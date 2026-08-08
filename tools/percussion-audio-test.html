@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Muse — jugement percussif alphaTab (ds / glpf / glpt)</title>
+<style>
+  :root {
+    --bg: #12131a;
+    --panel: #1b1d27;
+    --panel-2: #232634;
+    --ink: #e8e9ee;
+    --ink-dim: #9ca1b3;
+    --line: #333748;
+    --accent: #7aa2f7;
+    --a: #7aa2f7;
+    --b: #f7a27a;
+    --ok: #6dd58c;
+    --warn: #e0af68;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px;
+    background: var(--bg); color: var(--ink);
+    font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  h1 { font-size: 21px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 0; }
+  .sub { color: var(--ink-dim); margin: 0 0 20px; font-size: 14px; }
+
+  .bar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 20px;
+  }
+  .status { margin-left: auto; color: var(--ink-dim); font-size: 13px; }
+  .status.ready { color: var(--ok); }
+  .status.err { color: #f7768e; }
+
+  button {
+    background: var(--panel-2); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 7px;
+    padding: 7px 13px; font: inherit; font-size: 14px; cursor: pointer;
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  button.primary { background: var(--accent); color: #10121a; border-color: var(--accent); font-weight: 600; }
+  button.playing { background: var(--ok); color: #10121a; border-color: var(--ok); }
+  label { font-size: 13px; color: var(--ink-dim); display: inline-flex; gap: 6px; align-items: center; }
+
+  .case {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 16px; margin-bottom: 18px;
+  }
+  .case > header { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px; }
+  .tag {
+    font: 12px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+    background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 5px; padding: 4px 7px; color: var(--accent);
+  }
+  .ask { color: var(--warn); font-size: 13.5px; margin: 6px 0 12px; }
+  pre {
+    background: #0d0e14; border: 1px solid var(--line); border-radius: 7px;
+    padding: 11px 13px; overflow-x: auto; margin: 0 0 12px;
+    font: 12.5px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; color: #b8bdd0;
+  }
+  .score {
+    background: #fbfbfd; border-radius: 7px; padding: 6px;
+    overflow-x: auto; min-height: 90px;
+  }
+  .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 11px; }
+
+  /* ---- comparateur A/B ---- */
+  .ab { border-color: var(--accent); }
+  .ab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 780px) { .ab-grid { grid-template-columns: 1fr; } }
+  .ab-side { border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+  .ab-side.a { border-left: 3px solid var(--a); }
+  .ab-side.b { border-left: 3px solid var(--b); }
+  .ab-side h3 { margin: 0 0 8px; font-size: 14px; }
+  .ab-side.a h3 { color: var(--a); }
+  .ab-side.b h3 { color: var(--b); }
+
+  .verdict {
+    margin-top: 22px; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 10px; padding: 16px;
+  }
+  .verdict ol { margin: 10px 0 0; padding-left: 22px; }
+  .verdict li { margin-bottom: 9px; }
+  code { font: 12.5px ui-monospace, Consolas, monospace; color: var(--accent); }
+  .note { color: var(--ink-dim); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Jugement percussif alphaTab — <code>ds</code> / <code>glpf</code> / <code>glpt</code></h1>
+  <p class="sub">
+    Tranche 0, étape 4b. Le modèle parsé est validé (voir <code>docs/research/08-alphatab-verifie.md</code>).
+    Ce qui reste à trancher ne se lit pas dans un dump : <strong>le son et le rendu visuel</strong>.
+    Écoute chaque cas, réponds aux questions en bas.
+  </p>
+
+  <div class="bar">
+    <button id="init" class="primary">Charger le moteur audio</button>
+    <button id="stopAll" disabled>Tout arrêter</button>
+    <label><input type="checkbox" id="metronome"> Métronome</label>
+    <label>Tempo <input type="range" id="tempo" min="40" max="140" value="70" style="width:110px"> <span id="tempoVal">70</span></label>
+    <span id="status" class="status">moteur non chargé</span>
+  </div>
+
+  <!-- ============ Comparateur A/B ============ -->
+  <section class="case ab">
+    <header>
+      <h2>Comparateur A/B — la question centrale</h2>
+      <span class="tag">boucle</span>
+    </header>
+    <p class="ask">
+      <strong>A</strong> place les percussions sur des silences (<code>r { ds }</code>), <strong>B</strong> sur des
+      notes mortes (<code>x.6 { ds }</code>). Le modèle traite les deux différemment&nbsp;:
+      <code>ds</code> sur un silence rend le beat non-silencieux&nbsp;; <code>glpt</code> le laisse silencieux.
+      <strong>Est-ce que ça s'entend&nbsp;? Et lequel se lit le mieux&nbsp;?</strong>
+      Lance les deux en boucle, bascule de l'un à l'autre.
+    </p>
+    <div class="ab-grid">
+      <div class="ab-side a">
+        <h3>A — percussions sur silences</h3>
+        <pre id="tex-A"></pre>
+        <div class="score" id="score-A"></div>
+        <div class="controls">
+          <button data-play="A" disabled>▶ Boucler A</button>
+        </div>
+      </div>
+      <div class="ab-side b">
+        <h3>B — percussions sur notes mortes</h3>
+        <pre id="tex-B"></pre>
+        <div class="score" id="score-B"></div>
+        <div class="controls">
+          <button data-play="B" disabled>▶ Boucler B</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Cas isolés ============ -->
+  <div id="cases"></div>
+
+  <!-- ============ Ce que j'attends ============ -->
+  <section class="verdict">
+    <h2>Ce sur quoi j'ai besoin de ta réponse</h2>
+    <p class="note">Réponds dans l'ordre, en une ligne chacun. Je m'arrête tant que je n'ai pas ça.</p>
+    <ol>
+      <li><strong>Cas 1 — <code>ds</code> sur silence.</strong> Entends-tu quelque chose&nbsp;? Si oui, à quoi ça ressemble (percussion crédible, bruit, autre chose)&nbsp;?</li>
+      <li><strong>Cas 2 — <code>glpt</code> et <code>glpf</code> sur silence.</strong> Produisent-ils un son&nbsp;? Le modèle laisse ces beats marqués « silence », donc je soupçonne qu'ils soient <em>muets</em> et purement visuels. Confirme ou infirme.</li>
+      <li><strong>Cas 3 — sur notes réelles.</strong> Le golpe et le dead slap s'entendent-ils par-dessus la note&nbsp;?</li>
+      <li><strong>Rendu visuel.</strong> Les symboles sont-ils lisibles dans la portée&nbsp;? Distingues-tu <code>glpt</code> de <code>glpf</code> à l'œil&nbsp;?</li>
+      <li><strong>A ou B&nbsp;?</strong> Laquelle des deux écritures adopter pour les exercices percussifs — silences ou notes mortes&nbsp;? Ou faut-il une autre voie&nbsp;?</li>
+      <li><strong>Verdict global.</strong> Est-ce utilisable en l'état pour la fiche percussion, utilisable en visuel seulement (avec son désactivé), ou inutilisable&nbsp;?</li>
+    </ol>
+  </section>
+
+</div>
+
+<script type="module">
+import * as alphaTab from '../node_modules/@coderline/alphatab/dist/alphaTab.mjs';
+
+const BASE = '../node_modules/@coderline/alphatab/dist/';
+const HEAD = `\\track "Guitare"
+\\staff {tabs}
+\\tuning (E4 B3 G3 D3 A2 E2)
+\\ts (4 4)
+`;
+
+// --- Les cas. Chaque bloc est du alphaTex complet, tel qu'il irait dans une fiche.
+const CASES = [
+  {
+    id: 'A',
+    tex: HEAD + `// kick sur 1 et 3, snare sur 2 et 4 — tout sur des silences
+:4 r { glpt } r { ds } r { glpt } r { ds } |
+:4 r { glpt } r { ds } r { glpt } r { ds } |`,
+  },
+  {
+    id: 'B',
+    tex: HEAD + `// même motif, sur notes mortes corde 6
+:4 x.6 { glpt } x.6 { ds } x.6 { glpt } x.6 { ds } |
+:4 x.6 { glpt } x.6 { ds } x.6 { glpt } x.6 { ds } |`,
+  },
+  {
+    id: '1',
+    title: 'Cas 1 — `ds` seul, sur silences',
+    tags: ['ds', 'silence'],
+    ask: 'Le dead slap produit-il un son&nbsp;? Le modèle dit que ce beat cesse d\'être un silence — donc quelque chose devrait sortir.',
+    tex: HEAD + `:4 r { ds } r r { ds } r |
+:4 r { ds } r r { ds } r |`,
+  },
+  {
+    id: '2',
+    title: 'Cas 2 — `glpt` puis `glpf`, sur silences',
+    tags: ['glpt', 'glpf', 'silence'],
+    ask: 'Ces beats restent marqués « silence » dans le modèle. Je soupçonne qu\'ils soient <strong>muets</strong> et purement visuels. Confirme.',
+    tex: HEAD + `// deux golpe pouce, puis deux golpe doigt
+:4 r { glpt } r { glpt } r { glpf } r { glpf } |
+:4 r { glpt } r { glpt } r { glpf } r { glpf } |`,
+  },
+  {
+    id: '3',
+    title: 'Cas 3 — les trois effets sur des notes réelles',
+    tags: ['ds', 'glpt', 'glpf', 'notes'],
+    ask: 'Ici la note sonne de toute façon. La question est&nbsp;: <strong>entend-on l\'effet en plus</strong>, ou seulement la note&nbsp;?',
+    tex: HEAD + `// basse corde 5, avec effet percussif ajouté
+:4 0.5 { ds } 0.5 { glpt } 0.5 { glpf } 0.5 |
+:4 0.5 { ds } 0.5 { glpt } 0.5 { glpf } 0.5 |`,
+  },
+  {
+    id: '4',
+    title: 'Cas 4 — texture réelle : basse alternée + snare',
+    tags: ['application'],
+    ask: 'C\'est l\'exercice C de la fiche percussion. <strong>Est-ce que ça ressemble à quelque chose de musicalement exploitable&nbsp;?</strong>',
+    tex: HEAD + `// basse au pouce sur 1 et 3, snare sur 2 et 4
+:4 0.5{rf 1} r { ds } 2.4{rf 1} r { ds } |
+:4 0.5{rf 1} r { ds } 2.4{rf 1} r { ds } |`,
+  },
+  {
+    id: '5',
+    title: 'Cas 5 — kick et snare sur le même beat',
+    tags: ['glpt', 'ds', 'combiné'],
+    ask: 'Les deux effets cumulés sur un beat. Le modèle les accepte. <strong>Le rendu visuel reste-t-il lisible&nbsp;?</strong>',
+    tex: HEAD + `:4 r { glpt ds } r r { glpt ds } r |
+:4 r { glpt ds } r r { glpt ds } r |`,
+  },
+];
+
+// ------------------------------------------------------------------ rendu
+const apis = new Map();
+const statusEl = document.getElementById('status');
+const setStatus = (msg, cls = '') => { statusEl.textContent = msg; statusEl.className = 'status ' + cls; };
+
+function makeApi(el, tex) {
+  const api = new alphaTab.AlphaTabApi(el, {
+    core: {
+      tex: true,
+      fontDirectory: BASE + 'font/',
+      logLevel: alphaTab.LogLevel.Warning,
+    },
+    display: { scale: 0.9, stretchForce: 0.85 },
+    player: {
+      // Le worklet donne un son plus stable que le ScriptProcessor déprécié.
+      playerMode: alphaTab.PlayerMode.EnabledAutomatic,
+      soundFont: BASE + 'soundfont/sonivox.sf3',
+      scrollElement: el,
+      enableCursor: true,
+      enableUserInteraction: false,
+    },
+  });
+  api.tex(tex);
+  return api;
+}
+
+// Cas isolés → DOM
+const container = document.getElementById('cases');
+for (const c of CASES.filter((x) => x.title)) {
+  const sec = document.createElement('section');
+  sec.className = 'case';
+  sec.innerHTML = `
+    <header>
+      <h2>${c.title.replace(/`([^`]+)`/g, '<code>$1</code>')}</h2>
+      ${c.tags.map((t) => `<span class="tag">${t}</span>`).join('')}
+    </header>
+    <p class="ask">${c.ask}</p>
+    <pre></pre>
+    <div class="score"></div>
+    <div class="controls">
+      <button data-play="${c.id}" disabled>▶ Boucler</button>
+    </div>`;
+  sec.querySelector('pre').textContent = c.tex;
+  container.appendChild(sec);
+  c._el = sec.querySelector('.score');
+}
+
+// Comparateur A/B → DOM déjà présent
+for (const id of ['A', 'B']) {
+  const c = CASES.find((x) => x.id === id);
+  document.getElementById('tex-' + id).textContent = c.tex;
+  c._el = document.getElementById('score-' + id);
+}
+
+// ------------------------------------------------------------------ moteur
+let ready = 0;
+document.getElementById('init').addEventListener('click', async (e) => {
+  e.target.disabled = true;
+  setStatus('chargement de la soundfont…');
+  for (const c of CASES) {
+    try {
+      const api = makeApi(c._el, c.tex);
+      apis.set(c.id, api);
+      api.playerReady.on(() => {
+        ready++;
+        setStatus(`${ready}/${CASES.length} prêts`, ready === CASES.length ? 'ready' : '');
+        if (ready === CASES.length) {
+          document.querySelectorAll('button[data-play]').forEach((b) => (b.disabled = false));
+          document.getElementById('stopAll').disabled = false;
+          setStatus('prêt — clique sur « Boucler »', 'ready');
+        }
+      });
+      api.error.on((err) => setStatus('erreur : ' + (err?.message ?? err), 'err'));
+    } catch (err) {
+      setStatus('erreur : ' + err.message, 'err');
+    }
+  }
+});
+
+function stopAll() {
+  for (const api of apis.values()) api.stop();
+  document.querySelectorAll('button[data-play]').forEach((b) => {
+    b.classList.remove('playing');
+    b.textContent = b.textContent.replace('■ Arrêter', '▶ Boucler');
+  });
+}
+
+document.getElementById('stopAll').addEventListener('click', stopAll);
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-play]');
+  if (!btn) return;
+  const id = btn.dataset.play;
+  const api = apis.get(id);
+  if (!api) return;
+
+  const wasPlaying = btn.classList.contains('playing');
+  stopAll();
+  if (wasPlaying) return;
+
+  // Boucle, pour pouvoir basculer A/B à l'oreille sans relancer.
+  api.isLooping = true;
+  api.metronomeVolume = document.getElementById('metronome').checked ? 1 : 0;
+  api.playbackSpeed = Number(document.getElementById('tempo').value) / 70;
+  api.play();
+  btn.classList.add('playing');
+  btn.textContent = btn.textContent.replace('▶ Boucler', '■ Arrêter');
+});
+
+const tempo = document.getElementById('tempo');
+tempo.addEventListener('input', () => {
+  document.getElementById('tempoVal').textContent = tempo.value;
+  for (const api of apis.values()) api.playbackSpeed = Number(tempo.value) / 70;
+});
+
+document.getElementById('metronome').addEventListener('change', (e) => {
+  for (const api of apis.values()) api.metronomeVolume = e.target.checked ? 1 : 0;
+});
+</script>
+</body>
+</html>
