@@ -1,0 +1,146 @@
+---
+/**
+ * Bascule de thème — trois états : système → clair → sombre → système.
+ *
+ * Volontairement en JavaScript natif et non en îlot React, malgré la
+ * décision 8. Deux raisons :
+ *   1. le thème doit être appliqué AVANT le premier rendu, sinon la page
+ *      clignote en clair puis passe en sombre ; aucune hydratation React
+ *      n'est assez précoce pour ça (le script bloquant est dans BaseLayout) ;
+ *   2. c'est trois lignes d'état — importer React ici coûterait plus que ça
+ *      ne rapporte.
+ */
+---
+
+<button
+  id="theme-toggle"
+  type="button"
+  class="toggle no-print"
+  aria-label="Changer de thème"
+  title="Thème"
+>
+  <span class="icon icon--system" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <rect x="2.5" y="4" width="19" height="13" rx="2" />
+      <path d="M8 20.5h8M12 17.5v3" stroke-linecap="round" />
+    </svg>
+  </span>
+  <span class="icon icon--light" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <circle cx="12" cy="12" r="4.2" />
+      <path
+        d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"
+        stroke-linecap="round"
+      />
+    </svg>
+  </span>
+  <span class="icon icon--dark" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <path
+        d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.4 8.4 0 1 0 10.2 10.2Z"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </span>
+  <span class="sr-only" id="theme-state">Thème système</span>
+</button>
+
+<script is:inline>
+  (() => {
+    const KEY = 'muse:theme';
+    const ORDER = ['system', 'light', 'dark'];
+    const LABEL = {
+      system: 'Thème système',
+      light: 'Thème clair',
+      dark: 'Thème sombre',
+    };
+
+    const btn = document.getElementById('theme-toggle');
+    const state = document.getElementById('theme-state');
+    if (!btn || !state) return;
+
+    const read = () => {
+      try {
+        const v = localStorage.getItem(KEY);
+        return v === 'light' || v === 'dark' ? v : 'system';
+      } catch {
+        return 'system';
+      }
+    };
+
+    const apply = (mode) => {
+      if (mode === 'system') delete document.documentElement.dataset.theme;
+      else document.documentElement.dataset.theme = mode;
+      btn.dataset.mode = mode;
+      state.textContent = LABEL[mode];
+      btn.setAttribute('title', LABEL[mode]);
+      try {
+        if (mode === 'system') localStorage.removeItem(KEY);
+        else localStorage.setItem(KEY, mode);
+      } catch {
+        /* mode privé : on se contente de l'appliquer pour la session */
+      }
+    };
+
+    apply(read());
+
+    btn.addEventListener('click', () => {
+      const next = ORDER[(ORDER.indexOf(read()) + 1) % ORDER.length];
+      apply(next);
+    });
+  })();
+</script>
+
+<style>
+  .toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-line);
+    background: transparent;
+    color: var(--color-ink-2);
+    cursor: pointer;
+    transition:
+      color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .toggle:hover {
+    color: var(--color-brass);
+    border-color: var(--color-brass);
+  }
+
+  /* Les trois icônes occupent la même cellule ; seule celle du mode courant
+     est visible. Évite tout reflow au changement. */
+  .icon {
+    grid-area: 1 / 1;
+    display: none;
+    width: 1.05rem;
+    height: 1.05rem;
+  }
+  .icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Avant l'exécution du script, on montre l'icône « système ». */
+  .toggle:not([data-mode]) .icon--system,
+  .toggle[data-mode='system'] .icon--system,
+  .toggle[data-mode='light'] .icon--light,
+  .toggle[data-mode='dark'] .icon--dark {
+    display: block;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

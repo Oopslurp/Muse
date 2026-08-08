@@ -1,0 +1,178 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { NAV } from '~/lib/nav';
+
+const path = Astro.url.pathname;
+---
+
+<header class="header no-print">
+  <div class="header__inner">
+    <a href="/" class="brand" aria-label="Muse — accueil">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <!-- Six cordes et deux frettes : la marque est un fragment de manche. -->
+          <path d="M3 5h18M3 9.5h18M3 14h18M3 18.5h18" opacity="0.55" />
+          <path d="M8.5 2v20M15.5 2v20" />
+        </svg>
+      </span>
+      <span class="brand__word">Muse</span>
+    </a>
+
+    <nav class="nav" aria-label="Navigation principale">
+      <ul>
+        {
+          NAV.map((item) => (
+            <li>
+              {item.ready ? (
+                <a
+                  href={item.href}
+                  class:list={['nav__link', path.startsWith(item.href) && 'is-current']}
+                  aria-current={path.startsWith(item.href) ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <span
+                  class="nav__link nav__link--soon"
+                  title={`Livré en tranche ${item.tranche}`}
+                >
+                  {item.label}
+                  <span class="soon" aria-label={`à venir, tranche ${item.tranche}`}>
+                    {item.tranche}
+                  </span>
+                </span>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <ThemeToggle />
+  </div>
+  <div class="header__rule rule-brass"></div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in oklab, var(--color-bg) 88%, transparent);
+    backdrop-filter: blur(10px) saturate(1.2);
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 76rem;
+    margin: 0 auto;
+    padding: 0.85rem var(--spacing-gutter);
+  }
+
+  .header__rule {
+    max-width: 76rem;
+    margin: 0 auto;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    text-decoration: none;
+    color: var(--color-ink);
+    margin-right: auto;
+  }
+
+  .brand__mark {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-brass);
+    flex: none;
+  }
+  .brand__mark svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .brand__word {
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 60, 'SOFT' 30, 'WONK' 1;
+    font-weight: 600;
+    font-size: 1.32rem;
+    letter-spacing: 0.005em;
+  }
+
+  .nav ul {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    padding: 0.45rem 0.7rem;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-sm);
+    font-weight: 550;
+    color: var(--color-ink-2);
+    text-decoration: none;
+    transition: color 180ms ease, background-color 180ms ease;
+  }
+
+  a.nav__link:hover {
+    color: var(--color-ink);
+    background: var(--color-surface-2);
+  }
+
+  a.nav__link.is-current {
+    color: var(--color-brass);
+  }
+
+  .nav__link--soon {
+    color: var(--color-ink-3);
+    cursor: default;
+  }
+
+  /* Numéro de tranche : dit *quand* la section arrive, pas seulement
+     qu'elle manque. */
+  .soon {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.15em;
+    height: 1.15em;
+    padding: 0 0.28em;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-line-strong);
+    font-size: 0.62em;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-ink-3);
+  }
+
+  @media (max-width: 42rem) {
+    .header__inner {
+      flex-wrap: wrap;
+      gap: 0.6rem 1rem;
+    }
+    .nav {
+      order: 3;
+      width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav::-webkit-scrollbar {
+      display: none;
+    }
+    .nav__link {
+      padding-left: 0.45rem;
+      padding-right: 0.45rem;
+    }
+  }
+</style>

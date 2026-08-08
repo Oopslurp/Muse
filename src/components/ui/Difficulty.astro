@@ -1,0 +1,66 @@
+---
+/**
+ * Difficulté 1–5, en points pleins.
+ *
+ * Rendue comme une donnée graphique plutôt que « 3/5 » : on la lit d'un coup
+ * d'œil dans une liste. Le libellé complet reste accessible en infobulle et
+ * aux lecteurs d'écran.
+ */
+import { DIFFICULTY_LABELS, type Difficulty } from '~/lib/taxonomy';
+
+interface Props {
+  value: Difficulty;
+  /** Variable CSS d'accent — en général celle de la famille. */
+  colorVar?: string | undefined;
+  size?: 'sm' | 'md';
+  class?: string | undefined;
+}
+
+const { value, colorVar, size = 'sm', class: className = '' } = Astro.props;
+const accent = colorVar ? `var(${colorVar})` : 'var(--c-brass)';
+const label = `Difficulté ${value} sur 5 — ${DIFFICULTY_LABELS[value]}`;
+---
+
+<span
+  class:list={['diff', `diff--${size}`, className]}
+  style={`--accent:${accent}`}
+  title={label}
+  role="img"
+  aria-label={label}
+>
+  {
+    ([1, 2, 3, 4, 5] as const).map((i) => (
+      <span class:list={['pip', i <= value && 'pip--on']} />
+    ))
+  }
+</span>
+
+<style>
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.22em;
+    line-height: 1;
+  }
+
+  .pip {
+    display: block;
+    border-radius: 50%;
+    border: 1px solid color-mix(in oklab, var(--accent) 50%, transparent);
+    background: transparent;
+  }
+
+  .pip--on {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .diff--sm .pip {
+    width: 6px;
+    height: 6px;
+  }
+  .diff--md .pip {
+    width: 8px;
+    height: 8px;
+  }
+</style>

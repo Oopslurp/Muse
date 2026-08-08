@@ -243,8 +243,8 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | # | Tranche | Contenu | État |
 |---|---|---|---|
 | 0 | Sonde alphaTex | Vérification du format, corrections du corpus | ✅ **close** |
-| 1 | **Fondations** | Astro, Tailwind, design system (tokens couleur, échelle typo, espacements, composants de base), layout, mode sombre, accueil | 🔨 |
-| 2 | Contenu | Content collections typées selon `05-modele-donnees.md`, migration des 6 fiches longues + 27 courtes en MDX, liste + filtres (famille, difficulté, style, statut épistémique), page de détail | ⏳ |
+| 1 | **Fondations** | Astro, Tailwind, design system (tokens couleur, échelle typo, espacements, composants de base), layout, mode sombre, accueil | ✅ **close** |
+| 2 | **Contenu** | Content collections typées selon `05-modele-donnees.md`, migration des 6 fiches longues + 27 courtes en MDX, liste + filtres (famille, difficulté, style, statut épistémique), page de détail | ⏳ |
 | 3 | Tablatures | alphaTab : rendu, lecture, curseur, tempo, boucle A/B, métronome. Composant réutilisable inséré via MDX | ⏳ |
 | 4 | Accordeur | Page dédiée, chromatique, selon `06-accordeur.md`. Cents, aiguille lissée, choix d'accordage, gestion propre du micro **et de son refus** | ⏳ |
 | 5 | Arbre de compétences | Graphe de prérequis cliquable + progression | ⏳ |
@@ -269,6 +269,30 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | **Lisibilité** | **Depuis un pupitre** : corps de texte généreux, contrastes francs, interlignage large |
 | **Ton** | Un beau livre de méthode, pas une app SaaS. **Rien de « bootstrap ».** Ambition : niveau Awwwards. |
 | **Accessibilité** | Navigation clavier, focus visibles, respect de `prefers-reduced-motion`. Non négociable. |
+
+### Design system — ce qui est en place (tranche 1)
+
+Tout vit dans [src/styles/global.css](src/styles/global.css). **Vitrine : [/style-guide](src/pages/style-guide.astro).**
+
+**Thème — trois états, pas deux.** Aucun attribut sur `<html>` = le système décide ; `data-theme="light"` / `"dark"` = choix explicite. Toutes les couleurs passent par des variables `--c-*` redéfinies par thème et exposées à Tailwind via `@theme inline`. **Conséquence : on n'écrit jamais de variante `dark:`.** Un design system qui l'exige à chaque déclaration finit incohérent. `bg-surface text-ink` suffit.
+
+Le thème est appliqué par un script **inline et bloquant** dans `<head>` — seule exception assumée au « pas de script inline ». Différé, la page clignote.
+
+**Jetons de couleur.** Surfaces `--c-bg`, `--c-surface`, `--c-surface-2/3` · encres `--c-ink`, `--c-ink-2/3` · filets `--c-line`, `--c-line-strong` · accents `--c-brass`, `--c-brass-bright`, `--c-wood` · familles `--c-md` (bleu ardoise), `--c-mg` (vert forêt), `--c-pm` (rouille), `--c-tr` (gris-encre) · statuts `--c-source`, `--c-deduit`, `--c-observe`, `--c-verifier` · alerte `--c-sante`.
+
+Le transversal est volontairement **neutre** : il s'applique partout, il ne revendique pas de couleur.
+
+**Typographie.** Fraunces Variable en titrage (axes `opsz` / `SOFT` / `WONK` réglés pour un dessin gravé), Public Sans Variable en corps (humaniste, grandes ouvertures, lisible à distance de pupitre), pile mono système. **Fraunces est chargée en romain seulement** : son italique coûte 146 Ko pour du titrage. L'emphase en titrage passe par la couleur et les axes. Public Sans a bien son italique — le corpus en est plein.
+
+Échelle fluide en `clamp()`, corps 17→19 px, interlignage 1,68. Total servi : **172 Ko de polices, 34 Ko de CSS.**
+
+**Passer une couleur à un composant** se fait par **variable CSS en style inline** (`colorVar="--c-md"`), jamais par classe Tailwind construite dynamiquement : le scanner de Tailwind ne voit pas les classes calculées, et une table de correspondance en dur se désynchroniserait de `src/lib/taxonomy.ts`.
+
+**Composants** — `ui/Badge`, `ui/StatusBadge`, `ui/Difficulty`, `ui/Callout` (tons `note` / `sante` / `verifier`), `ui/Card`, `ui/Button`, plus la classe `.prose` pour le contenu MDX.
+
+**Vocabulaires contrôlés** — [src/lib/taxonomy.ts](src/lib/taxonomy.ts) : familles, difficulté, statut épistémique, style. Les décomptes y sont saisis à la main pour l'instant ; **à dériver des content collections en tranche 2**.
+
+**Navigation** — [src/lib/nav.ts](src/lib/nav.ts). Les sections non livrées apparaissent quand même, désactivées et étiquetées du numéro de tranche qui les livrera. Même honnêteté que le statut épistémique, appliquée à l'avancement.
 
 ---
 

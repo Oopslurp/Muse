@@ -1,0 +1,83 @@
+---
+/**
+ * Encadré. Trois tons, trois usages distincts — ne pas les mélanger.
+ *
+ *   note     : information de contexte
+ *   sante    : signal d'arrêt, tension, risque physique (CLAUDE.md décision 3)
+ *   verifier : doute assumé, `[À VÉRIFIER]` du corpus de recherche
+ *
+ * Le ton `sante` n'est jamais décoratif : il ne sert qu'à ce qui peut
+ * abîmer une main.
+ */
+interface Props {
+  tone?: 'note' | 'sante' | 'verifier';
+  title?: string | undefined;
+  class?: string | undefined;
+}
+
+const { tone = 'note', title, class: className = '' } = Astro.props;
+
+const ACCENT: Record<string, string> = {
+  note: 'var(--c-brass)',
+  sante: 'var(--c-sante)',
+  verifier: 'var(--c-verifier)',
+};
+
+const DEFAULT_TITLE: Record<string, string> = {
+  note: '',
+  sante: 'Santé',
+  verifier: 'À vérifier',
+};
+
+const heading = title ?? DEFAULT_TITLE[tone];
+---
+
+<aside
+  class:list={['callout', `callout--${tone}`, className]}
+  style={`--accent:${ACCENT[tone]}`}
+>
+  {heading && <p class="callout__title">{heading}</p>}
+  <div class="callout__body"><slot /></div>
+</aside>
+
+<style>
+  .callout {
+    border: 1px solid color-mix(in oklab, var(--accent) 32%, var(--color-line));
+    border-left-width: 3px;
+    border-left-color: var(--accent);
+    border-radius: var(--radius-card);
+    background: color-mix(in oklab, var(--accent) 5%, var(--color-surface));
+    padding: 1rem 1.15rem;
+    font-size: var(--text-sm);
+    line-height: 1.62;
+    color: var(--color-ink-2);
+  }
+
+  .callout--sante {
+    background: var(--color-sante-bg);
+  }
+
+  .callout__title {
+    margin: 0 0 0.4rem;
+    font-weight: 700;
+    font-size: var(--text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .callout__body :global(> :first-child) {
+    margin-top: 0;
+  }
+  .callout__body :global(> :last-child) {
+    margin-bottom: 0;
+  }
+  .callout__body :global(strong) {
+    color: var(--color-ink);
+    font-weight: 650;
+  }
+  .callout__body :global(a) {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+</style>

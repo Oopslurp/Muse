@@ -1,0 +1,491 @@
+/* ==========================================================================
+   Muse — design system
+   Registre : atelier de luthier. Bois chaud, laiton, encre profonde, papier.
+   ==========================================================================
+
+   Principe de thème
+   -----------------
+   Trois états, pas deux :
+     · aucun attribut sur <html>  → le système décide (prefers-color-scheme)
+     · data-theme="light"         → clair forcé
+     · data-theme="dark"          → sombre forcé
+
+   Toutes les couleurs passent par des variables `--c-*` redéfinies par thème.
+   Les utilitaires Tailwind pointent vers ces variables via `@theme inline`,
+   donc `bg-surface` suit le thème sans variante `dark:`. C'est volontaire :
+   un design system qui exige `dark:` à chaque déclaration finit incohérent.
+   -------------------------------------------------------------------------- */
+
+/* Polices servies depuis le bundle. Aucun CDN, aucune API externe.
+
+   Public Sans est chargée en romain ET en italique : le corpus est plein
+   d'italiques de corps — noms espagnols (*apoyando*), titres d'œuvres,
+   critères de palier. 28 Ko pour de vraies italiques dessinées plutôt que
+   des obliques synthétisées, l'échange est évident.
+
+   Fraunces est chargée en romain SEULEMENT. Son italique pèse 146 Ko pour
+   du titrage, c'est-à-dire quelques dizaines de mots par page : le rapport
+   ne tient pas. L'emphase en titrage passe par la couleur et les axes
+   variables, ce qui est de toute façon plus caractéristique qu'une italique.
+   Si un vrai besoin apparaît (titre d'œuvre dans un h2), ajouter
+   `@fontsource-variable/fraunces/full-italic.css`. */
+@import '@fontsource-variable/fraunces/full.css';
+@import '@fontsource-variable/public-sans/wght.css';
+@import '@fontsource-variable/public-sans/wght-italic.css';
+@import 'tailwindcss';
+
+/* ==========================================================================
+   1. Palette
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* — surfaces — */
+  --c-bg: #f6f1e8;          /* papier légèrement teinté */
+  --c-surface: #fdfbf7;     /* carte posée sur le papier */
+  --c-surface-2: #efe8db;   /* zone en creux : code, encadré */
+  --c-surface-3: #e6dccb;
+
+  /* — encre — */
+  --c-ink: #1c1815;         /* texte courant, brun très foncé */
+  --c-ink-2: #4e453b;       /* texte secondaire */
+  --c-ink-3: #7c7062;       /* mentions, métadonnées */
+
+  /* — filets — */
+  --c-line: #ded4c2;
+  --c-line-strong: #c2b49c;
+
+  /* — accents — */
+  --c-brass: #8a6a1b;       /* accent lisible sur papier */
+  --c-brass-bright: #b8912f;/* filets, ornements */
+  --c-wood: #8c5a30;
+
+  /* — familles de techniques (00-taxonomie.md) — */
+  --c-md: #2e5a78;          /* main droite   · bleu ardoise */
+  --c-mg: #3f6b45;          /* main gauche   · vert forêt */
+  --c-pm: #a85a24;          /* percussif     · rouille */
+  --c-tr: #5a5248;          /* transversal   · gris-encre */
+
+  /* — statut épistémique (CLAUDE.md, décision 1) — */
+  --c-source: #4e453b;      /* sourcé   · neutre, assuré */
+  --c-deduit: #7c7062;      /* déduit   · muted */
+  --c-observe: #3f7a4e;     /* observé  · vérifié à la guitare */
+  --c-verifier: #96550a;    /* à vérifier · ambre */
+
+  /* — alerte santé — */
+  --c-sante: #8f2f22;
+  --c-sante-bg: #f7e9e5;
+
+  /* — divers — */
+  --c-focus: var(--c-brass-bright);
+  --grain-opacity: 0.038;
+  --grain-blend: multiply;
+  --shadow-card: 0 1px 2px rgb(28 24 21 / 4%), 0 6px 18px -8px rgb(28 24 21 / 12%);
+  --shadow-lift: 0 2px 4px rgb(28 24 21 / 5%), 0 14px 34px -12px rgb(28 24 21 / 18%);
+}
+
+/* Sombre — appliqué par défaut du système, sauf clair forcé. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --c-bg: #14110e;
+    --c-surface: #1c1815;
+    --c-surface-2: #241f1a;
+    --c-surface-3: #2d2620;
+
+    --c-ink: #efe7d9;
+    --c-ink-2: #c3b7a5;
+    --c-ink-3: #8d8172;
+
+    --c-line: #2e2721;
+    --c-line-strong: #493e32;
+
+    --c-brass: #d8ac52;
+    --c-brass-bright: #efc978;
+    --c-wood: #c08551;
+
+    --c-md: #8cb9dc;
+    --c-mg: #8fc49a;
+    --c-pm: #eaa36b;
+    --c-tr: #a79b8a;
+
+    --c-source: #c3b7a5;
+    --c-deduit: #8d8172;
+    --c-observe: #7fc694;
+    --c-verifier: #e0a55b;
+
+    --c-sante: #f09a8c;
+    --c-sante-bg: #2a1a17;
+
+    --grain-opacity: 0.05;
+    --grain-blend: overlay;
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 30%), 0 6px 18px -8px rgb(0 0 0 / 45%);
+    --shadow-lift: 0 2px 4px rgb(0 0 0 / 35%), 0 14px 34px -12px rgb(0 0 0 / 55%);
+  }
+}
+
+/* Sombre forcé — mêmes valeurs, priorité sur le système. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --c-bg: #14110e;
+  --c-surface: #1c1815;
+  --c-surface-2: #241f1a;
+  --c-surface-3: #2d2620;
+
+  --c-ink: #efe7d9;
+  --c-ink-2: #c3b7a5;
+  --c-ink-3: #8d8172;
+
+  --c-line: #2e2721;
+  --c-line-strong: #493e32;
+
+  --c-brass: #d8ac52;
+  --c-brass-bright: #efc978;
+  --c-wood: #c08551;
+
+  --c-md: #8cb9dc;
+  --c-mg: #8fc49a;
+  --c-pm: #eaa36b;
+  --c-tr: #a79b8a;
+
+  --c-source: #c3b7a5;
+  --c-deduit: #8d8172;
+  --c-observe: #7fc694;
+  --c-verifier: #e0a55b;
+
+  --c-sante: #f09a8c;
+  --c-sante-bg: #2a1a17;
+
+  --grain-opacity: 0.05;
+  --grain-blend: overlay;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 30%), 0 6px 18px -8px rgb(0 0 0 / 45%);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 35%), 0 14px 34px -12px rgb(0 0 0 / 55%);
+}
+
+/* ==========================================================================
+   2. Thème Tailwind
+   `inline` fait pointer les utilitaires directement sur les variables
+   ci-dessus : elles restent dynamiques au changement de thème.
+   ========================================================================== */
+
+@theme inline {
+  --color-bg: var(--c-bg);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-surface-3: var(--c-surface-3);
+
+  --color-ink: var(--c-ink);
+  --color-ink-2: var(--c-ink-2);
+  --color-ink-3: var(--c-ink-3);
+
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+
+  --color-brass: var(--c-brass);
+  --color-brass-bright: var(--c-brass-bright);
+  --color-wood: var(--c-wood);
+
+  --color-md: var(--c-md);
+  --color-mg: var(--c-mg);
+  --color-pm: var(--c-pm);
+  --color-tr: var(--c-tr);
+
+  --color-source: var(--c-source);
+  --color-deduit: var(--c-deduit);
+  --color-observe: var(--c-observe);
+  --color-verifier: var(--c-verifier);
+
+  --color-sante: var(--c-sante);
+  --color-sante-bg: var(--c-sante-bg);
+
+  /* — familles typographiques — */
+  --font-display: 'Fraunces Variable', 'Iowan Old Style', 'Palatino Linotype',
+    Palatino, Georgia, serif;
+  --font-sans: 'Public Sans Variable', ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Segoe UI Mono', Menlo,
+    Consolas, monospace;
+
+  /* — échelle typographique, fluide —
+     Le corps est volontairement généreux : le site se lit depuis un pupitre,
+     à une distance nettement supérieure à celle d'un écran de bureau. */
+  --text-2xs: 0.75rem;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: clamp(1.0625rem, 1.01rem + 0.24vw, 1.1875rem);
+  --text-lg: clamp(1.1875rem, 1.12rem + 0.32vw, 1.3125rem);
+  --text-xl: clamp(1.3125rem, 1.2rem + 0.55vw, 1.5rem);
+  --text-h3: clamp(1.25rem, 1.14rem + 0.5vw, 1.5rem);
+  --text-h2: clamp(1.55rem, 1.3rem + 1.1vw, 2.2rem);
+  --text-h1: clamp(2.05rem, 1.6rem + 2.1vw, 3.35rem);
+  --text-display: clamp(2.6rem, 1.85rem + 3.5vw, 5.1rem);
+
+  /* — rythme vertical — */
+  --spacing-section: clamp(3.5rem, 2.5rem + 4vw, 7rem);
+  --spacing-gutter: clamp(1.25rem, 0.9rem + 1.6vw, 2.5rem);
+
+  --radius-card: 0.625rem;
+  --radius-pill: 999px;
+
+  --shadow-card: var(--shadow-card);
+  --shadow-lift: var(--shadow-lift);
+}
+
+/* ==========================================================================
+   3. Base
+   ========================================================================== */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* Compense la hauteur de l'en-tête collant pour les ancres. */
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.68;
+    /* Aucune graisse ni italique synthétisée : si une variante manque,
+       on veut le voir plutôt que d'obtenir une contrefaçon. */
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Grain papier. Très faible : on doit le sentir, jamais le voir.
+     `pointer-events: none` pour ne rien intercepter, et il est retiré
+     à l'impression. */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: var(--grain-blend);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    /* Fraunces : opsz élevé = plus de contraste, plus éditorial.
+       SOFT adoucit les angles, WONK active les formes alternatives —
+       c'est ce qui donne le caractère « gravé » plutôt que « neutre ». */
+    font-variation-settings: 'opsz' 96, 'SOFT' 22, 'WONK' 1;
+    letter-spacing: -0.018em;
+    text-wrap: balance;
+    color: var(--color-ink);
+    margin: 0;
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: from-font;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--c-brass-bright) 32%, transparent);
+    color: var(--color-ink);
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--color-line);
+    margin: 2.5rem 0;
+  }
+
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: var(--font-mono);
+    font-size: 0.885em;
+  }
+
+  /* Accessibilité : on coupe tout mouvement si l'utilisateur le demande. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ==========================================================================
+   4. Motifs réutilisables
+   ========================================================================== */
+
+@layer components {
+  /* Filet de laiton — séparateur ornemental discret. */
+  .rule-brass {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--c-brass-bright) 55%, transparent) 18%,
+      color-mix(in oklab, var(--c-brass-bright) 55%, transparent) 82%,
+      transparent
+    );
+  }
+
+  /* Petite capitale espacée — sur-titres et étiquettes de section. */
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+
+  /* Typographie de contenu long (fiches MDX, tranche 2). */
+  .prose {
+    max-width: 68ch;
+    line-height: 1.72;
+  }
+  .prose > * + * {
+    margin-top: 1.15em;
+  }
+  .prose h2 {
+    font-size: var(--text-h2);
+    line-height: 1.16;
+    margin-top: 2.2em;
+    margin-bottom: 0.55em;
+  }
+  .prose h3 {
+    font-size: var(--text-h3);
+    line-height: 1.28;
+    margin-top: 1.9em;
+    margin-bottom: 0.45em;
+  }
+  .prose strong {
+    font-weight: 650;
+  }
+  .prose a {
+    color: var(--color-brass);
+    text-decoration: underline;
+  }
+  .prose a:hover {
+    color: var(--color-ink);
+  }
+  .prose ul,
+  .prose ol {
+    padding-left: 1.35em;
+  }
+  .prose li + li {
+    margin-top: 0.35em;
+  }
+  .prose ul {
+    list-style: none;
+    padding-left: 1.15em;
+  }
+  .prose ul > li {
+    position: relative;
+  }
+  .prose ul > li::before {
+    content: '';
+    position: absolute;
+    left: -1.05em;
+    top: 0.72em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-brass-bright);
+  }
+  .prose blockquote {
+    border-left: 2px solid var(--color-brass-bright);
+    padding-left: 1.1em;
+    color: var(--color-ink-2);
+    font-style: italic;
+  }
+  .prose code:not(pre code) {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-line);
+    border-radius: 4px;
+    padding: 0.1em 0.34em;
+  }
+  .prose pre {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+  }
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+  .prose th,
+  .prose td {
+    border-bottom: 1px solid var(--color-line);
+    padding: 0.6em 0.7em;
+    text-align: left;
+    vertical-align: top;
+  }
+  .prose th {
+    font-weight: 650;
+    color: var(--color-ink-2);
+  }
+}
+
+/* ==========================================================================
+   5. Impression — une fiche doit pouvoir vivre sur un pupitre en papier
+   (tranche 7, mais les bases coûtent trois lignes ici)
+   ========================================================================== */
+
+@media print {
+  :root {
+    --c-bg: #fff;
+    --c-surface: #fff;
+    --c-ink: #000;
+  }
+  body::after {
+    display: none;
+  }
+  .no-print {
+    display: none !important;
+  }
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.75em;
+    color: #555;
+  }
+}

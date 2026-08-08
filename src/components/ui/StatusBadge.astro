@@ -1,0 +1,54 @@
+---
+/**
+ * Statut épistémique rendu visible — CLAUDE.md, décision 1.
+ *
+ * Ce composant est le plus important du design system : c'est lui qui
+ * matérialise la promesse du site. Il doit rester lisible partout, y compris
+ * réduit, et son infobulle doit dire ce que le statut engage.
+ */
+import Badge from './Badge.astro';
+import { statusById, type EpistemicStatus } from '~/lib/taxonomy';
+
+interface Props {
+  status: EpistemicStatus;
+  size?: 'sm' | 'md';
+  /** Masque le libellé et ne garde que la pastille — pour les listes denses. */
+  iconOnly?: boolean;
+  class?: string | undefined;
+}
+
+const { status, size = 'sm', iconOnly = false, class: className } = Astro.props;
+const meta = statusById(status);
+---
+
+<Badge
+  colorVar={meta.colorVar}
+  dashed={meta.dashed}
+  size={size}
+  title={`${meta.label} — ${meta.meaning}`}
+  class={className}
+>
+  <span class="dot" aria-hidden="true"></span>
+  {iconOnly ? <span class="sr-only">{meta.label}</span> : meta.label}
+</Badge>
+
+<style>
+  .dot {
+    width: 0.42em;
+    height: 0.42em;
+    border-radius: 50%;
+    background: currentColor;
+    flex: none;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

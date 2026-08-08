@@ -1,0 +1,89 @@
+---
+import '~/styles/global.css';
+import Header from '~/components/Header.astro';
+import Footer from '~/components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string | undefined;
+  /** Retire le conteneur centré — pour les pages qui gèrent leur propre grille. */
+  bare?: boolean;
+}
+
+const {
+  title,
+  description = 'Bibliothèque de référence des techniques de guitare fingerstyle, classique et percussive, avec accordeur chromatique.',
+  bare = false,
+} = Astro.props;
+
+const fullTitle = title === 'Muse' ? 'Muse' : `${title} — Muse`;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    {/* Les deux couleurs de fond, pour que la barre d'adresse mobile suive le thème. */}
+    <meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14110e" media="(prefers-color-scheme: dark)" />
+
+    {/*
+      Applique le thème choisi AVANT le premier rendu. Ce script doit rester
+      bloquant et en ligne : différé ou externalisé, la page s'affiche une
+      fraction de seconde dans le mauvais thème. C'est la seule exception
+      assumée au « pas de script inline ».
+    */}
+    <script is:inline>
+      (() => {
+        try {
+          const t = localStorage.getItem('muse:theme');
+          if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+        } catch {
+          /* mode privé : on laisse le système décider */
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <a href="#contenu" class="skip">Aller au contenu</a>
+    <Header />
+    <main id="contenu" class:list={[!bare && 'shell']}>
+      <slot />
+    </main>
+    <Footer />
+
+    <style>
+      .skip {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        transform: translate(-50%, -140%);
+        z-index: 100;
+        background: var(--color-ink);
+        color: var(--color-bg);
+        padding: 0.7rem 1.2rem;
+        border-radius: 0 0 var(--radius-card) var(--radius-card);
+        font-size: var(--text-sm);
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 160ms ease;
+      }
+      .skip:focus-visible {
+        transform: translate(-50%, 0);
+      }
+
+      .shell {
+        max-width: 76rem;
+        margin: 0 auto;
+        padding: 0 var(--spacing-gutter);
+      }
+    </style>
+  </body>
+</html>

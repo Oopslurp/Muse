@@ -1,0 +1,98 @@
+---
+/**
+ * Bouton / lien d'action. Rend un <a> si `href`, sinon un <button>.
+ */
+interface Props {
+  href?: string | undefined;
+  variant?: 'primary' | 'secondary' | 'quiet';
+  size?: 'sm' | 'md';
+  disabled?: boolean;
+  type?: 'button' | 'submit';
+  class?: string | undefined;
+}
+
+const {
+  href,
+  variant = 'secondary',
+  size = 'md',
+  disabled = false,
+  type = 'button',
+  class: className = '',
+} = Astro.props;
+
+const Tag = href && !disabled ? 'a' : 'button';
+const extra = href && !disabled ? { href } : { type, disabled };
+---
+
+<Tag
+  {...extra}
+  class:list={['btn', `btn--${variant}`, `btn--${size}`, className]}
+  aria-disabled={disabled ? 'true' : undefined}
+>
+  <slot />
+</Tag>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease;
+  }
+
+  .btn--sm {
+    font-size: var(--text-xs);
+    padding: 0.6em 1em;
+  }
+  .btn--md {
+    font-size: var(--text-sm);
+    padding: 0.78em 1.35em;
+  }
+
+  .btn--primary {
+    background: var(--color-ink);
+    color: var(--color-bg);
+    border-color: var(--color-ink);
+  }
+  .btn--primary:hover {
+    background: var(--color-brass);
+    border-color: var(--color-brass);
+  }
+
+  .btn--secondary {
+    background: transparent;
+    color: var(--color-ink);
+    border-color: var(--color-line-strong);
+  }
+  .btn--secondary:hover {
+    border-color: var(--color-brass);
+    color: var(--color-brass);
+  }
+
+  .btn--quiet {
+    background: transparent;
+    color: var(--color-ink-2);
+    padding-left: 0.35em;
+    padding-right: 0.35em;
+  }
+  .btn--quiet:hover {
+    color: var(--color-brass);
+  }
+
+  .btn[aria-disabled='true'],
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+</style>

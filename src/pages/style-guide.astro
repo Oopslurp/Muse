@@ -1,0 +1,454 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Card from '~/components/ui/Card.astro';
+import Badge from '~/components/ui/Badge.astro';
+import StatusBadge from '~/components/ui/StatusBadge.astro';
+import Difficulty from '~/components/ui/Difficulty.astro';
+import Callout from '~/components/ui/Callout.astro';
+import Button from '~/components/ui/Button.astro';
+import { FAMILIES, STATUSES, DIFFICULTY_LABELS, type Difficulty as Diff } from '~/lib/taxonomy';
+
+const SURFACES = [
+  ['--c-bg', 'Fond de page'],
+  ['--c-surface', 'Carte'],
+  ['--c-surface-2', 'Creux : code, encadré'],
+  ['--c-surface-3', 'Creux appuyé'],
+] as const;
+
+const INKS = [
+  ['--c-ink', 'Texte courant'],
+  ['--c-ink-2', 'Secondaire'],
+  ['--c-ink-3', 'Métadonnées'],
+  ['--c-line', 'Filet'],
+  ['--c-line-strong', 'Filet appuyé'],
+] as const;
+
+const ACCENTS = [
+  ['--c-brass', 'Laiton — accent'],
+  ['--c-brass-bright', 'Laiton clair — ornement'],
+  ['--c-wood', 'Bois'],
+  ['--c-sante', 'Santé — signal d’arrêt'],
+] as const;
+
+const TYPE = [
+  ['--text-display', 'Display', 'Le trémolo n’est pas une question de vitesse'],
+  ['--text-h1', 'Titre 1', 'Butée et pincé'],
+  ['--text-h2', 'Titre 2', 'Anatomie du geste'],
+  ['--text-h3', 'Titre 3', 'Point de contact et angle'],
+  ['--text-lg', 'Chapeau', 'La différence tient à un angle de sortie.'],
+  ['--text-base', 'Corps', 'Le doigt traverse la corde et poursuit sa course.'],
+  ['--text-sm', 'Petit', 'Métadonnées, légendes, tableaux.'],
+  ['--text-xs', 'Étiquette', 'MD-08 · Main droite'],
+] as const;
+
+const difficulties: Diff[] = [1, 2, 3, 4, 5];
+---
+
+<BaseLayout title="Design system" description="Jetons, échelles et composants de base.">
+  <header class="head">
+    <p class="eyebrow">Tranche 1</p>
+    <h1>Design system</h1>
+    <p class="lede">
+      Registre atelier de luthier&nbsp;: bois chaud, laiton, encre profonde,
+      beaucoup de papier. Bascule le thème depuis l'en-tête pour vérifier chaque
+      jeton dans les deux modes — ils sont définis en variables CSS, pas en
+      variantes&nbsp;<code>dark:</code>.
+    </p>
+  </header>
+
+  <!-- ============================================================ couleur -->
+  <section class="sec" aria-labelledby="couleur">
+    <h2 id="couleur">Couleur</h2>
+
+    <h3 class="sub">Surfaces</h3>
+    <div class="swatches">
+      {
+        SURFACES.map(([v, label]) => (
+          <div class="sw">
+            <span class="sw__chip sw__chip--bordered" style={`background:var(${v})`} />
+            <span class="sw__name">{label}</span>
+            <code class="sw__var">{v}</code>
+          </div>
+        ))
+      }
+    </div>
+
+    <h3 class="sub">Encres et filets</h3>
+    <div class="swatches">
+      {
+        INKS.map(([v, label]) => (
+          <div class="sw">
+            <span class="sw__chip" style={`background:var(${v})`} />
+            <span class="sw__name">{label}</span>
+            <code class="sw__var">{v}</code>
+          </div>
+        ))
+      }
+    </div>
+
+    <h3 class="sub">Accents</h3>
+    <div class="swatches">
+      {
+        ACCENTS.map(([v, label]) => (
+          <div class="sw">
+            <span class="sw__chip" style={`background:var(${v})`} />
+            <span class="sw__name">{label}</span>
+            <code class="sw__var">{v}</code>
+          </div>
+        ))
+      }
+    </div>
+
+    <h3 class="sub">Familles de techniques</h3>
+    <p class="note">
+      Quatre teintes suffisamment écartées pour rester distinguables en vision
+      réduite&nbsp;: bleu ardoise, vert forêt, rouille, gris-encre. Le transversal
+      est volontairement neutre — il s'applique partout, il ne revendique pas de
+      couleur.
+    </p>
+    <div class="swatches">
+      {
+        FAMILIES.map((f) => (
+          <div class="sw">
+            <span class="sw__chip" style={`background:var(${f.colorVar})`} />
+            <span class="sw__name">{f.label}</span>
+            <code class="sw__var">{f.colorVar}</code>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ======================================================== typographie -->
+  <section class="sec" aria-labelledby="typo">
+    <h2 id="typo">Typographie</h2>
+    <p class="note">
+      <strong>Fraunces</strong> en titrage — serif éditoriale, axes
+      <code>opsz</code>, <code>SOFT</code> et <code>WONK</code> réglés pour un
+      dessin gravé plutôt que neutre. <strong>Public Sans</strong> en corps,
+      humaniste et à grandes ouvertures, choisie pour la lecture à distance de
+      pupitre. Les deux sont servies depuis le bundle&nbsp;: aucun appel réseau.
+    </p>
+
+    <div class="type">
+      {
+        TYPE.map(([v, label, sample]) => (
+          <div class="type__row">
+            <div class="type__meta">
+              <span class="type__label">{label}</span>
+              <code class="sw__var">{v}</code>
+            </div>
+            <p
+              class:list={['type__sample', v.includes('display') || v.includes('h1') || v.includes('h2') || v.includes('h3') ? 'type__sample--display' : '']}
+              style={`font-size:var(${v})`}
+            >
+              {sample}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ========================================================= composants -->
+  <section class="sec" aria-labelledby="composants">
+    <h2 id="composants">Composants</h2>
+
+    <h3 class="sub">Statut épistémique</h3>
+    <p class="note">
+      Le composant le plus important du système&nbsp;: c'est lui qui porte la
+      promesse du site. Survole une pastille pour lire ce que le statut engage.
+    </p>
+    <div class="rowset">
+      {STATUSES.map((s) => <StatusBadge status={s.id} size="md" />)}
+    </div>
+
+    <h3 class="sub">Familles et codes</h3>
+    <div class="rowset">
+      {
+        FAMILIES.map((f) => (
+          <Badge colorVar={f.colorVar}>
+            {f.code} · {f.label}
+          </Badge>
+        ))
+      }
+      {FAMILIES.map((f) => <Badge colorVar={f.colorVar} variant="solid" size="sm">{f.code}</Badge>)}
+    </div>
+
+    <h3 class="sub">Difficulté</h3>
+    <p class="note">
+      Échelle relative au public visé — intermédiaire vers expert, pas débutant.
+      Lue d'un coup d'œil dans une liste&nbsp;; le libellé complet reste en
+      infobulle et pour les lecteurs d'écran.
+    </p>
+    <ul class="diffs">
+      {
+        difficulties.map((d) => (
+          <li>
+            <Difficulty value={d} size="md" />
+            <span class="diffs__label">{DIFFICULTY_LABELS[d]}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h3 class="sub">Boutons</h3>
+    <div class="rowset">
+      <Button variant="primary">Action principale</Button>
+      <Button variant="secondary">Secondaire</Button>
+      <Button variant="quiet">Discret</Button>
+      <Button variant="primary" disabled>Indisponible</Button>
+    </div>
+
+    <h3 class="sub">Encadrés</h3>
+    <div class="stack">
+      <Callout>
+        Ton <strong>note</strong> — information de contexte. Le laiton signale
+        sans alarmer.
+      </Callout>
+      <Callout tone="verifier">
+        Ton <strong>à vérifier</strong> — doute assumé, avec sa raison. Repris tel
+        quel du corpus de recherche&nbsp;: on ne lisse pas.
+      </Callout>
+      <Callout tone="sante">
+        Ton <strong>santé</strong> — réservé à ce qui peut abîmer une main. Jamais
+        décoratif. Exemple&nbsp;: <em>réapparition du galop, tension au dos de la
+        main, dix minutes maximum.</em>
+      </Callout>
+    </div>
+
+    <h3 class="sub">Cartes</h3>
+    <div class="cards">
+      <Card colorVar="--c-md" href="/style-guide">
+        <h4 class="card__h">Carte cliquable</h4>
+        <p class="card__p">
+          Survol&nbsp;: le filet d'accent s'affirme et la carte se soulève de deux
+          pixels. Rien de plus — un décollement de huit pixels appartient au
+          registre SaaS.
+        </p>
+      </Card>
+      <Card colorVar="--c-pm" muted>
+        <h4 class="card__h">Carte atténuée</h4>
+        <p class="card__p">
+          Filet pointillé, pas d'ombre, lien neutralisé. Sert à ce qui n'existe pas
+          encore, sans le cacher.
+        </p>
+      </Card>
+    </div>
+  </section>
+
+  <!-- ============================================================== prose -->
+  <section class="sec" aria-labelledby="prose">
+    <h2 id="prose">Contenu long</h2>
+    <p class="note">
+      Classe <code>.prose</code>, utilisée par les fiches MDX en tranche 2.
+      Mesure limitée à 68 caractères, interlignage 1,72, puces en laiton.
+    </p>
+
+    <div class="prose">
+      <h2>Anatomie du geste</h2>
+      <p>
+        <strong>Articulation motrice&nbsp;: la MCP</strong> — la jointure du doigt
+        avec la paume, celle qui forme la bosse du poing fermé. C'est elle qui
+        fournit le mouvement, et c'est le seul consensus fort du domaine.
+      </p>
+      <ul>
+        <li>
+          L'<strong>IPP</strong> maintient une forme&nbsp;; elle ne fléchit pas
+          activement pendant l'attaque.
+        </li>
+        <li>
+          L'<strong>IPD</strong> doit rester ferme. Si elle s'effondre au contact,
+          le son perd son noyau.
+        </li>
+      </ul>
+      <blockquote>
+        La différence entre butée et pincé n'est pas «&nbsp;on appuie ou on
+        n'appuie pas&nbsp;»&nbsp;: c'est un angle de sortie de quelques degrés.
+      </blockquote>
+      <p>
+        Le geste s'écrit <code>0.1&#123;rf 4&#125;</code> en alphaTex — corde&nbsp;1
+        à vide, annulaire. Attention&nbsp;: <code>lf 1</code> désigne le pouce, pas
+        l'index.
+      </p>
+      <pre><code>:8 0.5&#123;rf 1 lr&#125; 0.1&#123;rf 4&#125; 0.1&#123;rf 3&#125; 0.1&#123;rf 2&#125; |</code></pre>
+      <table>
+        <thead>
+          <tr><th>Palier</th><th>Départ</th><th>Cible</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Cycle en accord</td><td>♩ 40</td><td>♩ 60</td></tr>
+          <tr><td>Doubles-croches</td><td>♩ 40</td><td>♩ 60</td></tr>
+          <tr><td>Pouce indépendant</td><td>♩ 40</td><td>♩ 72</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .head {
+    padding: clamp(2.5rem, 1.5rem + 4vw, 4.5rem) 0 2.5rem;
+    max-width: 62ch;
+  }
+  .head h1 {
+    font-size: var(--text-h1);
+    line-height: 1.06;
+    margin: 0.4rem 0 1rem;
+  }
+  .lede {
+    margin: 0;
+    font-size: var(--text-lg);
+    color: var(--color-ink-2);
+    line-height: 1.6;
+  }
+  .lede code,
+  .note code {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-line);
+    border-radius: 4px;
+    padding: 0.08em 0.32em;
+  }
+
+  .sec {
+    padding-bottom: var(--spacing-section);
+  }
+  .sec > h2 {
+    font-size: var(--text-h2);
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--color-line);
+    margin-bottom: 1.75rem;
+  }
+  .sub {
+    font-size: var(--text-h3);
+    margin: 2.25rem 0 0.9rem;
+  }
+  .sec > .sub:first-of-type {
+    margin-top: 0;
+  }
+  .note {
+    max-width: 68ch;
+    margin: 0 0 1.25rem;
+    font-size: var(--text-sm);
+    color: var(--color-ink-2);
+    line-height: 1.6;
+  }
+
+  /* ------------------------------------------------------------ couleurs */
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: 0.9rem;
+  }
+  .sw {
+    display: grid;
+    gap: 0.3rem;
+  }
+  .sw__chip {
+    display: block;
+    height: 3.5rem;
+    border-radius: var(--radius-card);
+    border: 1px solid transparent;
+  }
+  .sw__chip--bordered {
+    border-color: var(--color-line);
+  }
+  .sw__name {
+    font-size: var(--text-xs);
+    font-weight: 600;
+  }
+  .sw__var {
+    font-size: var(--text-2xs);
+    color: var(--color-ink-3);
+  }
+
+  /* --------------------------------------------------------- typographie */
+  .type {
+    border-top: 1px solid var(--color-line);
+  }
+  .type__row {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: 1.5rem;
+    align-items: baseline;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .type__meta {
+    display: grid;
+    gap: 0.15rem;
+  }
+  .type__label {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+  .type__sample {
+    margin: 0;
+    line-height: 1.15;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .type__sample--display {
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 120, 'SOFT' 20, 'WONK' 1;
+    font-weight: 600;
+    letter-spacing: -0.018em;
+  }
+
+  /* ---------------------------------------------------------- composants */
+  .rowset {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .diffs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+  }
+  .diffs li {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+  .diffs__label {
+    font-size: var(--text-sm);
+    color: var(--color-ink-2);
+  }
+
+  .stack {
+    display: grid;
+    gap: 0.85rem;
+    max-width: 46rem;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: 1rem;
+  }
+  .card__h {
+    font-size: var(--text-h3);
+    margin: 0 0 0.4rem;
+  }
+  .card__p {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-ink-2);
+    line-height: 1.55;
+  }
+
+  @media (max-width: 42rem) {
+    .type__row {
+      grid-template-columns: 1fr;
+      gap: 0.4rem;
+    }
+  }
+</style>

@@ -1,0 +1,106 @@
+---
+import { CORPUS } from '~/lib/taxonomy';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer no-print">
+  <div class="rule-brass"></div>
+  <div class="footer__inner">
+    <div class="footer__col">
+      <p class="footer__word">Muse</p>
+      <p class="footer__note">
+        Bibliothèque personnelle de technique — guitare fingerstyle, classique et
+        percussive. {CORPUS.techniques} techniques, {CORPUS.fichesCompletes} fiches
+        approfondies.
+      </p>
+    </div>
+
+    <div class="footer__col">
+      <p class="eyebrow">Principes</p>
+      <ul>
+        <li>Chaque affirmation porte son statut&nbsp;: sourcé, déduit, observé.</li>
+        <li>Les doutes sont affichés, pas lissés.</li>
+        <li>Chaque technique dit quand s'arrêter, pas seulement quoi viser.</li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <p class="eyebrow">Technique</p>
+      <ul>
+        <li>Tout est local. Aucun compte, aucun serveur, aucun appel externe.</li>
+        <li>Les données de pratique s'exportent en JSON.</li>
+        <li><a href="/style-guide">Design system</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="footer__legal">
+    © {year} — usage personnel. Répertoire limité au domaine public&nbsp;;
+    aucune tablature sous droits n'est reproduite.
+  </p>
+</footer>
+
+<style>
+  .footer {
+    margin-top: var(--spacing-section);
+    font-size: var(--text-sm);
+    color: var(--color-ink-3);
+  }
+
+  .footer__inner {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 2.5rem var(--spacing-gutter);
+    max-width: 76rem;
+    margin: 0 auto;
+    padding: 2.75rem var(--spacing-gutter) 1.5rem;
+  }
+
+  .footer__word {
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 72, 'SOFT' 30, 'WONK' 1;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin: 0 0 0.4rem;
+  }
+
+  .footer__note {
+    margin: 0;
+    max-width: 34ch;
+    line-height: 1.6;
+  }
+
+  .footer__col ul {
+    list-style: none;
+    margin: 0.6rem 0 0;
+    padding: 0;
+  }
+  .footer__col li + li {
+    margin-top: 0.45rem;
+  }
+  .footer__col a {
+    color: var(--color-brass);
+    text-decoration: underline;
+  }
+  .footer__col a:hover {
+    color: var(--color-ink);
+  }
+
+  .footer__legal {
+    max-width: 76rem;
+    margin: 0 auto;
+    padding: 0 var(--spacing-gutter) 2.5rem;
+    font-size: var(--text-xs);
+    color: var(--color-ink-3);
+    opacity: 0.8;
+  }
+
+  @media (max-width: 52rem) {
+    .footer__inner {
+      grid-template-columns: 1fr;
+      gap: 1.75rem;
+    }
+  }
+</style>

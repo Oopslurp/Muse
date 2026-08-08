@@ -1,0 +1,94 @@
+---
+/**
+ * Pastille d'étiquetage — famille, statut épistémique, style, code de taxonomie.
+ *
+ * La couleur arrive par variable CSS en style inline plutôt que par classe
+ * Tailwind : le scanner de Tailwind ne voit pas les classes construites
+ * dynamiquement, et une table de correspondance en dur se désynchroniserait
+ * de `src/lib/taxonomy.ts`.
+ */
+interface Props {
+  /** Variable CSS d'accent, ex. `--c-md`. Sans elle, la pastille est neutre. */
+  colorVar?: string | undefined;
+  /** Filet pointillé : signale ce qui n'est pas assuré (déduit, à vérifier). */
+  dashed?: boolean;
+  /** `solid` remplit la pastille — à réserver aux états forts. */
+  variant?: 'outline' | 'solid' | 'ghost';
+  size?: 'sm' | 'md';
+  title?: string | undefined;
+  class?: string | undefined;
+}
+
+const {
+  colorVar,
+  dashed = false,
+  variant = 'outline',
+  size = 'md',
+  title,
+  class: className = '',
+} = Astro.props;
+
+const accent = colorVar ? `var(${colorVar})` : 'var(--c-ink-3)';
+---
+
+<span
+  class:list={[
+    'badge',
+    `badge--${variant}`,
+    `badge--${size}`,
+    dashed && 'badge--dashed',
+    className,
+  ]}
+  style={`--accent:${accent}`}
+  title={title}
+>
+  <slot />
+</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: 0.015em;
+    line-height: 1.2;
+    white-space: nowrap;
+    color: var(--accent);
+  }
+
+  .badge--sm {
+    font-size: var(--text-2xs);
+    padding: 0.24em 0.62em;
+  }
+  .badge--md {
+    font-size: var(--text-xs);
+    padding: 0.32em 0.75em;
+  }
+
+  .badge--outline {
+    border: 1px solid color-mix(in oklab, var(--accent) 45%, transparent);
+    background: color-mix(in oklab, var(--accent) 8%, transparent);
+  }
+
+  .badge--dashed {
+    border-style: dashed;
+  }
+
+  .badge--solid {
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    /* Le fond de page comme couleur de texte : lisible dans les deux thèmes
+       sans avoir à choisir entre blanc et noir. */
+    color: var(--color-bg);
+  }
+
+  .badge--ghost {
+    border: 1px solid transparent;
+    background: transparent;
+    padding-left: 0;
+    padding-right: 0;
+  }
+</style>
