@@ -53,10 +53,13 @@ http
 
     res.writeHead(200, {
       'content-type': MIME[path.extname(filePath).toLowerCase()] ?? 'application/octet-stream',
-      // Requis par AudioWorklet / SharedArrayBuffer dans certains navigateurs.
-      'cross-origin-opener-policy': 'same-origin',
-      'cross-origin-embedder-policy': 'require-corp',
       'cache-control': 'no-store',
+      // Pas de COEP `require-corp` ici. Il était arrivé pour AudioWorklet, mais
+      // AudioWorklet n'en a pas besoin — seul SharedArrayBuffer l'exige. En
+      // revanche il bloque toute sous-ressource sans en-tête CORP, y compris
+      // les modules du même site : les îlots ne se chargeaient plus et la page
+      // se vidait. Si SharedArrayBuffer devient nécessaire, réactiver COEP
+      // *avec* `cross-origin-resource-policy: same-origin` sur chaque réponse.
     });
     fs.createReadStream(filePath).pipe(res);
   })

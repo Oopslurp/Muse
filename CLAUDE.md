@@ -320,7 +320,25 @@ npm run validate  # invariant de build n°9 : parse TOUS les blocs ```alphatex
 npm run serve     # serveur statique local (sans dépendance), port 5173
                   # → http://localhost:5173/tools/percussion-audio-test.html
                   # Nécessaire : les imports de modules ES sont bloqués sur file://
+
+npm run dev       # site en développement, port 4321
+npm run build     # construction statique
+npm run test:notes    # dérivation des noms de notes (10 cas)
+
+npm run shot          # captures de contrôle dans .captures/ (Chrome headless)
+npm run audit:layout -- <url> <largeur>   # débordement horizontal, vrai viewport
 ```
+
+### Vérifier le rendu — ne pas s'en remettre au HTML
+
+Les tranches 0 à 2 ont été livrées **sans jamais regarder le rendu**, faute de navigateur. C'est corrigé : Chrome est présent sur la machine et pilotable en headless.
+
+- **`npm run shot`** capture les vues de référence — accueil, liste, fiche longue, fiche courte, fiche à risque, design system, clair et sombre. À lancer après chaque tranche.
+- **`npm run audit:layout`** mesure le débordement horizontal à un viewport donné, via le protocole DevTools.
+
+⚠️ **Chrome headless refuse une fenêtre sous ~485 px.** Une capture demandée à 420 px est rendue à 485 px puis rognée : le texte paraît coupé alors qu'il ne l'est pas. Pour un vrai viewport mobile, passer par `audit:layout`, qui force les métriques d'appareil.
+
+⚠️ **Un HTML correct ne prouve rien.** Une page peut servir 29 Ko de HTML valide et s'afficher vide : c'est arrivé, à cause d'en-têtes COEP qui bloquaient les modules. Toujours vérifier le DOM **après exécution du JS** (`--dump-dom`), pas la réponse du serveur.
 
 ### État de la Tranche 0
 

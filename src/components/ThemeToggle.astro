@@ -59,7 +59,13 @@
     const state = document.getElementById('theme-state');
     if (!btn || !state) return;
 
+    // `?__theme=` prime sur le choix mémorisé — sinon ce script, qui s'exécute
+    // après celui du layout, appliquerait « system » et supprimerait l'attribut
+    // que le layout venait de poser.
+    const force = new URLSearchParams(location.search).get('__theme');
+
     const read = () => {
+      if (force === 'light' || force === 'dark') return force;
       try {
         const v = localStorage.getItem(KEY);
         return v === 'light' || v === 'dark' ? v : 'system';
@@ -74,6 +80,8 @@
       btn.dataset.mode = mode;
       state.textContent = LABEL[mode];
       btn.setAttribute('title', LABEL[mode]);
+      // Un thème forcé par l'URL ne doit pas polluer le choix mémorisé.
+      if (force) return;
       try {
         if (mode === 'system') localStorage.removeItem(KEY);
         else localStorage.setItem(KEY, mode);

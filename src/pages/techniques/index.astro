@@ -4,6 +4,7 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
 import FiltreTechniques from '~/components/react/FiltreTechniques';
 import type { FicheResume } from '~/components/react/FiltreTechniques';
 import { construireGraphe } from '~/lib/graph';
+import { corpus } from '~/lib/corpus';
 import { statutAffiche } from '~/lib/provenance';
 import {
   FAMILIES,
@@ -80,8 +81,7 @@ const difficultes = ([1, 2, 3, 4, 5] as Difficulty[]).map((d) => ({
   label: DIFFICULTY_LABELS[d],
 }));
 
-const nbCompletes = fiches.filter((f) => f.data.profondeur === 'complete').length;
-const nbDoutes = fiches.reduce((n, f) => n + f.data.doutes.length, 0);
+const c = await corpus();
 ---
 
 <BaseLayout
@@ -92,13 +92,13 @@ const nbDoutes = fiches.reduce((n, f) => n + f.data.doutes.length, 0);
     <p class="eyebrow">La bibliothèque</p>
     <h1>Techniques</h1>
     <p class="lede">
-      {fiches.length} techniques, dont {nbCompletes} en fiche approfondie. Chacune
+      {c.fiches} fiches pour {c.techniques} techniques, dont {c.completes} approfondies. Chacune
       porte ses prérequis, ses paliers avec critère de passage, ses erreurs
       typiques et la façon de les repérer seul — plus une durée maximale et un
       signal d'arrêt.
     </p>
     <p class="meta">
-      {nbDoutes} points restent marqués <strong>à vérifier</strong> dans le corpus.
+      {c.doutes} points restent marqués <strong>à vérifier</strong> dans le corpus.
       Ils sont affichés sur chaque fiche, jamais masqués.
     </p>
   </header>

@@ -41,6 +41,14 @@ const fullTitle = title === 'Muse' ? 'Muse' : `${title} — Muse`;
     */}
     <script is:inline>
       (() => {
+        // `?__theme=dark` force le thème sans toucher au choix mémorisé.
+        // Sert aux captures de contrôle (`npm run shot`) et permet de
+        // partager un lien dans un thème donné.
+        const force = new URLSearchParams(location.search).get('__theme');
+        if (force === 'light' || force === 'dark') {
+          document.documentElement.dataset.theme = force;
+          return;
+        }
         try {
           const t = localStorage.getItem('muse:theme');
           if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
