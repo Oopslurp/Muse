@@ -185,6 +185,14 @@ const sections = [
     margin-top: 2rem;
   }
 
+  /* Un enfant de grille garde `min-width: auto` : sans cette ligne, il ne
+     peut pas rétrécir sous la largeur de son contenu le plus large — ici les
+     tablatures alphaTex, dont les lignes font plusieurs centaines de
+     caractères — et pousse toute la page en débordement horizontal. */
+  .corps__principal {
+    min-width: 0;
+  }
+
   .colle {
     position: sticky;
     top: 6rem;

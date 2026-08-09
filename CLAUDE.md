@@ -326,7 +326,8 @@ npm run build     # construction statique
 npm run test:notes    # dérivation des noms de notes (10 cas)
 
 npm run shot          # captures de contrôle dans .captures/ (Chrome headless)
-npm run audit:layout -- <url> <largeur>   # débordement horizontal, vrai viewport
+npm run audit:console # exceptions, erreurs console, îlots vides, débordement
+npm run audit:layout -- <url> <largeur>   # remonte à l'élément qui déborde
 ```
 
 ### Vérifier le rendu — ne pas s'en remettre au HTML
@@ -338,7 +339,21 @@ Les tranches 0 à 2 ont été livrées **sans jamais regarder le rendu**, faute 
 
 ⚠️ **Chrome headless refuse une fenêtre sous ~485 px.** Une capture demandée à 420 px est rendue à 485 px puis rognée : le texte paraît coupé alors qu'il ne l'est pas. Pour un vrai viewport mobile, passer par `audit:layout`, qui force les métriques d'appareil.
 
-⚠️ **Un HTML correct ne prouve rien.** Une page peut servir 29 Ko de HTML valide et s'afficher vide : c'est arrivé, à cause d'en-têtes COEP qui bloquaient les modules. Toujours vérifier le DOM **après exécution du JS** (`--dump-dom`), pas la réponse du serveur.
+⚠️ **Un HTML correct ne prouve rien.** La page « Techniques » a servi 29 Ko de HTML valide tout en s'affichant vide, pendant des heures, pour deux raisons successives : des en-têtes COEP qui bloquaient les modules, puis un pré-bundling Vite cassé qui rendait `jsxDEV` indéfini. Aucune des deux n'est visible dans la réponse du serveur. **Toujours exécuter le JS** — `npm run audit:console` fait exactement ça et échoue en code 1.
+
+**À lancer à la fin de chaque tranche**, avant le commit :
+
+```bash
+npm run audit:console                              # contre le dev
+MUSE_URL=http://localhost:4321 npm run audit:console
+npm run shot                                       # et regarder les images
+```
+
+### Le piège du pré-bundling Vite
+
+`astro.config.mjs` force `optimizeDeps.include` sur React et ses runtimes JSX. **Ne pas retirer.** Sans cette liste, Vite les ré-optimise dès qu'une dépendance change en cours de session, et l'interop CJS de `react/jsx-dev-runtime` en ressort parfois cassée : `jsxDEV` vaut `undefined`, le composant lève à sa première balise, React vide l'îlot. La page s'affiche puis disparaît en une fraction de seconde.
+
+Si le symptôme réapparaît malgré tout : `rm -rf node_modules/.vite .astro` puis redémarrer.
 
 ### État de la Tranche 0
 

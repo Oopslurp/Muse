@@ -17,7 +17,8 @@
     "check": "astro check",
     "test:notes": "node tools/test-notes.mts",
     "shot": "node tools/shot.mjs",
-    "audit:layout": "node tools/audit-layout.mjs"
+    "audit:layout": "node tools/audit-layout.mjs",
+    "audit:console": "node tools/audit-console.mjs"
   },
   "keywords": [],
   "author": "",
