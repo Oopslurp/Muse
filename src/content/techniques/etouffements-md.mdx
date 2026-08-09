@@ -1,0 +1,77 @@
+---
+code: MD-12
+nom:
+  fr: "Étouffements main droite"
+  en: "Right-hand damping"
+  es: "Apagado"
+  alias: ["palm mute", "pizzicato", "apagado"]
+famille: main-droite
+style: les-deux
+difficulte: 3
+main: pince
+prerequis: [appui-prepare]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [carlevaro-cuaderno-2, alphatab-doc]
+
+sonCible: >
+  Le silence, quand il est voulu. Un accord qui s’arrête net, une basse courte et percussive, une résonance coupée avant qu’elle ne salisse l’harmonie suivante.
+
+gesteCle: >
+  Trois moyens : la paume posée sur les cordes graves près du chevalet, un doigt reposé sur la corde qui vient de sonner, ou un pizzicato sourd. L’étouffement est actif et planifié, jamais un accident — un doigt qui se prépare est déjà un étouffeur, il faut savoir quand on veut cet effet.
+
+erreurs:
+  - titre: "Résonances parasites après un changement d’accord"
+    diagnostic:
+      canaux: [son]
+      test: >
+        Jouer un accord, changer, puis tout arrêter et écouter trois secondes.
+      signe: >
+        Ce qui chante encore ne devrait pas.
+
+exercices:
+  - id: a
+    titre: "Le silence comme exercice"
+    origine: formule-commune
+    description: >
+      Enchaîner quatre accords en imposant un silence total d’une noire entre chacun. Le silence est l’exercice, pas l’accord.
+    audioFidele: true
+    alphaTex: |
+      \title "Étouffements — silence imposé"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :4 (0.5 2.4 2.3 1.2 0.1) r (0.6 2.5 2.4 0.3 0.2 0.1) r |
+      :4 (3.5 2.4 0.3 1.2 0.1) r (3.6 2.5 0.4 0.3 0.2 3.1) r |
+
+seance:
+  moment: [echauffement, debut]
+  dureeMax: 8
+  frequence: "Quotidienne, en entretien."
+  reposMin: 45
+  risque: faible
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: carlevaro-cuaderno-2
+    pertinence: >
+      Notion d’apagado.
+  - id: alphatab-doc
+    pertinence: >
+      Effets `pm`, `st`, note morte `x`.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

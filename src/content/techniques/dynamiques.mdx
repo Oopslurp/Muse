@@ -1,0 +1,76 @@
+---
+code: TR-01
+nom:
+  fr: "Dynamiques"
+  en: "Dynamics"
+  es: "Dinámica"
+  alias: ["nuances"]
+famille: transversal
+style: les-deux
+difficulte: 3
+main: pince
+prerequis: [apoyando-tirando]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [carlevaro-escuela]
+
+sonCible: >
+  Une plage réelle du ppp au fff, et non les deux nuances entre mf et f dont la plupart se contentent sans le savoir.
+
+gesteCle: >
+  Le volume vient de l’amplitude de déplacement de la corde perpendiculairement à la table — donc de la profondeur d’enfoncement du doigt et de sa vitesse. Pas de la force de serrage : jouer fort en crispant produit un son dur et paradoxalement faible.
+
+erreurs:
+  - titre: "Plage dynamique de deux nuances"
+    diagnostic:
+      canaux: [audio]
+      test: >
+        Enregistrer une même phrase en pp puis en ff, et regarder le niveau.
+      signe: >
+        Le vumètre bouge à peine entre les deux.
+
+exercices:
+  - id: a
+    titre: "Seize notes, seize niveaux"
+    origine: formule-commune
+    description: >
+      Une seule note répétée seize fois, en crescendo continu du ppp au fff, puis retour. Chaque note doit être audiblement différente de la précédente.
+    audioFidele: false
+    reservesAudio:
+      - "Le rendu MIDI applique des paliers de vélocité, pas un continuum : le crescendo s’entendra par marches."
+    alphaTex: |
+      \title "Crescendo sur seize notes"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :8 0.1{rf 3} {dy ppp} 0.1{rf 3} 0.1{rf 3} {dy pp} 0.1{rf 3} 0.1{rf 3} {dy p} 0.1{rf 3} 0.1{rf 3} {dy mp} 0.1{rf 3} |
+      :8 0.1{rf 3} {dy mf} 0.1{rf 3} 0.1{rf 3} {dy f} 0.1{rf 3} 0.1{rf 3} {dy ff} 0.1{rf 3} 0.1{rf 3} {dy fff} 0.1{rf 3} |
+
+seance:
+  moment: [echauffement, debut]
+  dureeMax: 6
+  frequence: "Quotidienne, en entretien."
+  reposMin: 45
+  risque: faible
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: carlevaro-escuela
+    pertinence: >
+      La classification des toques est en partie une classification dynamique.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

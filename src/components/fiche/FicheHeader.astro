@@ -1,0 +1,241 @@
+---
+import Badge from '~/components/ui/Badge.astro';
+import StatusBadge from '~/components/ui/StatusBadge.astro';
+import Difficulty from '~/components/ui/Difficulty.astro';
+import { familyById, STYLE_LABELS, DIFFICULTY_LABELS, type FamilyId, type Difficulty as Diff, type Style } from '~/lib/taxonomy';
+import { statutAffiche, detailProvenance, type Provenance } from '~/lib/provenance';
+
+interface Props {
+  code: string;
+  nom: { fr: string; en: string; es: string; alias: string[] };
+  famille: FamilyId;
+  style: Style;
+  difficulte: Diff;
+  main: 'pince' | 'frette' | 'les-deux';
+  profondeur: 'complete' | 'courte';
+  permanent: boolean;
+  provenance: Provenance;
+  sonCible: string;
+  prerequis: Array<{ id: string; nom: string; code: string; famille: FamilyId }>;
+  debloque: Array<{ id: string; nom: string; code: string; famille: FamilyId }>;
+}
+
+const {
+  code, nom, famille, style, difficulte, main, profondeur, permanent,
+  provenance, sonCible, prerequis, debloque,
+} = Astro.props;
+
+const f = familyById(famille);
+
+/** La main est nommée par sa fonction, jamais « droite » ou « gauche » :
+ *  le site doit rester utilisable par un gaucher (CLAUDE.md, conventions). */
+const MAIN: Record<string, string> = {
+  pince: 'main qui pince',
+  frette: 'main qui frette',
+  'les-deux': 'les deux mains',
+};
+---
+
+<header class="fh" style={`--accent:var(${f.colorVar})`}>
+  <div class="fh__fil">
+    <a href="/techniques">Techniques</a>
+    <span aria-hidden="true">/</span>
+    <a href={`/techniques?famille=${famille}`}>{f.label}</a>
+  </div>
+
+  <div class="fh__etiquettes">
+    <Badge colorVar={f.colorVar} variant="solid" size="sm">{code}</Badge>
+    <Badge colorVar={f.colorVar} size="sm">{f.label}</Badge>
+    <Badge size="sm">{STYLE_LABELS[style]}</Badge>
+    <Badge size="sm">{MAIN[main]}</Badge>
+    {profondeur === 'courte' && <Badge size="sm" dashed>fiche courte</Badge>}
+    {permanent && (
+      <Badge colorVar="--c-brass" size="sm" title="S'applique à toutes les techniques">
+        transversal permanent
+      </Badge>
+    )}
+  </div>
+
+  <h1 class="fh__titre">{nom.fr}</h1>
+
+  <p class="fh__noms">
+    <span lang="en">{nom.en}</span>
+    <span class="fh__sep">·</span>
+    <span lang="es">{nom.es}</span>
+    {nom.alias.length > 0 && <span class="fh__alias"> — aussi&nbsp;: {nom.alias.join(', ')}</span>}
+  </p>
+
+  <p class="fh__son">{sonCible}</p>
+
+  <div class="fh__barre">
+    <div class="fh__diff">
+      <Difficulty value={difficulte} colorVar={f.colorVar} size="md" />
+      <span class="fh__diff-label">{DIFFICULTY_LABELS[difficulte]}</span>
+    </div>
+    <div class="fh__statut" title={detailProvenance(provenance)}>
+      <StatusBadge status={statutAffiche(provenance)} size="md" />
+    </div>
+  </div>
+
+  {
+    (prerequis.length > 0 || debloque.length > 0) && (
+      <div class="fh__liens">
+        {prerequis.length > 0 && (
+          <div class="fh__lien-bloc">
+            <p class="fh__lien-k">À tenir avant</p>
+            <ul>
+              {prerequis.map((p) => (
+                <li>
+                  <a href={`/techniques/${p.id}`} style={`--c:var(${familyById(p.famille).colorVar})`}>
+                    <span class="puce" aria-hidden="true" />
+                    {p.nom}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {debloque.length > 0 && (
+          <div class="fh__lien-bloc">
+            <p class="fh__lien-k">Débloque</p>
+            <ul>
+              {debloque.map((d) => (
+                <li>
+                  <a href={`/techniques/${d.id}`} style={`--c:var(${familyById(d.famille).colorVar})`}>
+                    <span class="puce" aria-hidden="true" />
+                    {d.nom}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    )
+  }
+</header>
+
+<style>
+  .fh {
+    padding: 2rem 0 1.75rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .fh__fil {
+    display: flex;
+    gap: 0.5rem;
+    font-size: var(--text-xs);
+    color: var(--color-ink-3);
+    margin-bottom: 1rem;
+  }
+  .fh__fil a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .fh__fil a:hover {
+    color: var(--color-brass);
+    text-decoration: underline;
+  }
+
+  .fh__etiquettes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .fh__titre {
+    font-size: var(--text-h1);
+    line-height: 1.04;
+    margin: 0;
+  }
+
+  .fh__noms {
+    margin: 0.35rem 0 1.1rem;
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--color-ink-3);
+  }
+  .fh__sep {
+    padding: 0 0.35em;
+    color: var(--color-line-strong);
+  }
+  .fh__alias {
+    font-style: normal;
+  }
+
+  .fh__son {
+    max-width: 62ch;
+    margin: 0 0 1.35rem;
+    font-size: var(--text-lg);
+    line-height: 1.55;
+    color: var(--color-ink-2);
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+  }
+
+  .fh__barre {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .fh__diff {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .fh__diff-label {
+    font-size: var(--text-xs);
+    color: var(--color-ink-3);
+  }
+
+  .fh__liens {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-line);
+  }
+  .fh__lien-k {
+    margin: 0 0 0.45rem;
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+  .fh__liens ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .fh__liens a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-size: var(--text-xs);
+    font-weight: 550;
+    text-decoration: none;
+    color: var(--color-ink-2);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    padding: 0.3em 0.75em;
+    transition: border-color 180ms ease, color 180ms ease;
+  }
+  .fh__liens a:hover {
+    color: var(--color-ink);
+    border-color: var(--c);
+  }
+  .puce {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--c);
+    flex: none;
+  }
+</style>

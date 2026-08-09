@@ -1,0 +1,82 @@
+---
+code: MD-09
+nom:
+  fr: "Rasgueado"
+  en: "Rasgueado"
+  es: "Rasgueado"
+  alias: ["rasgueo", "battement flamenco"]
+famille: main-droite
+style: les-deux
+difficulte: 3
+main: pince
+prerequis: [technique-pouce]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [alphatab-doc, pujol-escuela-razonada]
+
+sonCible: >
+  Un roulement continu, pas un coup. Trois ou quatre attaques distinctes et très rapprochées qui finissent par fusionner.
+
+gesteCle: >
+  Chaque doigt se déplie par extension active depuis la métacarpo-phalangienne, comme un ressort qu’on libère. Ce n’est pas un balayage de la main entière.
+
+erreurs:
+  - titre: "Le poignet balaie à la place des doigts"
+    description: >
+      On obtient un strumming, pas un rasgueado.
+    diagnostic:
+      canaux: [son]
+      test: >
+        Ralentir jusqu’à pouvoir compter les attaques.
+      signe: >
+        On entend un seul coup au lieu de trois ou quatre attaques séparées.
+
+exercices:
+  - id: a
+    titre: "Rasgueado a-m-i décomposé"
+    origine: formule-commune
+    description: >
+      Sur un accord de la mineur, très lentement, en cherchant à entendre trois attaques séparées. Accélérer seulement jusqu’au point où elles fusionnent.
+    audioFidele: true
+    alphaTex: |
+      \title "Rasgueado a-m-i"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :4 (0.5 2.4 2.3 1.2 0.1) { rasg (amiTriplet) } r (0.5 2.4 2.3 1.2 0.1) { rasg (amiTriplet) } r |
+    provenance:
+      origine: deduit
+      doute: >
+        La syntaxe du paramètre de `rasg` n’a pas été testée dans la sonde. À vérifier dans le playground alphaTab.
+
+seance:
+  moment: [debut]
+  dureeMax: 8
+  frequence: "4 à 5 fois par semaine."
+  reposMin: 60
+  risque: modere
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension ou brûlure dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: alphatab-doc
+    pertinence: >
+      Motifs de rasgueado disponibles : ii, mi, pmp, pei, pai, ami…
+  - id: pujol-escuela-razonada
+    pertinence: >
+      Contexte historique du rasgueado dans la technique espagnole.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

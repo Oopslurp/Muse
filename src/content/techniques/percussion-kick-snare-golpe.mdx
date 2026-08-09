@@ -1,0 +1,486 @@
+---
+code: PM-01
+nom:
+  fr: Percussion — kick, caisse claire, golpe
+  en: Kick, snare, body percussion, golpe
+  es: Golpe y percusión de caja
+  alias: [body hit, slap, dead slap, percussion corporelle, grille percussive]
+famille: percussif-moderne
+style: moderne
+difficulte: 4
+main: pince
+prerequis: [technique-pouce, etouffements-md, placement-rythmique]
+profondeur: complete
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: deduit
+  sourceIds: [acoustic-guitar-percussif, dawes-jamplay, wikipedia-golpe]
+  doute: >
+    La fiche la moins bien sourcée du corpus. Le fingerstyle percussif n'a aucune
+    littérature technique formalisée : pas de méthode de référence, pas de vocabulaire
+    stabilisé, aucune description anatomique publiée. Une partie de ce qui suit est
+    déduite mécaniquement plutôt que sourcée, et aucune vidéo n'a été visionnée.
+
+sonCible: >
+  Trois sons distincts, classés par fonction et non par nom : un grave sourd sans
+  hauteur sur les temps forts, un claquement sec et grainé sur les contretemps, un tic
+  léger qui subdivise. Le critère de niveau supérieur : la percussion ne doit pas
+  détruire le groove — un seul flux, pas trois événements séparés.
+
+ecoutes:
+  - oeuvre: Répertoire solo
+    interprete: Mike Dawes
+    quoiEcouter: >
+      Le vocabulaire percussif le plus articulé et le plus lisible du genre. D'après le
+      descriptif de ses cours, il emploie six sons percussifs distincts.
+    ecoute: false
+  - oeuvre: Répertoire solo
+    interprete: Kotaro Oshio
+    quoiEcouter: Le percussif fondu dans la mélodie plutôt qu'exposé.
+    ecoute: false
+  - oeuvre: Répertoire solo
+    interprete: Andy McKee
+    quoiEcouter: Le percussif comme texture, souvent en accordage ouvert.
+    ecoute: false
+  - oeuvre: Compás flamenco traditionnel
+    quoiEcouter: >
+      Le golpe pur, dans sa source historique — un tap bref du majeur ou de l'annulaire
+      sur la plaque, soit simultané à un coup vers le bas, soit indépendant pour
+      accentuer un contretemps.
+    ecoute: false
+
+erreurs:
+  - titre: Le snare est étouffé — un « pfff » au lieu d'un claquement
+    description: La main reste sur les cordes au lieu de rebondir.
+    diagnostic:
+      canaux: [video, sensation]
+      test: Se filmer de côté au ralenti.
+      signe: On voit la main coller. À la sensation, le rebond manque — il doit se sentir comme une balle.
+  - titre: Bourdon après la frappe
+    description: >
+      Le test le plus important de la fiche. Après un slap, les cordes vibrent ; sans
+      étouffement, on récupère une note parasite.
+    diagnostic:
+      canaux: [son]
+      test: Frapper une fois, puis écouter trois secondes.
+      signe: Une corde chante encore. On doit entendre le silence.
+    renvoi: [etouffements-md, etouffements-mg]
+  - titre: Kick trop aigu, un « toc » creux
+    description: Mauvaise zone de frappe ou mauvaise surface de contact.
+    diagnostic:
+      canaux: [son]
+      test: >
+        Promener la paume sur la table en frappant doucement, et cartographier les
+        zones de l'instrument.
+      signe: >
+        Le son est sec et sans corps. Chaque guitare a sa zone : la noter une fois pour
+        toutes.
+  - titre: Percussion en retard
+    description: >
+      L'oreille est bien plus sensible au placement d'un transitoire percussif qu'à
+      celui d'une note tenue. Une mélodie légèrement en retard passe inaperçue ; une
+      percussion, jamais.
+    diagnostic:
+      canaux: [metronome, audio]
+      test: >
+        Enregistrer par-dessus un clic et réécouter au ralenti. Sans matériel : jouer
+        les percussions seules en tapant du pied.
+      signe: Le pied et la main se décalent.
+    renvoi: [placement-rythmique]
+  - titre: Trou dans le jeu autour de la frappe
+    description: >
+      Ce n'est pas la frappe qui pose problème mais le trajet de retour vers la
+      position de pince.
+    diagnostic:
+      canaux: [metronome]
+      test: Jouer une mesure en boucle avec la percussion sur le temps 2.
+      signe: La note qui précède ou qui suit la frappe est écourtée ou en retard.
+  - titre: Frappe trop forte
+    diagnostic:
+      canaux: [son]
+      test: Jouer la même figure deux fois moins fort en gardant le grain.
+      signe: Impossible — on compense un mauvais placement par de la force.
+  - titre: Choc dans le poignet, le coude ou l'épaule
+    description: >
+      Ce n'est pas de la fatigue musculaire mais un défaut d'amortissement mécanique.
+      Continuer ne renforce rien.
+    diagnostic:
+      canaux: [sensation]
+      test: Prêter attention à ce qui remonte dans le bras après chaque frappe.
+      signe: Une onde se propage au lieu d'être dissipée par le rebond.
+    sante: true
+  - titre: Marques sur la table de l'instrument
+    diagnostic:
+      canaux: [visuel]
+      test: Examiner la table à la lumière rasante, une fois par semaine.
+      signe: Le vernis est marqué. Arrêter et protéger avant d'aller plus loin.
+    sante: true
+
+paliers:
+  - titre: Isoler chaque son
+    objectif: Obtenir les trois sons, reproductibles.
+    exercices: [a]
+    critere: >
+      Dix frappes consécutives de chaque son, timbre identique vérifié à
+      l'enregistrement, et zéro bourdon après chacune.
+    autoVerifiable: true
+  - titre: Deux sons alternés, en place
+    objectif: Grave sur les temps 1 et 3, claquement sur 2 et 4.
+    exercices: [b]
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '4' }
+    tempoCible: { valeur: 110, unite: bpm, subdivision: '4' }
+    critere: >
+      Deux minutes au métronome sans dérive, enregistrées et réécoutées. Le test du
+      pied doit tenir.
+    autoVerifiable: true
+  - titre: Percussion et basse
+    objectif: Ajouter le pouce mélodique.
+    exercices: [c]
+    tempoDepart: { valeur: 55, unite: bpm, subdivision: '4' }
+    tempoCible: { valeur: 96, unite: bpm, subdivision: '4' }
+    critere: Seize mesures sans trou rythmique autour des frappes.
+    autoVerifiable: true
+    note: >
+      Le palier qui bloque — pas le suivant. Ajouter la basse oblige la main à faire
+      deux allers-retours par mesure entre position de pince et position de frappe.
+      C'est là que se situe le travail réel.
+  - titre: Percussion et mélodie
+    objectif: La texture complète.
+    exercices: [d]
+    tempoDepart: { valeur: 50, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 88, unite: bpm, subdivision: '8' }
+    critere: >
+      Enregistrer et vérifier que chaque note mélodique tombe où elle doit : la mélodie
+      ne doit pas se déformer autour des frappes.
+    autoVerifiable: true
+  - titre: Golpe et subdivision
+    objectif: Ajouter la couche d'accent.
+    exercices: [d]
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 96, unite: bpm, subdivision: '8' }
+    critere: Trois couches simultanées, audibles et distinctes pour un auditeur.
+    autoVerifiable: false
+
+exercices:
+  - id: a
+    titre: 'Exercice A — isolation des trois sons'
+    origine: consigne
+    description: >
+      Exercice d'exploration, sans tablature. Grave : guitare protégée, frapper
+      doucement la table avec le tranchant de la paume en promenant la main sur toute
+      la surface — sous la rosace, entre rosace et chevalet, sur le bas de la caisse,
+      sur l'éclisse. Cartographier l'instrument et noter les deux meilleures zones,
+      puis dix frappes de suite en cherchant un timbre identique. Claquement : main qui
+      frette posée à plat sur les cordes vers la case 5 pour tout étouffer, frapper les
+      cordes au-dessus de la fin du manche avec la face plate des doigts, en
+      rebondissant. Puis retirer la main gauche et refaire — on entendra le bourdon,
+      qui est exactement ce qu'il faudra apprendre à contrôler. Golpe : un tap bref et
+      rebondi du majeur sur la plaque, comparé à l'annulaire, puis au bout du doigt,
+      puis à l'ongle.
+    audioFidele: true
+    provenance:
+      origine: deduit
+
+  - id: b
+    titre: 'Exercice B — kick et snare, motif de base'
+    origine: original
+    description: >
+      Le motif de batterie le plus élémentaire, main qui frette posée à plat sur les
+      cordes pour tout étouffer. On ne travaille que la percussion. Attention : le
+      grave est écrit ici en dead slap et non en golpe, parce que le golpe ne produit
+      aucun son à la lecture — voir la réserve ci-dessous.
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '4' }
+    tempoCible: { valeur: 110, unite: bpm, subdivision: '4' }
+    audioFidele: false
+    reservesAudio:
+      - alphaTab n'a qu'un seul son percussif — le grave et le claquement sonneront identiques, alors que la notation les distingue.
+      - Les golpe sont muets à la lecture. Vérifié à l'écoute le 8 août 2026.
+    alphaTex: |
+      \title "Ex. B — Kick / snare, motif de base"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :4 r { ds } r { ds } r { ds } r { ds } |
+      :4 r { ds } r { ds } r { ds } r { ds } |
+      :4 r { ds } r { ds } r { ds } r { ds } |
+      :4 r { ds } r { ds } r { ds } r { ds } |
+    provenance:
+      origine: source
+      sourceIds: [sonde-alphatex, acoustic-guitar-percussif]
+      observe:
+        date: '2026-08-08'
+        note: >
+          Écoute confirmant que `ds` produit bien un bruit percussif, et que `glpt` et
+          `glpf` sont muets. Le motif a donc été réécrit entièrement en `ds`.
+
+  - id: c
+    titre: 'Exercice C — percussion et basse alternée'
+    origine: original
+    description: >
+      Basse alternée au pouce sur un accord de la mineur, avec le claquement sur les
+      temps 2 et 4. C'est ici que la difficulté réelle apparaît : la main doit passer
+      de la position pouce à la position frappe deux fois par mesure, en rythme.
+      Commencer à un tempo ridiculement lent et ne se concentrer que sur le trajet de
+      retour — c'est lui, pas la frappe, qui détermine si le tempo tiendra.
+    tempoDepart: { valeur: 55, unite: bpm, subdivision: '4' }
+    tempoCible: { valeur: 96, unite: bpm, subdivision: '4' }
+    audioFidele: false
+    reservesAudio:
+      - Le dead slap coupe en réalité la basse jouée au temps précédent ; le rendu la fera sonner plus longtemps qu'elle ne dure.
+    alphaTex: |
+      \title "Ex. C — Basse alternée + snare"
+      \tempo 55
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :4 0.5{rf 1} r { ds } 2.4{rf 1} r { ds } |
+      :4 0.5{rf 1} r { ds } 2.4{rf 1} r { ds } |
+      :4 0.5{rf 1} r { ds } 2.4{rf 1} r { ds } |
+      :4 0.5{rf 1} r { ds } 2.4{rf 1} r { ds } |
+    provenance:
+      origine: source
+      sourceIds: [sonde-alphatex]
+      observe:
+        date: '2026-08-08'
+        note: Écriture sur silences retenue par défaut ; le dead slap sur note morte fait disparaître la note du modèle.
+
+  - id: d
+    titre: 'Exercice D — texture complète'
+    origine: original
+    description: >
+      Trois couches : basse au pouce sur les temps 1 et 3, claquement sur 2 et 4,
+      mélodie sur les contretemps. Accord de la mineur tenu. C'est la cible du palier 4.
+    tempoDepart: { valeur: 50, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 88, unite: bpm, subdivision: '8' }
+    audioFidele: false
+    reservesAudio:
+      - Le dead slap coupe en réalité toutes les cordes qu'il frappe. Le rendu laisse la basse et la mélodie sonner par-dessus, ce qui est faux.
+      - "C'est la contrainte fondamentale du style : on ne peut pas avoir à la fois des percussions denses et de longues résonances. La notation ne sait pas l'exprimer."
+    alphaTex: |
+      \title "Ex. D — Basse + snare + mélodie"
+      \tempo 50
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :8 0.5{rf 1 lr} 1.2{rf 2} r { ds } 0.1{rf 3} 2.4{rf 1 lr} 1.2{rf 2} r { ds } 0.1{rf 3} |
+      :8 0.5{rf 1 lr} 1.2{rf 2} r { ds } 0.1{rf 3} 2.4{rf 1 lr} 1.2{rf 2} r { ds } 0.1{rf 3} |
+    provenance:
+      origine: deduit
+
+repertoire:
+  - oeuvre: Exercices B à D de cette fiche
+    compositeur: Muse
+    droits: domaine-public
+    role: >
+      Le seul matériel utilisable. Sur toute cette famille, le contenu du site est
+      intégralement original.
+  - oeuvre: Compás flamencos traditionnels
+    compositeur: traditionnel
+    droits: edition-a-verifier
+    noteDroits: >
+      Un motif rythmique nu n'est en général pas protégeable, mais la transcription
+      précise d'une falseta d'un guitariste identifié l'est. Le statut juridique des
+      motifs traditionnels dépasse mes compétences.
+    role: >
+      Le golpe est la seule porte de sortie historique : une bulería ou une soleá de
+      base peut servir de terrain de travail rythmique légitime.
+  - oeuvre: Répertoire de Oshio, Dawes, McKee, Emmanuel
+    compositeur: divers
+    droits: sous-droits
+    noteDroits: >
+      Rien n'est dans le domaine public. Le genre est né dans les années 1970-1980. On
+      peut lier vers les tablatures officielles vendues par les artistes ; jamais copier.
+    role: Références d'écoute uniquement.
+
+seance:
+  moment: [jamais-a-froid, milieu]
+  dureeMin: 10
+  dureeMax: 15
+  frequence: >
+    3 à 4 fois par semaine. Pas quotidien au début : le geste est nouveau et les tissus
+    doivent s'adapter.
+  signalArret:
+    - Perte du rebond — la main commence à coller sur les cordes. C'est l'alarme précoce.
+    - Toute sensation de choc, de vibration douloureuse ou d'onde qui remonte dans le poignet, le coude ou l'épaule. Arrêt immédiat.
+    - Marques apparues sur la table de l'instrument.
+  reposMin: 60
+  risque: eleve
+  avertissementSante: >
+    La seule technique du corpus qui implique des impacts répétés — les autres sont des
+    mouvements de traction ou de pression. Aucune des sources consultées sur la santé
+    des musiciens ne traite du fingerstyle percussif : c'est un angle mort de la
+    littérature, et les recommandations ci-dessous sont donc prudentielles et non
+    sourcées. Deux principes tiennent lieu de règle. Le rebond n'est pas seulement un
+    choix de son : c'est ce qui dissipe l'énergie de l'impact, et une frappe sans rebond
+    envoie tout le choc dans l'articulation. Et le volume vient du placement et de la
+    vitesse, pas de la force — un guitariste qui doit frapper fort pour être entendu
+    frappe au mauvais endroit. Protéger l'instrument avant de commencer : un golpeador
+    ou un film transparent, jamais du ruban adhésif laissé plus de quelques jours.
+  provenance:
+    origine: deduit
+    doute: >
+      Recommandations prudentielles. La littérature sur la santé des musiciens ne couvre
+      pas le percussif — c'est le trou documentaire le plus préoccupant de toute la
+      recherche.
+
+sources:
+  - id: acoustic-guitar-percussif
+    pertinence: >
+      La source la plus explicite sur le mécanisme du claquement : les doigts frappés
+      droit vers la caisse font claquer les cordes contre le manche.
+  - id: dawes-jamplay
+    pertinence: >
+      Six sons percussifs distincts, notion de grille percussive, side slaps. Le grave
+      y est décrit comme un geste composite : ongles sur les cordes graves et paume sur
+      la caisse simultanément.
+  - id: dawes-truefire
+    pertinence: Percussions corporelles, accordages alternatifs, harmoniques.
+  - id: guitar-world-percussif
+    pertinence: Techniques percussives à deux mains.
+  - id: wikipedia-golpe
+    pertinence: >
+      Définition du golpe : doigt employé, cible, et les deux modes d'emploi —
+      simultané à un coup vers le bas, ou indépendant sur un contretemps.
+  - id: acoustic-accent-oshio
+    pertinence: Filiation Michael Hedges et description du nail attack.
+  - id: sonde-alphatex
+    pertinence: >
+      Comportement de `ds`, `glpf` et `glpt` en alphaTex, vérifié en parsant puis à
+      l'écoute.
+
+doutes:
+  - >
+    Toute la description du son grave — zone de frappe, surface de contact, articulation
+    motrice — est une déduction mécanique, pas une description sourcée. La seule source
+    disponible décrit un geste composite qui n'a pas pu être confirmé autrement.
+  - >
+    Pour le claquement, le mécanisme est sourcé — les cordes rebondissent contre les
+    frettes — mais la zone, la surface de contact et le rôle du rebond sont déduits.
+  - >
+    L'affirmation sur la sensibilité de l'oreille au placement des transitoires
+    percussifs est un phénomène bien connu en production musicale, mais aucune référence
+    académique n'est citée.
+  - >
+    Les dommages causés à un instrument non protégé relèvent du bon sens et de la
+    pratique généralisée du golpeador en flamenco, pas d'une source de lutherie.
+  - >
+    Le choix d'écrire les percussions sur des silences plutôt que sur des notes mortes
+    est une position par défaut, motivée par le fait que le dead slap fait disparaître
+    une note morte du modèle. À confirmer.
+  - >
+    Le statut juridique des compás flamencos dépasse mes compétences.
+  - >
+    Les recommandations de santé de cette fiche sont prudentielles et non sourcées.
+    Aucune littérature n'existe sur les impacts répétés en fingerstyle percussif.
+---
+
+## Protéger l'instrument, d'abord
+
+Ce point vient en premier parce qu'il est irréversible. Frapper la table d'une guitare
+non protégée abîme le vernis, puis le bois. Une table en épicéa massif sans plaque se
+marque en quelques semaines de pratique percussive.
+
+Trois protections, par ordre de durabilité : un **golpeador** — la plaque de protection
+flamenca, en film transparent adhésif, posée sous et autour des cordes et retirable par
+un luthier ; un **film de protection** vendu pour guitare acoustique, moins cher et
+moins durable, souvent suffisant ; du **ruban de masquage** en dépannage, à ne jamais
+laisser plus de quelques jours car la colle marque le vernis.
+
+Recommandation : ne pas travailler le percussif sur une guitare classique. Utiliser une
+acoustique dédiée et protégée.
+
+## Le problème de vocabulaire
+
+**Il n'y a pas de nomenclature standard.** Les mêmes mots désignent des gestes
+différents selon les auteurs, et le même geste porte plusieurs noms. C'est le principal
+obstacle à l'apprentissage autonome du genre.
+
+Ce site classe donc par **fonction sonore** plutôt que par nom d'usage :
+
+| Fonction | Ce qu'on cherche | Noms rencontrés |
+|---|---|---|
+| **Grave** | Un « boum » sourd, sans hauteur, sur les temps forts | kick, bass hit, thumb thump, body hit |
+| **Aigu** | Un « clac » sec et brillant, sur les contretemps | snare, slap, string slap |
+| **Accent** | Un « tic » léger qui subdivise | golpe, tap, nail click |
+
+Cette grille fonctionne parce qu'elle correspond à ce que fait une batterie, et c'est le
+modèle mental que les joueurs modernes emploient explicitement.
+
+## Anatomie du geste
+
+### Le grave
+
+La description la plus précise disponible est composite : frapper les cordes graves avec
+les ongles de la main qui pince, **en même temps** que la paume frappe la caisse. Le
+grave n'y est donc pas une frappe unique mais la superposition d'une attaque de corde
+étouffée et d'un impact sur le bois.
+
+Ce qui suit est déduit mécaniquement, pas sourcé. La **zone** : la table, sous les
+cordes, entre la rosace et le chevalet, ou sur le bas de la caisse. Plus on approche du
+chevalet, plus le son est sec ; plus on frappe une zone libre, plus elle résonne. La
+zone exacte dépend de l'instrument — c'est un réglage à faire à l'oreille, pas une donnée
+transférable. La **surface** : le tranchant de la paume, côté auriculaire, ou la base du
+pouce. Pas le bout des doigts, qui donne un son sec et fait mal. Le **mouvement** vient
+du coude et de l'avant-bras, pas du poignet seul : un grave produit par un coup de
+poignet est faible et dangereux pour l'articulation.
+
+Et surtout : **la main rebondit.** Elle ne s'écrase pas sur la table. Une main qui reste
+posée après l'impact étouffe la résonance de la caisse — donc tue le son qu'on cherchait
+à produire.
+
+### Le claquement
+
+Ici le mécanisme est sourcé, et il est clair : **le son ne vient pas de la main qui
+frappe le bois, mais des cordes qui rebondissent contre les frettes.** C'est le même
+principe physique que le slap de basse.
+
+Conséquences : on frappe **au-dessus de la touche** ou juste après la fin du manche, là
+où les cordes ont du débattement — pas près du chevalet où elles sont trop tendues. Avec
+la face plate des doigts, pas les bouts. Et **par la vitesse, pas par la force** :
+frapper fort et lentement ne fonctionne pas, fait mal, et abîme l'instrument.
+
+Le rebond est obligatoire. Si la main reste sur les cordes, on obtient un « pfff »
+étouffé au lieu d'un claquement — c'est l'erreur numéro un.
+
+### Le golpe
+
+La seule des trois qui soit correctement documentée, parce qu'elle vient du flamenco :
+un tap bref du majeur ou de l'annulaire sur la plaque de protection, avec rebond
+immédiat et amplitude minimale. Deux emplois — simultané à un coup vers le bas d'un
+autre doigt, ou indépendant pour accentuer un contretemps.
+
+## Ce qui est réellement difficile
+
+Aucune des trois frappes prise isolément. En isolation, un adulte apprend chacune en une
+heure. La difficulté est **l'intégration**, pour trois raisons.
+
+La main qui pince doit faire **trois métiers** — pincer, étouffer, frapper — en
+alternance rapide, avec des positions très différentes. Le trajet de retour entre une
+frappe et un pincement est la vraie compétence.
+
+**L'étouffement doit être permanent.** Chaque frappe laisse des cordes en vibration
+parasite. C'est là que le percussif échoue le plus souvent, et c'est ce qui le rend bien
+plus difficile qu'il n'en a l'air.
+
+**Le placement rythmique ne pardonne pas.** Une note mélodique légèrement en retard passe
+inaperçue ; une percussion en retard s'entend immédiatement.
+
+## Ce que la notation ne sait pas dire
+
+Deux limites établies par la vérification du format, et affichées sur chaque exercice
+concerné :
+
+- **alphaTab n'a qu'un seul son percussif.** Le grave et le claquement sont notés
+  différemment mais sonneront identiques.
+- **Un claquement coupe toutes les cordes qu'il frappe.** Le rendu laisse sonner la
+  basse et la mélodie par-dessus, ce qui est faux. Ce n'est pas un défaut de la
+  notation : c'est **la contrainte fondamentale du style**, qu'aucune écriture ne
+  restitue. En percussif, on ne peut pas avoir à la fois des percussions denses et de
+  longues résonances, et les compositeurs du genre écrivent en en tenant compte.

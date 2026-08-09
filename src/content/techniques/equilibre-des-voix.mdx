@@ -1,0 +1,77 @@
+---
+code: TR-04
+nom:
+  fr: "Équilibre des voix"
+  en: "Voicing balance"
+  es: "Equilibrio de voces"
+  alias: ["balance", "hiérarchie des voix"]
+famille: transversal
+style: les-deux
+difficulte: 4
+main: pince
+prerequis: [apoyando-tirando, arpeges-pima]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [tennant-pumping-nylon]
+
+sonCible: >
+  Une mélodie qu’un auditeur peut fredonner après deux écoutes, alors qu’elle est jouée par la même main que l’accompagnement.
+
+gesteCle: >
+  Le doigt porteur de la mélodie attaque plus profond et plus vite, éventuellement en butée, pendant que les autres restent en pincé léger. C’est une différenciation par doigt, pas par main.
+
+erreurs:
+  - titre: "Tout au même niveau"
+    description: >
+      Donne une bouillie harmonique où rien ne chante.
+    diagnostic:
+      canaux: [audio]
+      test: >
+        Faire écouter à quelqu’un et lui demander de fredonner la mélodie.
+      signe: >
+        Il ne peut pas.
+
+exercices:
+  - id: a
+    titre: "Le même accord, quatre fois, quatre voix"
+    origine: formule-commune
+    description: >
+      Un accord de quatre notes plaqué, joué quatre fois de suite, en faisant ressortir à chaque fois une voix différente. C’est l’exercice le plus rentable du corpus.
+    audioFidele: false
+    reservesAudio:
+      - "Le rendu joue les quatre accords à l’identique : la hiérarchie des voix, qui est tout l’exercice, ne s’entend pas."
+    alphaTex: |
+      \title "Équilibre — une voix à la fois"
+      \tempo 50
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :4 (0.5 2.4 1.2 0.1) (0.5 2.4 1.2 0.1) (0.5 2.4 1.2 0.1) (0.5 2.4 1.2 0.1) |
+
+seance:
+  moment: [echauffement, debut]
+  dureeMax: 8
+  frequence: "Quotidienne, en entretien."
+  reposMin: 45
+  risque: faible
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: tennant-pumping-nylon
+    pertinence: >
+      La deuxième édition ajoute des exercices d’équilibre des voix d’accord.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

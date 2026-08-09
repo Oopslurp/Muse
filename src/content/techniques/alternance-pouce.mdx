@@ -1,0 +1,431 @@
+---
+code: MD-07
+nom:
+  fr: Alternance du pouce
+  en: Travis picking
+  es: Bajo alternado
+  alias: [basse alternée, Travis picking, alternating bass, indépendance du pouce]
+famille: main-droite
+style: moderne
+difficulte: 3
+main: pince
+prerequis: [technique-pouce, etouffements-md]
+profondeur: complete
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [dawes-jamplay, tennant-pumping-nylon]
+
+sonCible: >
+  Deux musiciens dans une seule main. Une basse régulière, imperturbable, presque
+  ennuyeuse à force de constance — et par-dessus, une mélodie libre et syncopée qui ne
+  semble pas savoir que la basse existe.
+
+ecoutes:
+  - oeuvre: Enregistrements originaux
+    interprete: Merle Travis
+    quoiEcouter: La version source du procédé, plus sobre que ce qui se joue aujourd'hui.
+    ecoute: false
+  - oeuvre: Répertoire fingerpicking
+    interprete: Chet Atkins
+    quoiEcouter: La sophistication maximale du procédé.
+    ecoute: false
+  - oeuvre: Répertoire solo
+    interprete: Tommy Emmanuel
+    quoiEcouter: >
+      Écouter uniquement la basse, en ignorant tout le reste : elle ne bouge pas d'un
+      iota pendant que tout se passe au-dessus.
+    ecoute: false
+
+erreurs:
+  - titre: La basse ralentit quand la mélodie se complique
+    description: Le défaut universel, et le seul critère qui compte vraiment.
+    diagnostic:
+      canaux: [metronome, audio]
+      test: >
+        Métronome calé sur la basse uniquement : chaque note de basse doit coïncider
+        avec un clic. Sans métronome, taper du pied et se filmer pieds compris.
+      signe: Une note de basse arrive en retard sur les passages mélodiques denses.
+  - titre: Mélodie calée sur la basse
+    description: Sans syncope, ça sonne comme un accompagnement de chanson, pas comme du fingerstyle.
+    diagnostic:
+      canaux: [son]
+      test: Compter « un-et-deux-et » à voix haute en jouant.
+      signe: Les notes de mélodie tombent toujours sur les chiffres, jamais sur les « et ».
+  - titre: Basse non automatisée
+    description: >
+      L'indépendance n'est pas un problème musculaire — le pouce et les doigts ont des
+      voies motrices distinctes. C'est un problème cognitif : tant qu'on pense à la
+      basse, on ne peut pas jouer librement au-dessus.
+    diagnostic:
+      canaux: [sensation]
+      test: >
+        Jouer la basse seule et parler en même temps : raconter sa journée, compter à
+        rebours depuis cent, n'importe quoi qui occupe le langage.
+      signe: >
+        La basse s'arrête dès qu'on ouvre la bouche. Sans appel — et aucun travail de
+        mélodie ne servira à rien avant que ce test passe.
+  - titre: Pinch désynchronisé
+    description: >
+      Le pinch est le seul moment où les deux voix se rencontrent. La moindre
+      désynchronisation s'y entend.
+    diagnostic:
+      canaux: [audio]
+      test: Enregistrer et réécouter au ralenti.
+      signe: Un léger « flam » — deux attaques au lieu d'une, le pouce roulé avant le doigt.
+  - titre: Étouffement paume mal placé
+    diagnostic:
+      canaux: [son]
+      test: >
+        Jouer une basse répétée en faisant glisser la paume de quelques millimètres à
+        la fois, du chevalet vers le manche.
+      signe: >
+        Soit la basse a disparu et n'est plus qu'une percussion sans hauteur — trop
+        loin vers le manche — soit il n'y a aucun effet.
+    renvoi: [etouffements-md]
+  - titre: Le pouce claque
+    description: L'interphalangienne du pouce se replie vers l'intérieur à chaque note.
+    diagnostic:
+      canaux: [sensation, video]
+      test: Se filmer de face.
+      signe: Le bout du pouce se plie au lieu de rester ferme.
+    renvoi: [technique-pouce]
+  - titre: Douleur à la base du pouce
+    description: >
+      Le pouce travaille en continu, à cadence fixe, pendant des minutes. C'est le seul
+      doigt du corpus soumis à un régime aussi soutenu.
+    diagnostic:
+      canaux: [sensation]
+      test: Prêter attention à l'articulation carpo-métacarpienne et au muscle charnu de la base du pouce.
+      signe: >
+        Toute douleur ou raideur y est un arrêt immédiat, pas un « ça passera ». Ce
+        n'est pas un défaut technique à travailler, c'est une alerte.
+    sante: true
+
+paliers:
+  - titre: Basse seule
+    objectif: Automatiser la basse au point qu'elle ne demande plus d'attention.
+    exercices: [a]
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '4' }
+    tempoCible: { valeur: 100, unite: bpm, subdivision: '4' }
+    critere: >
+      Deux minutes de basse alternée sans faute en récitant l'alphabet à l'envers ou
+      en décrivant la pièce où l'on est. Non négociable.
+    autoVerifiable: true
+  - titre: Basse et pinch
+    objectif: Superposer une voix synchrone.
+    exercices: [b]
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '4' }
+    tempoCible: { valeur: 100, unite: bpm, subdivision: '4' }
+    critere: Seize mesures sans « flam » audible sur le pinch, vérifié à l'enregistrement.
+    autoVerifiable: true
+  - titre: Mélodie sur les contretemps
+    objectif: Le motif Travis de base.
+    exercices: [c]
+    tempoDepart: { valeur: 55, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 96, unite: bpm, subdivision: '8' }
+    critere: Seize mesures au métronome, aucune note de basse en retard.
+    autoVerifiable: true
+  - titre: Changements d'accord
+    objectif: Tenir le motif à travers l'harmonie.
+    exercices: [d]
+    tempoDepart: { valeur: 55, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 100, unite: bpm, subdivision: '8' }
+    critere: >
+      Enchaîner les quatre accords sans hésitation de la basse au changement. C'est
+      précisément là qu'elle trébuche.
+    autoVerifiable: true
+  - titre: Mélodie libre
+    objectif: Improviser au-dessus.
+    exercices: [d]
+    tempoDepart: { valeur: 70, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 110, unite: bpm, subdivision: '8' }
+    critere: >
+      Jouer pendant huit mesures une mélodie inventée sur le moment, sans que la basse
+      ne bouge. C'est le vrai test d'indépendance.
+    autoVerifiable: true
+
+exercices:
+  - id: a
+    titre: 'Exercice A — basse alternée seule'
+    origine: formule-commune
+    description: >
+      Uniquement le pouce, sur un accord de do majeur tenu. Trois passages : sans
+      étouffement, avec étouffement paume, puis en butée. Écouter la différence et
+      choisir. Consigne dès le premier jour : parler à voix haute pendant qu'on joue.
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '4' }
+    tempoCible: { valeur: 100, unite: bpm, subdivision: '4' }
+    audioFidele: false
+    reservesAudio:
+      - L'étouffement paume est rendu comme une atténuation grossière ; le réglage fin de la position de la paume, qui est tout l'intérêt, ne s'entend pas.
+    alphaTex: |
+      \title "Ex. A — Basse alternée seule"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :4 3.5{rf 1} 2.4{rf 1} 3.5{rf 1} 2.4{rf 1} |
+      :4 3.5{rf 1} 2.4{rf 1} 3.5{rf 1} 2.4{rf 1} |
+      :4 3.5{rf 1 pm} 2.4{rf 1 pm} 3.5{rf 1 pm} 2.4{rf 1 pm} |
+      :4 3.5{rf 1 pm} 2.4{rf 1 pm} 3.5{rf 1 pm} 2.4{rf 1 pm} |
+    provenance:
+      origine: deduit
+
+  - id: b
+    titre: 'Exercice B — basse et pinch'
+    origine: formule-commune
+    description: >
+      Même basse, avec le majeur qui joue la corde 2 exactement en même temps que le
+      pouce, sur les temps 1 et 3. L'objectif unique : un seul son, pas deux.
+      Enregistrer et vérifier l'absence de flam.
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '4' }
+    tempoCible: { valeur: 100, unite: bpm, subdivision: '4' }
+    audioFidele: true
+    alphaTex: |
+      \title "Ex. B — Basse + pinch"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :4 (3.5{rf 1} 1.2{rf 3}) 2.4{rf 1} (3.5{rf 1} 1.2{rf 3}) 2.4{rf 1} |
+      :4 (3.5{rf 1} 1.2{rf 3}) 2.4{rf 1} (3.5{rf 1} 1.2{rf 3}) 2.4{rf 1} |
+    provenance:
+      origine: deduit
+
+  - id: c
+    titre: 'Exercice C — le motif Travis de base'
+    origine: formule-commune
+    description: >
+      Le motif canonique en croches. Sur le temps 1, un pinch — pouce et majeur
+      ensemble. Ensuite le pouce alterne sur les temps, et les doigts tombent sur les
+      contretemps et entre les basses. C'est cette grille de placement qui fait le
+      style, pas les notes elles-mêmes.
+    tempoDepart: { valeur: 55, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 96, unite: bpm, subdivision: '8' }
+    audioFidele: false
+    reservesAudio:
+      - L'étouffement paume de la basse n'est rendu que grossièrement.
+    alphaTex: |
+      \title "Ex. C — Motif Travis de base"
+      \tempo 55
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :8 (3.5{rf 1 pm} 1.2{rf 3}) 0.3{rf 2} 2.4{rf 1 pm} 1.2{rf 3} 3.5{rf 1 pm} 0.3{rf 2} 2.4{rf 1 pm} 1.2{rf 3} |
+      :8 (3.5{rf 1 pm} 1.2{rf 3}) 0.3{rf 2} 2.4{rf 1 pm} 1.2{rf 3} 3.5{rf 1 pm} 0.3{rf 2} 2.4{rf 1 pm} 1.2{rf 3} |
+    provenance:
+      origine: source
+      sourceIds: [dawes-jamplay]
+
+  - id: d
+    titre: 'Exercice D — le motif à travers quatre accords'
+    origine: original
+    description: >
+      Le motif appliqué à une grille de quatre accords, une mesure chacun. Le point
+      difficile est le changement d'accord, pas le motif : la main qui frette doit être
+      en place avant le temps 1. Travailler d'abord les changements sans jouer, en
+      posant et levant en rythme. Basses alternées choisies selon la formule standard
+      fondamentale puis quinte.
+    tempoDepart: { valeur: 55, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 110, unite: bpm, subdivision: '8' }
+    audioFidele: false
+    reservesAudio:
+      - L'étouffement paume de la basse n'est rendu que grossièrement.
+    alphaTex: |
+      \title "Ex. D — Travis sur quatre accords"
+      \tempo 55
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :8 (3.5{rf 1 pm} 1.2{rf 3}) 0.3{rf 2} 2.4{rf 1 pm} 1.2{rf 3} 3.5{rf 1 pm} 0.3{rf 2} 2.4{rf 1 pm} 1.2{rf 3} |
+      :8 (0.5{rf 1 pm} 1.2{rf 3}) 2.3{rf 2} 2.4{rf 1 pm} 1.2{rf 3} 0.5{rf 1 pm} 2.3{rf 2} 2.4{rf 1 pm} 1.2{rf 3} |
+      :8 (0.4{rf 1 pm} 3.2{rf 3}) 2.3{rf 2} 0.5{rf 1 pm} 3.2{rf 3} 0.4{rf 1 pm} 2.3{rf 2} 0.5{rf 1 pm} 3.2{rf 3} |
+      :8 (3.6{rf 1 pm} 0.2{rf 3}) 0.3{rf 2} 0.4{rf 1 pm} 0.2{rf 3} 3.6{rf 1 pm} 0.3{rf 2} 0.4{rf 1 pm} 0.2{rf 3} |
+    provenance:
+      origine: deduit
+
+  - id: destructuration
+    titre: 'Variantes de déstructuration'
+    origine: consigne
+    description: >
+      Six consignes sans tablature. Basse et parole : réciter à voix haute pendant la
+      basse, pour l'automatisation. Mélodie fantôme : jouer la basse et chanter la
+      mélodie, pour séparer la conception de l'exécution. Basse en aveugle : yeux
+      fermés, en écoutant autre chose. Doubler la basse : la passer en doubles-croches
+      sur une mesure, pour voir si elle est vraiment sous contrôle. Silence d'une
+      basse : supprimer celle du temps 3 en continuant à la penser, pour révéler si
+      l'on compte ou si l'on suit. Improviser au-dessus, enfin — c'est l'objectif.
+    audioFidele: true
+    provenance:
+      origine: deduit
+
+repertoire:
+  - oeuvre: Exercices A à D de cette fiche
+    compositeur: Muse
+    droits: domaine-public
+    role: >
+      Le socle. Sur cette technique, tout le matériel du site est original — voir la
+      note ci-dessous sur les droits.
+  - oeuvre: Mélodies traditionnelles antérieures à 1929
+    compositeur: traditionnel
+    droits: edition-a-verifier
+    noteDroits: >
+      La mélodie peut être libre, l'arrangement ne l'est presque jamais. Poser une
+      mélodie traditionnelle sur sa propre basse alternée et faire son propre
+      arrangement.
+    role: Terrain d'application musicale.
+  - oeuvre: Freight Train
+    compositeur: Elizabeth Cotten
+    mort: 1987
+    droits: sous-droits
+    noteDroits: >
+      Souvent présentée comme traditionnelle, elle ne l'est pas. Attribuée à Elizabeth
+      Cotten, et l'histoire de ses droits est un cas connu de spoliation. Ne pas
+      utiliser.
+    role: À ne pas employer, mentionnée pour éviter l'erreur.
+
+seance:
+  moment: [debut, milieu]
+  dureeMin: 15
+  dureeMax: 20
+  frequence: >
+    Quotidienne pendant les trois premiers paliers. L'automatisation demande de la
+    répétition espacée. Au moins un tiers du temps sur la basse seule, même arrivé au
+    palier 4 — c'est contre-intuitif et c'est ce qui fait la différence.
+  signalArret:
+    - Douleur ou raideur à la base du pouce — arrêt immédiat, ce n'est pas de la fatigue musculaire ordinaire.
+    - La basse commence à dériver, signe de fatigue cognitive.
+  reposMin: 60
+  risque: modere
+  avertissementSante: >
+    La base du pouce — articulation carpo-métacarpienne et muscles thénariens — est une
+    zone à risque documentée chez les guitaristes, et cette technique la sollicite plus
+    que toute autre du corpus. Toute douleur y est un arrêt, pas un obstacle à
+    surmonter.
+  provenance:
+    origine: source
+    sourceIds: [performance-health]
+
+sources:
+  - id: dawes-jamplay
+    pertinence: >
+      Traite explicitement l'auto-accompagnement, l'indépendance des doigts et « basse
+      et mélodie en même temps ». La formalisation moderne la plus structurée trouvée.
+  - id: dawes-truefire
+    pertinence: Techniques de main droite, staccato et legato, percussions.
+  - id: tennant-pumping-nylon
+    pertinence: Technique du pouce en contexte classique — butée et pincé — transposable.
+  - id: acoustic-guitar-percussif
+    pertinence: Contexte du fingerstyle acoustique moderne.
+  - id: performance-health
+    pertinence: Blessures de la main et du poignet chez les musiciens.
+
+doutes:
+  - >
+    La filiation Mose Rager et Ike Everly vers Merle Travis est très souvent citée mais
+    n'a pas été confirmée sur une source primaire. Ne pas l'affirmer sans vérification.
+  - >
+    Merle Travis lui-même utilisait, semble-t-il, principalement le pouce et l'index et
+    non trois doigts. Ce qu'on appelle aujourd'hui « Travis picking » recouvre des
+    motifs plus riches que ce qu'il jouait : le nom est partiellement un abus de langage.
+  - >
+    Le réglage précis de la position de la paume pour l'étouffement est décrit
+    qualitativement. Aucune source ne donne de position exacte, et il n'y en a
+    probablement pas : cela dépend de l'instrument.
+  - >
+    Le statut des arrangements de chansons traditionnelles reste à clarifier au cas par
+    cas. La mélodie peut être libre, l'arrangement presque jamais.
+---
+
+## Le nom et la paternité
+
+Le terme vient de **Merle Travis** (1917–1983), guitariste du Kentucky, et **Chet
+Atkins** en a fait le style dominant de la guitare country américaine. Deux réserves
+historiques figurent dans les points à vérifier de cette fiche : la filiation exacte, et
+le fait que Travis lui-même jouait sans doute avec moins de doigts qu'on ne le lui
+attribue aujourd'hui.
+
+## Anatomie du geste
+
+### Le pouce
+
+L'articulation motrice est la **carpo-métacarpienne** — la base du pouce, dans le
+poignet — avec participation de la métacarpo-phalangienne. Ce n'est pas la même
+articulation que pour les autres doigts, et c'est ce qui rend l'indépendance
+physiologiquement possible : le pouce a un appareil moteur en grande partie distinct.
+
+Le mouvement est une flexion-adduction : le pouce descend et va vers l'intérieur, en
+traversant la corde vers le corps de la guitare. Il ne se plie pas à son
+interphalangienne — si le bout du pouce claque vers l'intérieur à chaque note, on perd
+la puissance et la régularité.
+
+**Trois modes d'attaque**, à choisir consciemment plutôt qu'à subir :
+
+- **pincé** — le pouce dégage après la corde. Son rond, résonant ;
+- **butée** — le pouce se pose sur la corde grave suivante. Puissant, projeté, utile
+  pour une basse qui doit porter ;
+- **étouffé paume** — le tranchant de la paume repose sur les cordes graves juste devant
+  le chevalet. Court, percussif. **C'est le son Travis caractéristique.**
+
+Le réglage de l'étouffement est fin : trop loin vers le manche, la note meurt et devient
+une percussion sans hauteur ; trop près du chevalet, l'effet disparaît. Il se trouve en
+jouant une basse répétée et en faisant glisser la paume de quelques millimètres.
+
+### L'onglet de pouce
+
+Beaucoup de joueurs du style utilisent un onglet — un plectre porté sur le pouce. Il
+donne une attaque plus dure et un accès facile aux balayages, mais il change la
+trajectoire requise : l'onglet dépasse et peut accrocher les cordes voisines, l'angle
+devient critique. Ce n'est pas une décision anodine, c'est presque un changement de
+technique.
+
+Recommandation pour un joueur venant du classique : **commencer sans onglet.** Le pouce
+nu a déjà un son travaillé. L'onglet peut s'ajouter plus tard comme une option de
+timbre, pas comme un prérequis.
+
+### Le pinch
+
+Le **pinch** est le moment où le pouce et un doigt jouent exactement en même temps,
+typiquement sur le premier temps. Il crée un repère fort qui permet à tout le reste de
+flotter.
+
+Techniquement, c'est le geste le plus simple de la fiche — mais c'est le seul moment où
+les deux voix se rencontrent, donc la moindre désynchronisation s'entend comme un
+défaut.
+
+## La contrainte que l'exercice D a révélée
+
+Une première version de la mesure 3 utilisait un fa en position à quatre cordes. C'était
+impraticable : la seule seconde basse disponible était déjà prise par la mélodie, et le
+pouce se retrouvait sur la même corde que l'index.
+
+**Ce n'est pas un détail d'écriture, c'est une contrainte structurelle du style : toutes
+les positions n'offrent pas deux basses.** Un accord dont la fondamentale et la quinte
+ne tombent pas sur deux cordes graves libres ne peut pas porter une basse alternée telle
+quelle. Trois issues, à connaître :
+
+1. **changer de position** — ici, un ré mineur remplace le fa et fournit deux cordes à
+   vide. C'est la solution retenue ;
+2. **barrer** — mécaniquement propre, mais lourd ;
+3. **renoncer à l'alternance** sur cette mesure et tenir une basse unique. C'est souvent
+   le meilleur choix musical, et personne ne le remarque.
+
+C'est une contrainte de **composition**, pas d'exécution. Elle se règle en choisissant la
+grille, pas en travaillant plus.
+
+## Note sur le répertoire
+
+Le répertoire Travis est de la musique du XXᵉ siècle, presque intégralement sous droits :
+Merle Travis est mort en 1983, Chet Atkins en 2001. **Sur cette technique, tout le
+matériel du site est original.** C'est plus de travail, mais c'est le seul chemin propre,
+et ça évite d'avoir à retirer du contenu plus tard.

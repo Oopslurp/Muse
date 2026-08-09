@@ -1,0 +1,78 @@
+---
+code: MG-05
+nom:
+  fr: "Déplacements & doigts guides"
+  en: "Shifts and guide fingers"
+  es: "Traslados y dedo guía"
+  alias: ["changement de position", "doigt guide"]
+famille: main-gauche
+style: les-deux
+difficulte: 3
+main: frette
+prerequis: [placement-mg]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [carlevaro-cuaderno-3-4]
+
+sonCible: >
+  Le silence pendant le voyage. Un déplacement réussi ne s’entend pas.
+
+gesteCle: >
+  Trois temps : relâcher la pression, voyager en gardant un contact léger, reposer à l’arrivée. Le doigt guide reste sur sa corde et ne quitte jamais le manche — c’est un repère tactile, pas un appui.
+
+erreurs:
+  - titre: "Garder la pression pendant le déplacement"
+    description: >
+      Produit un glissando parasite et use les cordes.
+    diagnostic:
+      canaux: [son]
+      test: >
+        Écouter uniquement l’intervalle entre deux positions.
+      signe: >
+        Un chuintement accompagne chaque changement de position.
+
+exercices:
+  - id: a
+    titre: "Un accord promené, doigt 1 en guide"
+    origine: formule-commune
+    description: >
+      Une forme de la mineur déplacée de la case 2 à la case 7 puis retour, très lentement, avec l’index comme guide sur la corde 2. Chercher le silence pendant le trajet.
+    audioFidele: true
+    alphaTex: |
+      \title "Déplacements — doigt guide"
+      \tempo 50
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :2 (4.4 4.3 2.2) r |
+      :2 (9.4 9.3 7.2) r |
+      :2 (4.4 4.3 2.2) r |
+      :2 (9.4 9.3 7.2) r |
+
+seance:
+  moment: [echauffement, debut]
+  dureeMax: 8
+  frequence: "Quotidienne, en entretien."
+  reposMin: 45
+  risque: faible
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: carlevaro-cuaderno-3-4
+    pertinence: >
+      La question des déplacements est centrale dans le système de Carlevaro.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

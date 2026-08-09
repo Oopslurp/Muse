@@ -1,0 +1,141 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import FiltreTechniques from '~/components/react/FiltreTechniques';
+import type { FicheResume } from '~/components/react/FiltreTechniques';
+import { construireGraphe } from '~/lib/graph';
+import { statutAffiche } from '~/lib/provenance';
+import {
+  FAMILIES,
+  STATUSES,
+  STYLE_LABELS,
+  DIFFICULTY_LABELS,
+  familyById,
+  statusById,
+  type Difficulty,
+} from '~/lib/taxonomy';
+
+const fiches = (await getCollection('techniques')).filter((f) => !f.data.brouillon);
+
+/**
+ * Validation du graphe de prérequis, au build.
+ *
+ * Appelée ici plutôt que dans un script à part : une page doit en dépendre,
+ * sinon la vérification ne s'exécute jamais. Un prérequis mort ou un cycle
+ * casse le parcours d'apprentissage sans faire planter la moindre page —
+ * c'est exactement le genre de faute qui passe inaperçue en production.
+ */
+construireGraphe(fiches);
+
+const resumes: FicheResume[] = fiches
+  .map((f) => {
+    const d = f.data;
+    const fam = familyById(d.famille);
+    const statut = statutAffiche(d.provenance);
+    const meta = statusById(statut);
+    return {
+      id: f.id,
+      code: d.code,
+      nom: d.nom.fr,
+      nomEn: d.nom.en,
+      nomEs: d.nom.es,
+      alias: d.nom.alias,
+      famille: d.famille,
+      familleLabel: fam.label,
+      familleColorVar: fam.colorVar,
+      style: d.style,
+      styleLabel: STYLE_LABELS[d.style],
+      difficulte: d.difficulte,
+      profondeur: d.profondeur,
+      statut,
+      statutLabel: meta.label,
+      statutColorVar: meta.colorVar,
+      statutPointille: meta.dashed,
+      sonCible: d.sonCible,
+      nbDoutes: d.doutes.length,
+      risque: d.seance.risque,
+    };
+  })
+  .sort((a, b) => a.code.localeCompare(b.code, 'fr'));
+
+const familles = FAMILIES.map((f) => ({
+  cle: f.id as string,
+  label: f.label,
+  colorVar: f.colorVar,
+}));
+
+const statuts = STATUSES.map((s) => ({
+  cle: s.id as string,
+  label: s.label,
+  colorVar: s.colorVar,
+}));
+
+const styles = (Object.keys(STYLE_LABELS) as Array<keyof typeof STYLE_LABELS>).map((k) => ({
+  cle: k as string,
+  label: STYLE_LABELS[k],
+}));
+
+const difficultes = ([1, 2, 3, 4, 5] as Difficulty[]).map((d) => ({
+  cle: d as number,
+  label: DIFFICULTY_LABELS[d],
+}));
+
+const nbCompletes = fiches.filter((f) => f.data.profondeur === 'complete').length;
+const nbDoutes = fiches.reduce((n, f) => n + f.data.doutes.length, 0);
+---
+
+<BaseLayout
+  title="Techniques"
+  description="Les techniques de guitare fingerstyle, classique et percussive, filtrables par famille, difficulté, style et statut épistémique."
+>
+  <header class="tete">
+    <p class="eyebrow">La bibliothèque</p>
+    <h1>Techniques</h1>
+    <p class="lede">
+      {fiches.length} techniques, dont {nbCompletes} en fiche approfondie. Chacune
+      porte ses prérequis, ses paliers avec critère de passage, ses erreurs
+      typiques et la façon de les repérer seul — plus une durée maximale et un
+      signal d'arrêt.
+    </p>
+    <p class="meta">
+      {nbDoutes} points restent marqués <strong>à vérifier</strong> dans le corpus.
+      Ils sont affichés sur chaque fiche, jamais masqués.
+    </p>
+  </header>
+
+  <FiltreTechniques
+    client:load
+    fiches={resumes}
+    familles={familles}
+    styles={styles}
+    statuts={statuts}
+    difficultes={difficultes}
+  />
+</BaseLayout>
+
+<style>
+  .tete {
+    padding: clamp(2.25rem, 1.5rem + 3vw, 3.75rem) 0 2rem;
+    max-width: 62ch;
+  }
+  .tete h1 {
+    font-size: var(--text-h1);
+    line-height: 1.05;
+    margin: 0.35rem 0 1rem;
+  }
+  .lede {
+    margin: 0;
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--color-ink-2);
+  }
+  .meta {
+    margin: 0.85rem 0 0;
+    font-size: var(--text-sm);
+    color: var(--color-ink-3);
+  }
+  .meta strong {
+    color: var(--color-verifier);
+    font-weight: 650;
+  }
+</style>

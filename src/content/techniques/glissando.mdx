@@ -1,0 +1,75 @@
+---
+code: MG-08
+nom:
+  fr: "Glissando"
+  en: "Slide"
+  es: "Glisando"
+  alias: ["slide", "arrastre", "portamento"]
+famille: main-gauche
+style: les-deux
+difficulte: 2
+main: frette
+prerequis: [placement-mg]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [alphatab-doc]
+
+sonCible: >
+  Le trajet s’entend, et il a une vitesse choisie. La note d’arrivée est nette.
+
+gesteCle: >
+  Pression constante et vitesse contrôlée. Contrairement au déplacement, où l’on relâche, ici on maintient. Reste un choix à faire explicitement : la note d’arrivée est-elle réattaquée ou non ?
+
+erreurs:
+  - titre: "Ralentir en fin de course"
+    diagnostic:
+      canaux: [son, audio]
+      test: >
+        S’enregistrer et écouter la fin du glissando.
+      signe: >
+        L’arrivée est floue. Un glissando doit avoir une vitesse constante ou légèrement accélérée, jamais décélérée.
+
+exercices:
+  - id: a
+    titre: "Le même intervalle en trois durées"
+    origine: formule-commune
+    description: >
+      Corde 3, case 2 vers case 9, en une noire à 60, dix fois. Puis en une croche. Puis en une blanche. Trois vitesses, trois intentions musicales différentes.
+    audioFidele: true
+    alphaTex: |
+      \title "Glissando — trois durées"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :4 2.3{sl} 9.3 r r |
+      :8 2.3{sl} 9.3 r r r r r r |
+      :2 2.3{sl} 9.3 |
+
+seance:
+  moment: [echauffement, debut]
+  dureeMax: 5
+  frequence: "Quotidienne, en entretien."
+  reposMin: 45
+  risque: faible
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: alphatab-doc
+    pertinence: >
+      Effets `sl`, `ss`, `sib`, `sia`, `sou`, `sod`.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

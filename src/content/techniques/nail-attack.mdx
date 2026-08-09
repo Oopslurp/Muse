@@ -1,0 +1,73 @@
+---
+code: PM-02
+nom:
+  fr: "Nail attack"
+  en: "Nail attack"
+  es: "Ataque con uña"
+  alias: ["attaque à l’ongle", "Oshio strum"]
+famille: percussif-moderne
+style: moderne
+difficulte: 4
+main: pince
+prerequis: [percussion-kick-snare-golpe, rasgueado]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [acoustic-accent-oshio]
+
+sonCible: >
+  Une pulsation percussive rapide et continue, sous une mélodie qui continue de se jouer par-dessus.
+
+gesteCle: >
+  D’après la description disponible : frappe des cordes avec les ongles du majeur et de l’annulaire, ce qui permet d’installer une pulsation tout en continuant à pincer une mélodie. Kotaro Oshio l’aurait développée sous l’influence de Michael Hedges.
+
+erreurs:
+  - titre: "La mélodie disparaît dès que la percussion s’installe"
+    description: >
+      Les deux couches fusionnent en un seul geste.
+    diagnostic:
+      canaux: [son, audio]
+      test: >
+        Jouer la percussion seule, puis la mélodie seule, puis les deux.
+      signe: >
+        La superposition dégrade l’une des deux : elles ne sont pas indépendantes.
+
+exercices:
+  - id: a
+    titre: "Pulsation puis superposition"
+    origine: consigne
+    description: >
+      Nail attack en croches sur les cordes graves étouffées, main gauche à plat. Puis ajouter une note tenue sur la corde 1.
+    audioFidele: true
+    provenance:
+      origine: deduit
+      doute: >
+        Exercice déduit du descriptif de la technique, pas issu d’une source. Aucune vidéo n’a été visionnée.
+
+seance:
+  moment: [debut]
+  dureeMax: 10
+  frequence: "3 fois par semaine."
+  reposMin: 60
+  risque: modere
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension ou brûlure dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: acoustic-accent-oshio
+    pertinence: >
+      Description du geste : ongles du majeur et de l’annulaire, filiation Michael Hedges.
+
+doutes:
+  - >
+    Aucune vidéo n’a été visionnée. La description vient d’un article, pas d’une observation.
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

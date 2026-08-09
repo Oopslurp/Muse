@@ -1,0 +1,68 @@
+---
+code: PM-03
+nom:
+  fr: "Tapping à deux mains"
+  en: "Two-handed tapping"
+  es: "Tapping"
+  alias: ["tapping"]
+famille: percussif-moderne
+style: moderne
+difficulte: 4
+main: les-deux
+prerequis: [ligado-ascendant, ligado-descendant]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [dawes-jamplay, alphatab-doc]
+
+sonCible: >
+  Deux voix indépendantes sur le manche, sans qu’aucune main ne pince.
+
+gesteCle: >
+  Frappe perpendiculaire, près de la frette, avec rebond. Chaque doigt qui quitte une note doit l’étouffer en partant, sinon les résonances s’accumulent. Les deux mains travaillent dans des zones distinctes du manche.
+
+erreurs:
+  - titre: "Bruit parasite des cordes non jouées"
+    diagnostic:
+      canaux: [audio]
+      test: >
+        S’enregistrer et n’écouter que le bruit de fond entre les notes.
+      signe: >
+        Un halo de cordes qui vibrent sans être jouées.
+
+exercices:
+  - id: a
+    titre: "Mains séparées, longtemps"
+    origine: consigne
+    description: >
+      Main qui frette : arpège tapé en cases 3-5-7 sur les cordes graves. Main qui pince : mélodie tapée en cases 12-15 sur les cordes aiguës. Séparément d’abord, et longtemps.
+    audioFidele: true
+
+seance:
+  moment: [debut]
+  dureeMax: 10
+  frequence: "3 fois par semaine."
+  reposMin: 60
+  risque: modere
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension ou brûlure dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: dawes-jamplay
+    pertinence: >
+      Le programme mentionne le tapping d’accords parmi les techniques enseignées.
+  - id: alphatab-doc
+    pertinence: >
+      Effet de beat `tt`, effet de note `lht`.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

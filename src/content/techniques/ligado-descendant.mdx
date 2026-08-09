@@ -1,0 +1,77 @@
+---
+code: MG-04
+nom:
+  fr: "Ligado descendant"
+  en: "Pull-off"
+  es: "Ligado descendente"
+  alias: ["pull-off", "liaison descendante"]
+famille: main-gauche
+style: les-deux
+difficulte: 3
+main: frette
+prerequis: [ligado-ascendant]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [tennant-pumping-nylon, alphatab-doc]
+
+sonCible: >
+  Même volume que le ligado ascendant. C’est le critère, et c’est rarement atteint.
+
+gesteCle: >
+  Ce n’est pas un lever, c’est un pincement latéral : le doigt tire la corde vers l’intérieur de la paume puis la relâche. C’est un geste de main droite exécuté par la main gauche. Le doigt qui tient la note inférieure doit être posé avant.
+
+erreurs:
+  - titre: "Lever le doigt tout droit"
+    diagnostic:
+      canaux: [son]
+      test: >
+        Alterner un hammer-on et un pull-off sur les mêmes notes.
+      signe: >
+        Le pull-off est nettement plus faible que le hammer-on, parfois inaudible.
+
+exercices:
+  - id: a
+    titre: "L’inverse de l’exercice ascendant"
+    origine: formule-commune
+    description: >
+      Annulaire case 7 vers index case 5, dix fois par paire de doigts, en cherchant l’égalité de volume avec le ligado ascendant.
+    audioFidele: true
+    alphaTex: |
+      \title "Ligado descendant — paires de doigts"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :8 7.1{lf 4 h} 5.1{lf 2} 7.1{lf 4 h} 5.1{lf 2} 6.1{lf 3 h} 5.1{lf 2} 6.1{lf 3 h} 5.1{lf 2} |
+      :8 8.1{lf 5 h} 5.1{lf 2} 8.1{lf 5 h} 5.1{lf 2} 8.1{lf 5 h} 6.1{lf 3} 8.1{lf 5 h} 6.1{lf 3} |
+
+seance:
+  moment: [debut]
+  dureeMax: 8
+  frequence: "4 à 5 fois par semaine."
+  reposMin: 60
+  risque: modere
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension ou brûlure dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: tennant-pumping-nylon
+    pertinence: >
+      Ligados descendants.
+  - id: alphatab-doc
+    pertinence: >
+      Effet `h`, dont le sens se déduit de la case suivante.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

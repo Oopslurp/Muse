@@ -1,0 +1,79 @@
+---
+code: MG-01
+nom:
+  fr: "Placement de la main qui frette"
+  en: "Left-hand placement"
+  es: "Colocación de la mano izquierda"
+  alias: ["position de la main gauche", "pouce derrière le manche"]
+famille: main-gauche
+style: les-deux
+difficulte: 1
+main: frette
+prerequis: []
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [carlevaro-cuaderno-3-4, classical-guitar-shed]
+
+sonCible: >
+  Rien en propre — c’est la condition de tout le reste. Un placement juste s’entend à l’absence de frisures et à la facilité des changements.
+
+gesteCle: >
+  Poignet en ligne avec l’avant-bras, doigts perpendiculaires à la touche et frettant sur la pointe juste derrière la frette, pouce à plat sur sa pulpe derrière le manche. Le pouce s’oppose, il ne serre pas.
+
+erreurs:
+  - titre: "Poignet cassé vers l’extérieur"
+    description: >
+      Compensation d’un coude mal placé, en amont.
+    diagnostic:
+      canaux: [visuel, sensation]
+      test: >
+        Regarder le dos de la main pendant le jeu.
+      signe: >
+        La ligne avant-bras/main forme un angle marqué au lieu d’être quasi droite.
+
+exercices:
+  - id: a
+    titre: "Chromatique 1-2-3-4, sans objectif de vitesse"
+    origine: formule-commune
+    description: >
+      Exercice chromatique sur chaque corde, en cases 5 à 8, en ne surveillant qu’une chose : l’angle du poignet. Aucun objectif de tempo.
+    audioFidele: true
+    alphaTex: |
+      \title "Placement — chromatique 1-2-3-4"
+      \tempo 50
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :8 5.6{lf 2} 6.6{lf 3} 7.6{lf 4} 8.6{lf 5} 5.5{lf 2} 6.5{lf 3} 7.5{lf 4} 8.5{lf 5} |
+      :8 5.4{lf 2} 6.4{lf 3} 7.4{lf 4} 8.4{lf 5} 5.3{lf 2} 6.3{lf 3} 7.3{lf 4} 8.3{lf 5} |
+
+seance:
+  moment: [echauffement]
+  dureeMax: 6
+  frequence: "Quotidienne, en entretien."
+  reposMin: 45
+  risque: faible
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: carlevaro-cuaderno-3-4
+    pertinence: >
+      Technique de la main gauche et placement.
+  - id: classical-guitar-shed
+    pertinence: >
+      Articles gratuits sur la tension de la main gauche.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

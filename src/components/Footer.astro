@@ -1,7 +1,8 @@
 ---
-import { CORPUS } from '~/lib/taxonomy';
+import { corpus } from '~/lib/corpus';
 
 const year = new Date().getFullYear();
+const c = await corpus();
 ---
 
 <footer class="footer no-print">
@@ -11,7 +12,7 @@ const year = new Date().getFullYear();
       <p class="footer__word">Muse</p>
       <p class="footer__note">
         Bibliothèque personnelle de technique — guitare fingerstyle, classique et
-        percussive. {CORPUS.techniques} techniques, {CORPUS.fichesCompletes} fiches
+        percussive. {c.techniques} techniques en {c.fiches} fiches, dont {c.completes}{' '}
         approfondies.
       </p>
     </div>

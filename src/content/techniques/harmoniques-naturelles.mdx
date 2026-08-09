@@ -1,0 +1,79 @@
+---
+code: MD-10
+nom:
+  fr: "Harmoniques naturelles"
+  en: "Natural harmonics"
+  es: "Armónicos naturales"
+  alias: ["harmoniques", "sons flûtés"]
+famille: main-droite
+style: les-deux
+difficulte: 2
+main: les-deux
+prerequis: [apoyando-tirando]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [tennant-pumping-nylon, alphatab-doc]
+
+sonCible: >
+  Une cloche. Cristallin, tenu, sans attaque percussive.
+
+gesteCle: >
+  Le doigt effleure sans presser, exactement au-dessus de la frette et non derrière, puis se retire immédiatement après l’attaque. Nœuds : case 12 pour l’octave, 7 pour l’octave et quinte, 5 pour deux octaves, 4 et 9 pour deux octaves et tierce majeure — ces deux dernières étant légèrement en deçà de la frette.
+
+erreurs:
+  - titre: "Le doigt reste sur la corde"
+    diagnostic:
+      canaux: [son]
+      test: >
+        Écouter la résonance après l’attaque.
+      signe: >
+        Un « ploc » sourd au lieu d’une cloche : le doigt s’est retiré trop tard.
+
+exercices:
+  - id: a
+    titre: "Les six cordes aux trois nœuds principaux"
+    origine: formule-commune
+    description: >
+      Cases 12, puis 7, puis 5, sur les six cordes. Chercher la même intensité partout — les cordes graves sortent plus facilement que les aiguës.
+    audioFidele: true
+    alphaTex: |
+      \title "Harmoniques naturelles"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :4 12.6{nh} 12.5{nh} 12.4{nh} 12.3{nh} |
+      :4 12.2{nh} 12.1{nh} r r |
+      :4 7.6{nh} 7.5{nh} 7.4{nh} 7.3{nh} |
+      :4 5.6{nh} 5.5{nh} 5.4{nh} 5.3{nh} |
+
+seance:
+  moment: [echauffement, debut]
+  dureeMax: 6
+  frequence: "Quotidienne, en entretien."
+  reposMin: 45
+  risque: faible
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: tennant-pumping-nylon
+    pertinence: >
+      Traitement des harmoniques.
+  - id: alphatab-doc
+    pertinence: >
+      Effet de note `nh`.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

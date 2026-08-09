@@ -1,0 +1,415 @@
+---
+code: MD-04
+nom:
+  fr: Arpèges p-i-m-a
+  en: Arpeggio patterns
+  es: Arpegios
+  alias: [arpèges main droite, formules de Giuliani, p-i-m-a]
+famille: main-droite
+style: les-deux
+difficulte: 3
+main: pince
+prerequis: [apoyando-tirando, appui-prepare]
+profondeur: complete
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [giuliani-op1, tennant-pumping-nylon, carlevaro-cuaderno-2]
+
+sonCible: >
+  Un objet continu, pas une suite d'événements. Égalité — aucune note ne ressort sans
+  qu'on l'ait voulu ; résonance — l'accord doit être présent en entier dans l'air ;
+  direction — l'arpège a un sommet, généralement porté par l'annulaire.
+
+ecoutes:
+  - oeuvre: Estudio en Mi menor
+    compositeur: Francisco Tárrega
+    quoiEcouter: >
+      Arpège pur, motif unique du début à la fin. Le meilleur miroir possible : tout
+      défaut d'égalité s'y entend, faute d'autre chose à écouter.
+    ecoute: false
+  - oeuvre: Étude op. 60 n°3
+    compositeur: Matteo Carcassi
+    quoiEcouter: Arpège avec mélodie émergente — la vraie difficulté musicale.
+    ecoute: false
+  - oeuvre: Accompagnements en accordage ouvert
+    interprete: Tommy Emmanuel, Andy McKee
+    quoiEcouter: >
+      Le même mécanisme avec plus de résonance, parce que les cordes à vide
+      s'accumulent au lieu de s'annuler.
+    ecoute: false
+
+erreurs:
+  - titre: L'annulaire est plus faible
+    description: >
+      Défaut universel. Ce n'est pas un manque de force à corriger : les tendons
+      extenseurs de l'annulaire et du majeur partagent des connexions anatomiques.
+      La réponse est de travailler l'égalité, pas la force.
+    diagnostic:
+      canaux: [son, audio]
+      test: >
+        Test de l'inversion : jouer p-a-m-i au lieu de p-i-m-a. Si le motif inversé
+        sonne nettement moins bien, ce n'est pas le motif qui pose problème.
+      signe: >
+        À l'enregistrement, un « trou » régulier revient à la même place dans le cycle.
+  - titre: Pouce trop fort
+    diagnostic:
+      canaux: [son]
+      test: Jouer l'arpège en cherchant à rendre la basse plus faible que le reste.
+      signe: C'est impossible — le pouce est en pilote automatique.
+    renvoi: [technique-pouce]
+  - titre: Appui trop précoce — l'arpège sonne sec
+    description: L'accord ne s'accumule jamais parce que chaque doigt coupe la corde avant de la jouer.
+    diagnostic:
+      canaux: [son]
+      test: Jouer un cycle en s'interdisant tout appui préparé, attaque en vol.
+      signe: Si la résonance revient d'un coup, on posait trop tôt.
+    renvoi: [appui-prepare]
+  - titre: Collision du pouce et de l'index
+    description: >
+      Le pouce doit passer devant l'index, côté manche, pas dessous. Le réglage est
+      positionnel : avancer légèrement le poignet pour lui donner un couloir.
+    diagnostic:
+      canaux: [sensation, video]
+      test: Monter le tempo jusqu'à ce que le défaut apparaisse, puis se filmer de face.
+      signe: >
+        Un accroc irrégulier qui n'existe qu'au-dessus d'un certain tempo. À la vidéo,
+        on voit le pouce heurter l'index.
+  - titre: Le poignet pompe
+    diagnostic:
+      canaux: [sensation, visuel]
+      test: >
+        Poser l'autre main sur le poignet pendant l'arpège. Ou mimer le geste avec
+        l'avant-bras posé sur une table.
+      signe: Si le mouvement disparaît quand l'avant-bras est bloqué, c'était le poignet.
+  - titre: Irrégularité masquée par la vitesse
+    diagnostic:
+      canaux: [metronome]
+      test: Placer le clic sur la deuxième note du cycle au lieu de la première.
+      signe: >
+        Les irrégularités deviennent audibles instantanément. C'est brutal et très
+        efficace.
+  - titre: La main qui frette lâche l'accord
+    description: Ce n'est pas la main qui pince qui est en cause.
+    diagnostic:
+      canaux: [son]
+      test: Tenir l'accord et laisser sonner sans rien jouer d'autre.
+      signe: Des notes s'éteignent avant la fin de la mesure.
+    renvoi: [placement-mg]
+
+paliers:
+  - titre: Cycle simple, appui simultané
+    objectif: Comprendre le contrôle. Le son sera moche, c'est normal.
+    exercices: [a]
+    tempoDepart: { valeur: 50, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 70, unite: bpm, subdivision: '8' }
+    critere: Deux minutes en continu sans qu'aucun doigt ne rate sa corde, volume perçu uniforme.
+    autoVerifiable: true
+  - titre: Cycle simple, appui séquentiel
+    objectif: Récupérer la résonance perdue au palier précédent.
+    exercices: [a]
+    tempoDepart: { valeur: 50, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 90, unite: bpm, subdivision: '8' }
+    critere: >
+      S'arrêter sur la dernière note et compter trois secondes : on doit entendre
+      l'accord complet, pas une note seule.
+    autoVerifiable: true
+    note: >
+      Le palier qui coince. Tout le monde sait faire le précédent, qui est mécanique,
+      et croit pouvoir sauter celui-ci. C'est le seul où l'on travaille l'oreille
+      plutôt que les doigts.
+  - titre: Formules multiples
+    objectif: Sortir du réflexe d'un seul motif.
+    exercices: [b1, b2]
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 100, unite: bpm, subdivision: '8' }
+    critere: >
+      Enchaîner six formules sans arrêt entre elles, à tempo constant. Le passage
+      d'une formule à l'autre ne doit produire aucun trou rythmique.
+    autoVerifiable: true
+  - titre: Changement d'accord dans le flux
+    objectif: Le vrai problème musical.
+    exercices: [b1]
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 112, unite: bpm, subdivision: '8' }
+    critere: >
+      Huit cycles enchaînés, quatre par accord, sans que le changement s'entende comme
+      une hésitation.
+    autoVerifiable: true
+  - titre: Mélodie émergente
+    objectif: Faire chanter la note aiguë au-dessus du tissu.
+    exercices: [c]
+    tempoDepart: { valeur: 50, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 84, unite: bpm, subdivision: '8' }
+    critere: >
+      Un auditeur qui ne lit pas la partition doit pouvoir fredonner la ligne
+      supérieure après deux écoutes.
+    autoVerifiable: false
+
+exercices:
+  - id: a
+    titre: 'Exercice A — cycle p-i-m-a sur accord tenu'
+    origine: formule-commune
+    description: >
+      Accord de la mineur tenu, cycle en croches, huit cycles. Trois passages dans la
+      même séance : appui simultané, appui séquentiel, puis sans appui du tout. La
+      différence de résonance entre le deuxième et le troisième passage est le coût
+      exact de votre appui préparé — mémorisez-la, c'est votre étalon.
+    tempoDepart: { valeur: 50, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 90, unite: bpm, subdivision: '8' }
+    audioFidele: false
+    reservesAudio:
+      - "Le rendu ne restitue pas l'appui préparé : les trois passages sonneront identiques, alors que toute la valeur de l'exercice est dans leur différence."
+    alphaTex: |
+      \title "Ex. A — Cycle p-i-m-a sur La mineur"
+      \tempo 50
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :8 0.5{rf 1 lr} 2.3{rf 2 lr} 1.2{rf 3 lr} 0.1{rf 4 lr} 0.5{rf 1 lr} 2.3{rf 2 lr} 1.2{rf 3 lr} 0.1{rf 4 lr} |
+      :8 0.5{rf 1 lr} 2.3{rf 2 lr} 1.2{rf 3 lr} 0.1{rf 4 lr} 0.5{rf 1 lr} 2.3{rf 2 lr} 1.2{rf 3 lr} 0.1{rf 4 lr} |
+    provenance:
+      origine: source
+      sourceIds: [tennant-pumping-nylon]
+
+  - id: b1
+    titre: 'Exercice B1 — formule p-i-m-a sur la grille de Giuliani'
+    origine: domaine-public
+    description: >
+      Giuliani a écrit 120 formules de main droite sur une seule grille harmonique de
+      deux mesures. Le principe est de ne jamais changer la main qui frette, pour que
+      toute l'attention aille à l'autre. Les formules ci-dessous sont les plus
+      élémentaires du recueil — des permutations de p-i-m-a.
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 112, unite: bpm, subdivision: '8' }
+    audioFidele: true
+    alphaTex: |
+      \title "Ex. B1 — Formule p-i-m-a"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :8 3.5{rf 1 lr} 0.3{rf 2 lr} 1.2{rf 3 lr} 0.1{rf 4 lr} 3.5{rf 1 lr} 0.3{rf 2 lr} 1.2{rf 3 lr} 0.1{rf 4 lr} |
+      :8 3.6{rf 1 lr} 0.3{rf 2 lr} 0.2{rf 3 lr} 1.1{rf 4 lr} 3.6{rf 1 lr} 0.3{rf 2 lr} 0.2{rf 3 lr} 1.1{rf 4 lr} |
+    provenance:
+      origine: source
+      sourceIds: [giuliani-op1]
+      doute: >
+        Les positions employées — x32010 et 320001 — sont les positions ouvertes
+        standard, mais aucune édition d'op. 1 n'a été consultée. Certaines omettent la
+        corde 6 sur l'accord de dominante. À confirmer sur IMSLP avant d'afficher
+        « d'après Giuliani ».
+
+  - id: b2
+    titre: 'Exercice B2 — formule p-a-m-i, la même grille inversée'
+    origine: domaine-public
+    description: >
+      Le cycle descendant. C'est lui qui révèle la faiblesse de l'annulaire, parce
+      qu'il l'oblige à attaquer en premier après le pouce, sans élan.
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 100, unite: bpm, subdivision: '8' }
+    audioFidele: true
+    alphaTex: |
+      \title "Ex. B2 — Formule p-a-m-i"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :8 3.5{rf 1 lr} 0.1{rf 4 lr} 1.2{rf 3 lr} 0.3{rf 2 lr} 3.5{rf 1 lr} 0.1{rf 4 lr} 1.2{rf 3 lr} 0.3{rf 2 lr} |
+      :8 3.6{rf 1 lr} 1.1{rf 4 lr} 0.2{rf 3 lr} 0.3{rf 2 lr} 3.6{rf 1 lr} 1.1{rf 4 lr} 0.2{rf 3 lr} 0.3{rf 2 lr} |
+    provenance:
+      origine: source
+      sourceIds: [giuliani-op1]
+
+  - id: c
+    titre: 'Exercice C — arpège à mélodie émergente'
+    origine: original
+    description: >
+      Même grille, formule p-i-m-a, mais la note jouée par l'annulaire change à chaque
+      cycle pour former une ligne. Exprimée en cases sur la corde 1 : 0 – 3, puis
+      3 – 1, puis 0 – 0. Elle monte, tient le sommet à cheval sur le changement
+      d'accord, puis redescend par degré conjoint. La case 3 se prend à l'auriculaire,
+      sans lâcher la forme d'accord. Consigne : annulaire en butée si nécessaire pour
+      obtenir la projection, le reste en pincé doux.
+    tempoDepart: { valeur: 50, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 84, unite: bpm, subdivision: '8' }
+    audioFidele: false
+    reservesAudio:
+      - Le rendu ne distingue pas la butée du pincé, donc la mélodie ne ressortira pas — or c'est tout l'exercice.
+    alphaTex: |
+      \title "Ex. C — Arpège à mélodie émergente"
+      \tempo 50
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :8 3.5{rf 1 lr} 0.3{rf 2 lr} 1.2{rf 3 lr} 0.1{rf 4 lr} 3.5{rf 1 lr} 0.3{rf 2 lr} 1.2{rf 3 lr} 3.1{rf 4 lr} |
+      :8 3.6{rf 1 lr} 0.3{rf 2 lr} 0.2{rf 3 lr} 3.1{rf 4 lr} 3.6{rf 1 lr} 0.3{rf 2 lr} 0.2{rf 3 lr} 1.1{rf 4 lr} |
+      :8 3.5{rf 1 lr} 0.3{rf 2 lr} 1.2{rf 3 lr} 0.1{rf 4 lr} 3.5{rf 1 lr} 0.3{rf 2 lr} 1.2{rf 3 lr} 0.1{rf 4 lr} |
+    provenance:
+      origine: deduit
+
+repertoire:
+  - oeuvre: Estudio en Mi menor
+    compositeur: Francisco Tárrega
+    mort: 1909
+    droits: domaine-public
+    role: Arpège p-i-m-a quasi continu. Le morceau d'application idéal après le palier 2.
+    url: https://imslp.org/
+    aPartirDuPalier: 2
+  - oeuvre: 120 Studi per la mano destra, op. 1
+    compositeur: Mauro Giuliani
+    mort: 1829
+    droits: domaine-public
+    role: Les 120 formules, sur une grille harmonique unique. Le matériau brut.
+    url: https://imslp.org/
+    aPartirDuPalier: 3
+  - oeuvre: Étude op. 60 n°3
+    compositeur: Matteo Carcassi
+    mort: 1853
+    droits: domaine-public
+    role: Arpège avec mélodie émergente. Cible du palier 5.
+    aPartirDuPalier: 5
+  - oeuvre: Préludes op. 114
+    compositeur: Ferdinando Carulli
+    mort: 1841
+    droits: domaine-public
+    role: Arpèges courts et faciles, bons pour l'entretien.
+    aPartirDuPalier: 2
+  - oeuvre: La Catedral
+    compositeur: Agustín Barrios Mangoré
+    mort: 1944
+    droits: domaine-public-ue
+    noteDroits: Domaine public en Union européenne depuis 2015. Statut hors UE non vérifié.
+    role: Arpèges rapides et continus dans un tissu polyphonique. Très au-dessus des paliers de cette fiche.
+  - oeuvre: Romance anónimo
+    compositeur: anonyme, XIXᵉ siècle
+    droits: edition-a-verifier
+    noteDroits: >
+      L'œuvre est traditionnellement considérée comme anonyme et libre, mais
+      l'attribution à Yepes et les éditions modernes ont fait l'objet de
+      revendications. Ne pas reproduire d'édition récente.
+    role: Arpège en triolets avec mélodie sur la corde 1.
+  - oeuvre: Prélude BWV 999
+    compositeur: Johann Sebastian Bach
+    mort: 1750
+    droits: domaine-public
+    role: Arpège continu. Difficulté élevée du côté de la main qui frette.
+
+seance:
+  moment: [debut]
+  dureeMin: 10
+  dureeMax: 15
+  frequence: >
+    Quotidienne. C'est le pain quotidien de la main qui pince, et le travail le plus
+    rentable à l'heure de tout le corpus.
+  signalArret:
+    - L'égalité se dégrade, ou un doigt commence à traîner — à ce moment on n'ancre plus que l'inégalité.
+    - Fatigue au dos de la main.
+  reposMin: 60
+  risque: faible
+  provenance:
+    origine: source
+    sourceIds: [tennant-pumping-nylon]
+
+sources:
+  - id: giuliani-op1
+    pertinence: Les 120 formules d'arpège sur une grille harmonique unique. Domaine public.
+  - id: tennant-pumping-nylon
+    pertinence: >
+      Appui préparé, égalité des doigts, équilibre des voix d'accord. La deuxième
+      édition intègre les études de main gauche op. 1 de Giuliani.
+  - id: carlevaro-cuaderno-2
+    pertinence: Classification des attaques et des trajectoires de doigt.
+  - id: pujol-escuela-razonada
+    pertinence: Séquences d'arpèges progressives.
+  - id: sagreras-lecciones
+    pertinence: Arpèges intégrés au répertoire dès les premières leçons.
+  - id: classical-guitar-corner
+    pertinence: Comparatif des méthodes, utile pour situer Giuliani parmi les corpus d'exercices.
+
+doutes:
+  - >
+    Les positions employées pour la grille de Giuliani n'ont pas été confirmées sur une
+    édition. À vérifier sur IMSLP avant d'écrire « d'après Giuliani » sur le site.
+  - >
+    L'existence de connexions tendineuses entre les extenseurs des doigts est un fait
+    anatomique établi, mais aucune source spécifique à la guitare n'a été trouvée pour
+    l'implication pédagogique exacte. Le constat pratique — l'annulaire est plus
+    faible — est en revanche unanime dans les méthodes.
+  - >
+    Le statut du Romance anónimo hors du cadre « œuvre anonyme » reste à clarifier,
+    en particulier pour les éditions modernes.
+---
+
+## Ce que « arpège » veut dire ici
+
+Pas « jouer les notes d'un accord une par une » au sens harmonique — ça, c'est la
+conséquence. La technique, c'est **l'affectation stable d'un doigt à une corde** et la
+coordination du cycle qui en résulte.
+
+Le répertoire classique repose là-dessus à un point qu'on sous-estime : la majorité des
+études de Sor, Carcassi, Carulli et Giuliani sont, mécaniquement, des exercices
+d'arpège habillés en musique.
+
+## Anatomie du geste
+
+### Affectation des doigts
+
+L'affectation standard, stable dans toutes les méthodes classiques : le **pouce** tient
+les cordes 6, 5 et 4 et se déplace entre elles ; l'**index** est fixe sur la corde 3, le
+**majeur** sur la 2, l'**annulaire** sur la 1.
+
+Cette fixité n'est pas une convention arbitraire : c'est la stabilité de la main qui
+permet la vitesse. Dès que les trois doigts doivent chercher leur corde, on perd le
+repère spatial et on ajoute une décision par note. Les exceptions existent — arpèges sur
+cinq ou six cordes, *campanelas* — mais elles se traitent comme des exceptions
+explicites, pas comme le régime normal.
+
+### L'articulation
+
+Identique à celle du pincé : moteur à la métacarpo-phalangienne, interphalangienne
+proximale qui tient la forme, distale ferme. La différence tient à ce que trois ou
+quatre doigts se relaient, ce qui expose deux problèmes propres.
+
+**Le pouce et l'index se gênent.** Le pouce doit passer *devant* l'index, côté manche,
+pas dessous. S'ils se croisent au même endroit de l'espace, ils se percutent à grande
+vitesse. La solution est positionnelle : avancer légèrement le poignet pour donner au
+pouce un couloir devant les doigts. C'est le réglage le plus rentable de toute la
+technique d'arpège.
+
+**L'annulaire est structurellement plus faible et moins indépendant.** Ce n'est pas un
+défaut à corriger par la force — les tendons extenseurs de l'annulaire et du majeur
+partagent des connexions anatomiques. La réponse pédagogique est de travailler
+l'égalité, pas la force.
+
+### L'appui préparé — le cœur du sujet
+
+Poser le doigt sur la corde, c'est déjà arrêter la corde. L'appui préparé a donc
+**toujours** un coût en résonance. Le travail consiste à réduire ce coût au strict
+nécessaire : poser le plus tard possible tout en gardant le contrôle. C'est le curseur
+central de la technique d'arpège, et il n'a pas de réglage universel — il se règle par
+contexte musical.
+
+Diagnostic direct : si l'arpège sonne sec alors qu'on voudrait qu'il résonne, on pose
+trop tôt. Si l'on rate des cordes ou que les attaques sont inégales, on pose trop tard.
+
+### Poignet, avant-bras, relâchement
+
+Le poignet est **immobile**. Un poignet qui pompe à chaque note signale que les doigts
+ne travaillent pas seuls. L'avant-bras aussi reste posé et immobile pendant le cycle ; il
+ne se réajuste qu'entre deux positions du pouce.
+
+Chaque doigt rend son tonus immédiatement après sa note, pendant que les autres
+travaillent. Dans un cycle p-i-m-a à vitesse moyenne, chaque doigt est au repos les
+trois quarts du temps. Si l'on ne sent pas ces trois quarts, on est en co-contraction et
+le plafond de vitesse est déjà atteint.

@@ -1,0 +1,249 @@
+---
+/**
+ * Trois annexes de fin de fiche : écoutes, répertoire, sources.
+ *
+ * Deux honnêtetés y sont rendues visibles plutôt que tues :
+ *  · une référence d'écoute non écoutée est marquée comme telle ;
+ *  · une source vidéo non visionnée aussi.
+ * C'est la règle de fond 3 de CLAUDE.md appliquée à l'interface.
+ */
+import { droitsMeta } from '~/lib/format';
+import { sourceById } from '~/data/sources';
+
+interface Ecoute {
+  oeuvre: string;
+  compositeur?: string | undefined;
+  interprete?: string | undefined;
+  url?: string | undefined;
+  quoiEcouter: string;
+  ecoute: boolean;
+}
+
+interface Repertoire {
+  oeuvre: string;
+  compositeur: string;
+  mort?: number | undefined;
+  droits: string;
+  noteDroits?: string | undefined;
+  role: string;
+  url?: string | undefined;
+  aPartirDuPalier?: number | undefined;
+}
+
+interface Props {
+  ecoutes: Ecoute[];
+  repertoire: Repertoire[];
+  sources: Array<{ id: string; pertinence: string }>;
+}
+
+const { ecoutes, repertoire, sources } = Astro.props;
+const aucuneEcoutee = ecoutes.length > 0 && ecoutes.every((e) => !e.ecoute);
+---
+
+{
+  ecoutes.length > 0 && (
+    <section class="annexe" aria-labelledby="ecoutes">
+      <h2 id="ecoutes">Références d'écoute</h2>
+      {aucuneEcoutee && (
+        <p class="avertissement">
+          Aucun de ces enregistrements n'a été écouté pour rédiger la fiche. Ce
+          sont des pistes de recherche, pas des recommandations vérifiées.
+        </p>
+      )}
+      <ul class="liste">
+        {ecoutes.map((e) => (
+          <li>
+            <p class="liste__titre">
+              {e.url ? (
+                <a href={e.url} rel="noopener">
+                  {e.oeuvre}
+                </a>
+              ) : (
+                e.oeuvre
+              )}
+              {e.compositeur && <span class="liste__auteur"> — {e.compositeur}</span>}
+              {e.interprete && <span class="liste__auteur">, {e.interprete}</span>}
+              {!e.ecoute && (
+                <span class="marque" title="Non écouté pour cette fiche">
+                  non écouté
+                </span>
+              )}
+            </p>
+            <p class="liste__note">{e.quoiEcouter}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+{
+  repertoire.length > 0 && (
+    <section class="annexe" aria-labelledby="repertoire">
+      <h2 id="repertoire">Répertoire</h2>
+      <ul class="liste">
+        {repertoire.map((r) => {
+          const d = droitsMeta(r.droits);
+          return (
+            <li>
+              <p class="liste__titre">
+                {r.url ? (
+                  <a href={r.url} rel="noopener">
+                    {r.oeuvre}
+                  </a>
+                ) : (
+                  r.oeuvre
+                )}
+                <span class="liste__auteur">
+                  {' '}
+                  — {r.compositeur}
+                  {r.mort && ` (†${r.mort})`}
+                </span>
+                <span class:list={['droits', !d.libre && 'droits--attention']}>
+                  {d.label}
+                </span>
+                {r.aPartirDuPalier && (
+                  <span class="palier-min">à partir de P{r.aPartirDuPalier}</span>
+                )}
+              </p>
+              <p class="liste__note">{r.role}</p>
+              {r.noteDroits && <p class="liste__droits">{r.noteDroits}</p>}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  )
+}
+
+{
+  sources.length > 0 && (
+    <section class="annexe" aria-labelledby="sources">
+      <h2 id="sources">Sources</h2>
+      <ul class="liste">
+        {sources.map(({ id, pertinence }) => {
+          const s = sourceById(id);
+          if (!s) return <li class="liste__manquant">Source inconnue : {id}</li>;
+          return (
+            <li>
+              <p class="liste__titre">
+                {s.url ? (
+                  <a href={s.url} rel="noopener">
+                    {s.titre}
+                  </a>
+                ) : (
+                  s.titre
+                )}
+                <span class="liste__auteur">
+                  {' '}
+                  — {s.auteur}
+                  {s.annee && `, ${s.annee}`}
+                </span>
+                {s.kind === 'video' && s.visionne === false && (
+                  <span class="marque" title="Qualifiée d'après sa description, pas visionnée">
+                    non visionnée
+                  </span>
+                )}
+              </p>
+              <p class="liste__note">{pertinence}</p>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .annexe {
+    margin-top: 2.75rem;
+  }
+  .annexe h2 {
+    font-size: var(--text-h3);
+    margin: 0 0 0.9rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .avertissement {
+    margin: 0 0 1rem;
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--color-ink-3);
+    border-left: 2px solid var(--color-verifier);
+    padding-left: 0.85rem;
+  }
+
+  .liste {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.95rem;
+  }
+  .liste__titre {
+    margin: 0;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    line-height: 1.45;
+  }
+  .liste__titre a {
+    color: var(--color-brass);
+    text-decoration: underline;
+  }
+  .liste__titre a:hover {
+    color: var(--color-ink);
+  }
+  .liste__auteur {
+    font-weight: 400;
+    color: var(--color-ink-2);
+  }
+  .liste__note {
+    margin: 0.2rem 0 0;
+    font-size: var(--text-sm);
+    line-height: 1.55;
+    color: var(--color-ink-2);
+    max-width: 72ch;
+  }
+  .liste__droits {
+    margin: 0.25rem 0 0;
+    font-size: var(--text-xs);
+    color: var(--color-verifier);
+    line-height: 1.5;
+  }
+  .liste__manquant {
+    color: var(--color-sante);
+    font-size: var(--text-sm);
+  }
+
+  .marque,
+  .droits,
+  .palier-min {
+    display: inline-block;
+    margin-left: 0.5em;
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    border-radius: var(--radius-pill);
+    padding: 0.14em 0.6em;
+    vertical-align: 0.08em;
+    white-space: nowrap;
+  }
+  .marque {
+    color: var(--color-ink-3);
+    border: 1px dashed var(--color-line-strong);
+  }
+  .droits {
+    color: var(--color-observe);
+    border: 1px solid color-mix(in oklab, var(--c-observe) 40%, transparent);
+  }
+  .droits--attention {
+    color: var(--color-verifier);
+    border-color: color-mix(in oklab, var(--c-verifier) 45%, transparent);
+    border-style: dashed;
+  }
+  .palier-min {
+    color: var(--color-brass);
+    border: 1px solid color-mix(in oklab, var(--c-brass) 35%, transparent);
+  }
+</style>

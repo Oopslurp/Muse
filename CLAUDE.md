@@ -244,7 +244,7 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 |---|---|---|---|
 | 0 | Sonde alphaTex | Vérification du format, corrections du corpus | ✅ **close** |
 | 1 | **Fondations** | Astro, Tailwind, design system (tokens couleur, échelle typo, espacements, composants de base), layout, mode sombre, accueil | ✅ **close** |
-| 2 | **Contenu** | Content collections typées selon `05-modele-donnees.md`, migration des 6 fiches longues + 27 courtes en MDX, liste + filtres (famille, difficulté, style, statut épistémique), page de détail | ⏳ |
+| 2 | **Contenu** | Content collections typées selon `05-modele-donnees.md`, migration des fiches en MDX, liste + filtres, page de détail | ✅ **close** |
 | 3 | Tablatures | alphaTab : rendu, lecture, curseur, tempo, boucle A/B, métronome. Composant réutilisable inséré via MDX | ⏳ |
 | 4 | Accordeur | Page dédiée, chromatique, selon `06-accordeur.md`. Cents, aiguille lissée, choix d'accordage, gestion propre du micro **et de son refus** | ⏳ |
 | 5 | Arbre de compétences | Graphe de prérequis cliquable + progression | ⏳ |
@@ -326,6 +326,26 @@ npm run serve     # serveur statique local (sans dépendance), port 5173
 
 - **4a — sonde Node : faite.** Résultats dans [docs/research/08-alphatab-verifie.md](docs/research/08-alphatab-verifie.md). Les deux questions bloquantes sont tranchées : `\tuning` s'écrit de la corde aiguë vers la grave, et `rf 1` = pouce.
 - **4b — page de jugement : prête**, en attente du verdict humain sur `ds` / `glpf` / `glpt`. **Ne rien coder d'autre avant cette réponse.**
+
+### Contenu — ce qui est en place (tranche 2)
+
+**32 fiches MDX pour 33 techniques** — butée et pincé sont deux entrées de la taxonomie et une seule fiche, parce que ce sont deux terminaisons du même geste. Décomptes dérivés de la collection par [src/lib/corpus.ts](src/lib/corpus.ts), jamais saisis à la main.
+
+**Schéma** : [src/content.config.ts](src/content.config.ts), validé par Zod au build. Trois écarts assumés par rapport à `05-modele-donnees.md` :
+
+1. **Le statut épistémique n'est plus un enum à quatre valeurs.** `origine` dit d'où vient l'affirmation (`source` / `deduit`), `observe` est une promotion manuelle qui **n'écrase pas** l'origine, `doute` porte un `[À VÉRIFIER]` avec sa raison. Le statut montré est **calculé** — [src/lib/provenance.ts](src/lib/provenance.ts), priorité observé › à vérifier › origine.
+2. **Sources dans un catalogue global** — [src/data/sources.ts](src/data/sources.ts). La fiche ne garde qu'un identifiant et une phrase de pertinence locale. Les sources vidéo portent `visionne`, affiché.
+3. **Champs santé obligatoires** : `dureeMax`, `signalArret` (non vide), `reposMin`. Le build échoue sans eux, et `risque: eleve` exige un `avertissementSante`.
+
+**Invariants qui font échouer le build** — six dans le schéma (critère de passage jamais « quand tu te sens prêt », exercice référencé existant, ≥ 4 paliers pour une fiche approfondie, alphaTex présent hors consigne, `audioFidele: false` exige des réserves nommées, avertissement santé si risque élevé) et trois dans [src/lib/graph.ts](src/lib/graph.ts) : existence des prérequis, acyclicité, monotonie de difficulté. Le graphe est validé depuis `/techniques` — **une page doit en dépendre**, sinon la vérification ne s'exécute jamais.
+
+> La monotonie de difficulté a attrapé **trois incohérences** de la taxonomie de recherche. Corrections retenues : `glissando` a pour prérequis le placement et non les déplacements ; `accordages-alternatifs` passe en difficulté 3 (la fiche dit elle-même « conceptuellement exigeant ») ; `alternance-pouce` a pour prérequis les étouffements plutôt que l'équilibre des voix.
+
+**Noms de notes** — dérivés par [src/lib/notes.ts](src/lib/notes.ts) depuis `(accordage, corde, case)`, avec `npm run test:notes` (10 cas). La table des accordages y vit aussi : l'accordeur de la tranche 4 la réutilisera. Rappel du piège : le modèle alphaTab **inverse** la numérotation des cordes par rapport au texte source — pour lire une hauteur, utiliser `note.realValue`.
+
+**Validation des tablatures** — `npm run validate` parse les 63 blocs alphaTex du projet, ceux de `docs/research` et ceux du frontmatter MDX. Il garantit la validité **syntaxique**, pas la justesse musicale : il n'aurait attrapé aucune des deux erreurs de contenu de la recherche.
+
+**Îlot React** — un seul pour l'instant : [FiltreTechniques](src/components/react/FiltreTechniques.tsx). Il justifie son hydratation (quatre facettes combinables, recherche, décompte en temps réel) et reflète son état dans l'URL, pour qu'une vue filtrée se mette en favori et que les liens « famille » retombent dessus.
 
 ### Conventions alphaTex établies par la sonde
 

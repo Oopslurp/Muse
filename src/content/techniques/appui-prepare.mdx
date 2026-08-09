@@ -1,0 +1,67 @@
+---
+code: MD-05
+nom:
+  fr: "Appui préparé"
+  en: "Planting"
+  es: "Plantar"
+  alias: ["planting", "préparation", "apoyo previo"]
+famille: main-droite
+style: les-deux
+difficulte: 3
+main: pince
+prerequis: [apoyando-tirando]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [tennant-pumping-nylon]
+
+sonCible: >
+  Le curseur entre contrôle et résonance. Poser le doigt, c’est déjà arrêter la corde : tout le travail consiste à poser le plus tard possible.
+
+gesteCle: >
+  Deux régimes. L’appui simultané pose tous les doigts d’un coup — outil d’exercice, son sec. L’appui séquentiel pose chaque doigt pendant que le précédent joue : c’est le régime musical réel.
+
+erreurs:
+  - titre: "Poser trop tôt"
+    description: >
+      L’arpège devient sec et l’accord ne s’accumule jamais dans l’air.
+    diagnostic:
+      canaux: [son]
+      test: >
+        Rejouer le même passage en s’interdisant tout appui préparé, attaque en vol.
+      signe: >
+        Si la résonance revient d’un coup, c’est qu’on posait trop tôt. Cette différence est le coût exact de l’appui.
+
+exercices:
+  - id: a
+    titre: "Le même cycle en trois régimes"
+    origine: consigne
+    description: >
+      Un cycle p-i-m-a joué trois fois de suite : appui simultané, appui séquentiel, sans appui du tout. Écouter la différence de résonance et la mémoriser — c’est l’étalon.
+    audioFidele: true
+
+seance:
+  moment: [echauffement, debut]
+  dureeMax: 10
+  frequence: "Quotidienne, en entretien."
+  reposMin: 45
+  risque: faible
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: tennant-pumping-nylon
+    pertinence: >
+      Traitement du planting et de son coût en résonance.
+
+doutes: []
+---
+
+C’est le nœud caché du graphe : prérequis à la fois des arpèges et du trémolo. Un blocage sur le trémolo vient plus souvent d’ici que du métronome.
+

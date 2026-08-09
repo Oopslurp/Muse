@@ -1,0 +1,76 @@
+---
+code: MG-09
+nom:
+  fr: "Étouffements main gauche"
+  en: "Left-hand muting"
+  es: "Apagado con la izquierda"
+  alias: ["mute main gauche"]
+famille: main-gauche
+style: les-deux
+difficulte: 3
+main: frette
+prerequis: [placement-mg, etouffements-md]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [carlevaro-cuaderno-3-4]
+
+sonCible: >
+  Une texture propre en accordage ouvert, où seules les cordes voulues sonnent.
+
+gesteCle: >
+  Deux moyens : relâcher la pression sans quitter la corde, ce qui arrête la note tout en gardant la corde amortie ; ou poser à plat un doigt libre sur les cordes à faire taire. Indispensable dès qu’on joue en accordage ouvert, où tout résonne.
+
+erreurs:
+  - titre: "Cordes graves laissées libres après un changement d’harmonie"
+    diagnostic:
+      canaux: [son]
+      test: >
+        Le test des trois secondes : jouer, changer d’accord, arrêter, écouter.
+      signe: >
+        Une note de l’accord précédent chante encore sous le nouveau.
+
+exercices:
+  - id: a
+    titre: "Mélodie isolée en DADGAD"
+    origine: formule-commune
+    description: >
+      En DADGAD, jouer une mélodie sur la corde 1 en imposant le silence complet des cinq autres. Beaucoup plus dur qu’il n’y paraît : l’accordage ouvert fait résonner tout ce qu’on ne tient pas.
+    audioFidele: true
+    alphaTex: |
+      \title "Étouffements en DADGAD"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (D4 A3 G3 D3 A2 D2)
+      :4 0.1 2.1 4.1 5.1 |
+      :4 7.1 5.1 4.1 2.1 |
+
+seance:
+  moment: [echauffement, debut]
+  dureeMax: 8
+  frequence: "Quotidienne, en entretien."
+  reposMin: 45
+  risque: faible
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: carlevaro-cuaderno-3-4
+    pertinence: >
+      Contrôle de la main gauche et étouffements.
+
+doutes:
+  - >
+    Le sujet est traité de façon dispersée dans la littérature classique. C’est un manque général, pas une lacune de cette recherche.
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

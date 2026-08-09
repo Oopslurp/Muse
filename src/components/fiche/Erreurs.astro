@@ -1,0 +1,157 @@
+---
+/**
+ * Erreurs fréquentes et autodiagnostic.
+ *
+ * Section aussi importante que l'anatomie du geste : c'est elle qui remplace
+ * le professeur. Chaque erreur porte un test praticable seul et le signe qu'on
+ * observe si elle est présente.
+ */
+import { nomCanal } from '~/lib/format';
+
+interface Erreur {
+  titre: string;
+  description?: string | undefined;
+  diagnostic: { canaux: string[]; test: string; signe: string };
+  renvoi: string[];
+  sante: boolean;
+}
+
+interface Props {
+  erreurs: Erreur[];
+  /** id → nom lisible, pour les renvois vers d'autres fiches. */
+  nomsTechniques: Record<string, string>;
+}
+
+const { erreurs, nomsTechniques } = Astro.props;
+---
+
+<ul class="erreurs">
+  {
+    erreurs.map((e) => (
+      <li class:list={['erreur', e.sante && 'erreur--sante']}>
+        <div class="erreur__tete">
+          <h3 class="erreur__titre">{e.titre}</h3>
+          {e.sante && <span class="tag-sante">signal d'arrêt</span>}
+        </div>
+
+        {e.description && <p class="erreur__desc">{e.description}</p>}
+
+        <div class="diag">
+          <p class="diag__k">
+            Se repérer {e.diagnostic.canaux.map(nomCanal).join(', ')}
+          </p>
+          <p class="diag__test">{e.diagnostic.test}</p>
+          <p class="diag__signe">
+            <span class="diag__signe-k">Le signe</span>
+            {e.diagnostic.signe}
+          </p>
+        </div>
+
+        {e.renvoi.length > 0 && (
+          <p class="renvoi">
+            Cause possible ailleurs&nbsp;:
+            {e.renvoi.map((id, i) => (
+              <>
+                {i > 0 && ', '}
+                <a href={`/techniques/${id}`}>{nomsTechniques[id] ?? id}</a>
+              </>
+            ))}
+          </p>
+        )}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .erreurs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .erreur {
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    padding: 1.1rem 1.2rem;
+  }
+  .erreur--sante {
+    border-color: color-mix(in oklab, var(--c-sante) 35%, var(--color-line));
+    background: color-mix(in oklab, var(--c-sante) 4%, var(--color-surface));
+  }
+
+  .erreur__tete {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.4rem;
+  }
+  .erreur__titre {
+    font-size: var(--text-lg);
+    margin: 0;
+  }
+  .tag-sante {
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-sante);
+    border: 1px solid color-mix(in oklab, var(--c-sante) 45%, transparent);
+    border-radius: var(--radius-pill);
+    padding: 0.18em 0.6em;
+  }
+
+  .erreur__desc {
+    margin: 0 0 0.8rem;
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    color: var(--color-ink-2);
+  }
+
+  .diag {
+    background: var(--color-surface-2);
+    border-radius: 0.45rem;
+    padding: 0.8rem 0.95rem;
+  }
+  .diag__k {
+    margin: 0 0 0.35rem;
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+  .diag__test {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: 1.55;
+  }
+  .diag__signe {
+    margin: 0.55rem 0 0;
+    font-size: var(--text-sm);
+    line-height: 1.55;
+    color: var(--color-ink-2);
+  }
+  .diag__signe-k {
+    display: inline-block;
+    margin-right: 0.5em;
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-brass);
+  }
+
+  .renvoi {
+    margin: 0.7rem 0 0;
+    font-size: var(--text-xs);
+    color: var(--color-ink-3);
+  }
+  .renvoi a {
+    color: var(--color-brass);
+  }
+</style>

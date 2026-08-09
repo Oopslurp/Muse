@@ -1,0 +1,419 @@
+---
+code: MG-02
+nom:
+  fr: Barré & demi-barré
+  en: Barre and half barre
+  es: Cejilla y media cejilla
+  alias: [cejilla, media cejilla, bar, capodastre mobile]
+famille: main-gauche
+style: les-deux
+difficulte: 3
+main: frette
+prerequis: [placement-mg]
+profondeur: complete
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [tennant-pumping-nylon, carlevaro-cuaderno-3-4, classical-guitar-shed]
+
+sonCible: >
+  Un barré réussi est inaudible en tant que tel : aucune corde ne frise, aucune n'est
+  étouffée, et le timbre est identique à celui d'une note frettée normalement. Le test
+  n'est pas « ça sonne » mais « on ne devine pas qu'il y a un barré ».
+
+ecoutes:
+  - oeuvre: Recuerdos de la Alhambra
+    compositeur: Francisco Tárrega
+    quoiEcouter: >
+      Des barrés maintenus longuement sous un trémolo. Le morceau où un barré fatigué
+      s'entend immédiatement — la mélodie perd des notes avant que le guitariste ne
+      s'en aperçoive.
+    ecoute: false
+  - oeuvre: Étude op. 6 n°11
+    compositeur: Fernando Sor
+    quoiEcouter: Barrés répétés dans un contexte polyphonique.
+    ecoute: false
+  - oeuvre: La Catedral
+    compositeur: Agustín Barrios Mangoré
+    quoiEcouter: >
+      Barrés en position haute dans un tissu d'arpèges rapides. Le barré y est autant
+      un problème d'endurance que de propreté.
+    ecoute: false
+
+erreurs:
+  - titre: Une corde morte, toujours la même
+    description: >
+      Presque toujours la 2 ou la 3 — celle qui tombe pile dans un pli
+      interarticulaire de l'index.
+    diagnostic:
+      canaux: [son]
+      test: Jouer les six cordes du barré une par une, très lentement, et repérer laquelle échoue.
+      signe: >
+        La même corde échoue à chaque essai. Le remède n'est pas plus de force :
+        décaler l'index de deux millimètres le long de la corde jusqu'à ce que le pli
+        passe entre deux cordes.
+  - titre: Frisure sur toutes les cordes
+    description: Index trop loin de la frette.
+    diagnostic:
+      canaux: [visuel]
+      test: Regarder l'écart entre l'index et la frette.
+      signe: Plus de trois millimètres. Chaque millimètre de recul multiplie la force nécessaire.
+  - titre: Serrage du pouce
+    description: >
+      Pincer le manche entre le pouce et l'index au lieu d'utiliser le poids du bras.
+      C'est la manière la plus coûteuse d'obtenir le même résultat.
+    diagnostic:
+      canaux: [sensation]
+      test: >
+        Faire un barré propre, puis retirer complètement le pouce du manche. La
+        plupart des gens découvrent avec surprise qu'ils peuvent le maintenir sans.
+      signe: >
+        L'accord meurt instantanément — c'était le serrage qui tenait. Autre indice :
+        une marque rouge sur le pouce, ou une douleur au muscle charnu à sa base.
+    sante: true
+  - titre: Le barré s'effondre dans le mouvement
+    description: Il sonne à l'arrêt et se casse dès qu'on joue. Le problème est la vitesse de mise en place, pas la tenue.
+    diagnostic:
+      canaux: [metronome]
+      test: >
+        Jouer le passage en supprimant tout ce qui n'est pas le barré : poser et lever
+        en rythme, sans jouer les notes.
+      signe: On n'arrive pas à poser en rythme.
+  - titre: Barré maintenu inutilement
+    diagnostic:
+      canaux: [visuel]
+      test: Surligner sur la partition les mesures où le barré est réellement nécessaire, puis comparer à ce que fait la main.
+      signe: On tient quatre mesures pour une mesure utile.
+  - titre: Épaule montée, souffle retenu
+    diagnostic:
+      canaux: [sensation]
+      test: Chanter ou compter à voix haute pendant le barré.
+      signe: >
+        On ne peut pas. C'est le test le plus efficace et le plus désagréable de la
+        fiche : retenir son souffle signale que tout le haut du corps est engagé.
+    sante: true
+  - titre: Barré complet là où un demi suffit
+    diagnostic:
+      canaux: [visuel]
+      test: Compter les cordes qui sonnent réellement dans la mesure.
+      signe: Elles sont moins nombreuses que celles qu'on barre. C'est de la fatigue gratuite.
+
+paliers:
+  - titre: Poser propre
+    objectif: Un barré six cordes en case 5 dont les six notes sonnent.
+    exercices: [a]
+    critere: >
+      Six cordes arpégées lentement, six notes claires, cinq fois de suite, avec
+      relâchement complet entre chaque essai.
+    autoVerifiable: true
+  - titre: Sans pouce
+    objectif: Comprendre d'où vient réellement la force.
+    exercices: [a]
+    critere: >
+      Tenir le barré trois secondes sans pouce sur le manche, avec au moins quatre
+      cordes qui sonnent encore.
+    autoVerifiable: true
+    note: >
+      Le palier décisif. Tant qu'on n'a pas fait l'expérience du barré sans pouce, on
+      reste dans le modèle « serrer fort » et on plafonne.
+  - titre: Tenir dans la durée
+    objectif: Endurance sans crispation.
+    exercices: [b]
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 60, unite: bpm, subdivision: '8' }
+    critere: >
+      Huit mesures d'arpège sur barré tenu, en comptant à voix haute, sans dégradation
+      du son sur la dernière mesure.
+    autoVerifiable: true
+  - titre: Poser et lever en rythme
+    objectif: Vitesse de mise en place.
+    exercices: [c]
+    tempoDepart: { valeur: 50, unite: bpm, subdivision: '2' }
+    tempoCible: { valeur: 100, unite: bpm, subdivision: '2' }
+    critere: >
+      Alternance barré / accord ouvert toutes les deux temps, seize fois d'affilée,
+      sans trou rythmique ni note morte.
+    autoVerifiable: true
+  - titre: Descendre vers la case 1
+    objectif: Le cas difficile, gardé pour la fin.
+    exercices: [a, c]
+    critere: >
+      Tous les critères des paliers 1 à 4 tenus en case 1. C'est là qu'on découvre si
+      la mécanique était bonne ou si l'on compensait par la force.
+    autoVerifiable: true
+
+exercices:
+  - id: a
+    titre: 'Exercice A — barré diagnostic, case 5'
+    origine: formule-commune
+    description: >
+      Barré complet six cordes en case 5, sans autres doigts. Jouer les six cordes une
+      par une, très lentement, du grave à l'aigu puis en sens inverse. Identifier
+      précisément quelle corde échoue et corriger par micro-déplacement de l'index —
+      pas par plus de force. Relâcher complètement entre chaque essai, main pendante
+      cinq secondes.
+    audioFidele: true
+    alphaTex: |
+      \title "Ex. A — Barré diagnostic, case 5"
+      \tempo 50
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :4 5.6 5.5 5.4 5.3 |
+      :4 5.2 5.1 r r |
+      :4 5.1 5.2 5.3 5.4 |
+      :4 5.5 5.6 r r |
+      :1 (5.6 5.5 5.4 5.3 5.2 5.1) { barre (5) } |
+    provenance:
+      origine: source
+      sourceIds: [sonde-alphatex]
+      observe:
+        date: '2026-08-07'
+        note: Syntaxe du barré vérifiée par la sonde — { barre (5) } donne barreShape Full.
+
+  - id: b
+    titre: 'Exercice B — endurance sur barré tenu'
+    origine: formule-commune
+    description: >
+      Barré case 5 avec la forme de mi majeur transposée. Arpège continu pendant huit
+      mesures sans jamais lâcher le barré. Compter à voix haute pendant tout
+      l'exercice : si l'on ne peut pas parler, on est trop crispé.
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '8' }
+    audioFidele: true
+    alphaTex: |
+      \title "Ex. B — Endurance sur barré tenu"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :8 5.6{lr} 7.3{lr} 6.2{lr} 5.1{lr} 5.6{lr} 7.3{lr} 6.2{lr} 5.1{lr} |
+      :8 5.6{lr} 7.3{lr} 6.2{lr} 5.1{lr} 5.6{lr} 7.3{lr} 6.2{lr} 5.1{lr} |
+      :8 5.6{lr} 7.3{lr} 6.2{lr} 5.1{lr} 5.6{lr} 7.3{lr} 6.2{lr} 5.1{lr} |
+      :8 5.6{lr} 7.3{lr} 6.2{lr} 5.1{lr} 5.6{lr} 7.3{lr} 6.2{lr} 5.1{lr} |
+    provenance:
+      origine: deduit
+
+  - id: c
+    titre: 'Exercice C — poser et lever en rythme'
+    origine: original
+    description: >
+      Alternance toutes les deux temps entre un accord de mi mineur en position
+      ouverte, main quasi relâchée, et le barré complet case 5. L'objectif n'est pas
+      la beauté mais la vitesse de transition et le relâchement entre les deux états.
+      Consigne clé : pendant les deux temps d'accord ouvert, l'index doit être
+      visiblement décollé et détendu, pas « en attente » au-dessus des cordes.
+    tempoDepart: { valeur: 50, unite: bpm, subdivision: '2' }
+    tempoCible: { valeur: 100, unite: bpm, subdivision: '2' }
+    audioFidele: true
+    alphaTex: |
+      \title "Ex. C — Poser / lever en rythme"
+      \tempo 50
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :2 (0.6 2.5 2.4 0.3 0.2 0.1) (5.6 5.5 5.4 5.3 5.2 5.1) { barre (5) } |
+      :2 (0.6 2.5 2.4 0.3 0.2 0.1) (5.6 5.5 5.4 5.3 5.2 5.1) { barre (5) } |
+      :2 (0.6 2.5 2.4 0.3 0.2 0.1) (5.6 5.5 5.4 5.3 5.2 5.1) { barre (5) } |
+      :2 (0.6 2.5 2.4 0.3 0.2 0.1) (5.6 5.5 5.4 5.3 5.2 5.1) { barre (5) } |
+    provenance:
+      origine: deduit
+      doute: Exercice écrit pour la fiche et jamais entendu. Contenu harmonique vérifié par le calcul, pas par l'oreille.
+
+  - id: d
+    titre: 'Exercice D — demi-barré, économie de cordes'
+    origine: original
+    description: >
+      Demi-barré case 5 sur les cordes 1 à 3 seulement, les cordes graves restant
+      libres de sonner à vide. On doit sentir que la base de l'index ne touche rien.
+      Alterner avec le barré complet pour percevoir la différence d'effort, qui est
+      considérable.
+    audioFidele: true
+    alphaTex: |
+      \title "Ex. D — Demi-barré case 5"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :4 (0.6 5.3 5.2 5.1) { barre (5 half) } 5.3 5.2 5.1 |
+      :4 (0.5 5.3 5.2 5.1) { barre (5 half) } 5.3 5.2 5.1 |
+      :1 (5.6 5.5 5.4 5.3 5.2 5.1) { barre (5) } |
+      :4 (0.6 5.3 5.2 5.1) { barre (5 half) } 5.3 5.2 5.1 |
+    provenance:
+      origine: source
+      sourceIds: [sonde-alphatex]
+      observe:
+        date: '2026-08-07'
+        note: >
+          Le demi-barré est représentable — { barre (5 half) } donne barreShape Half.
+          Vérifié par la sonde.
+
+repertoire:
+  - oeuvre: Lágrima
+    compositeur: Francisco Tárrega
+    mort: 1909
+    droits: domaine-public
+    role: Demi-barrés courts et répétés. Bon terrain pour le palier 4.
+    url: https://imslp.org/
+    aPartirDuPalier: 4
+  - oeuvre: Adelita
+    compositeur: Francisco Tárrega
+    mort: 1909
+    droits: domaine-public
+    role: Barrés en position haute, courts.
+    aPartirDuPalier: 3
+  - oeuvre: Recuerdos de la Alhambra
+    compositeur: Francisco Tárrega
+    mort: 1909
+    droits: domaine-public
+    role: Barrés longuement tenus sous trémolo. La cible d'endurance ultime.
+  - oeuvre: La Catedral
+    compositeur: Agustín Barrios Mangoré
+    mort: 1944
+    droits: domaine-public-ue
+    noteDroits: Domaine public en Union européenne depuis 2015. Statut hors UE non vérifié.
+    role: Barrés en position haute dans un tissu d'arpèges rapides.
+  - oeuvre: Étude op. 60 n°7
+    compositeur: Matteo Carcassi
+    mort: 1853
+    droits: edition-a-verifier
+    noteDroits: Le numéro est cité de mémoire. À confirmer sur IMSLP que c'est bien l'étude à barrés du recueil.
+    role: Barrés dans un contexte d'arpèges.
+  - oeuvre: Las Terceras Lecciones, leçons avec cejilla
+    compositeur: Julio Salvador Sagreras
+    mort: 1942
+    droits: domaine-public
+    role: Introduction progressive du barré, très bien graduée.
+    aPartirDuPalier: 3
+
+seance:
+  moment: [jamais-a-froid, milieu]
+  dureeMax: 8
+  frequence: >
+    4 à 5 fois par semaine, avec au moins un jour complet sans barré.
+  series:
+    travailSecondes: 45
+    reposSecondes: 45
+    nombre: 6
+  signalArret:
+    - Une corde qui commence à friser alors qu'elle sonnait — c'est l'alarme précoce, elle arrive bien avant la douleur.
+    - Sensation de brûlure dans l'avant-bras côté paume.
+    - Douleur au pouce ou au muscle charnu de sa base.
+  reposMin: 45
+  risque: eleve
+  avertissementSante: >
+    La technique la plus à risque du corpus. C'est le seul geste où forcer a une
+    récompense immédiate — ça sonne — et un coût différé. À traiter comme un exercice
+    de force : volume modéré, séries courtes, récupération obligatoire, et jamais à
+    froid. La littérature identifie les séances intenses sans repos comme premier
+    facteur de trouble musculo-squelettique chez les musiciens.
+  provenance:
+    origine: source
+    sourceIds: [pasadena-injury, msstate-rsi, performance-health]
+
+sources:
+  - id: tennant-pumping-nylon
+    pertinence: Traitement de la main qui frette, du placement et de la tension.
+  - id: carlevaro-cuaderno-3-4
+    pertinence: >
+      Technique de la main gauche, déplacements et mécanique du barré, dans le cadre
+      théorique de l'Escuela de la Guitarra.
+  - id: pujol-escuela-razonada
+    pertinence: Terminologie cejilla / media cejilla et progression historique.
+  - id: shearer-learning
+    pertinence: >
+      Logique de décomposition — poser, tenir, relâcher comme trois compétences
+      distinctes — qui structure les paliers de cette fiche.
+  - id: classical-guitar-shed
+    pertinence: >
+      Articles gratuits sur la tension de la main gauche ; le programme entier est
+      structuré autour de la réduction d'effort.
+  - id: pasadena-injury
+    pertinence: Prévention des blessures, mise en garde sur l'étirement à froid.
+  - id: msstate-rsi
+    pertinence: Exercices préventifs contre les troubles de sursollicitation.
+  - id: sonde-alphatex
+    pertinence: Syntaxe du barré et du demi-barré en alphaTex, vérifiée en parsant.
+
+doutes:
+  - >
+    Le test du pouce retiré est une pratique répandue de l'enseignement contemporain,
+    mais aucune attribution à une source primaire n'a pu être établie. À citer comme
+    pratique courante, pas comme « d'après X ».
+  - >
+    Les numéros d'opus de Carcassi op. 60 n°7 et de Sor op. 31 n°20 sont cités de
+    mémoire. À confirmer sur IMSLP.
+  - >
+    Les exercices C et D sont originaux et n'ont jamais été entendus. Leur contenu
+    harmonique a été vérifié par le calcul des notes, pas à l'oreille.
+---
+
+## L'erreur de modèle mental à corriger d'abord
+
+Le barré n'est **pas** « appuyer fort avec l'index ». Si c'était une question de force,
+les guitaristes les plus musclés auraient les meilleurs barrés — ce n'est pas le cas.
+
+C'est une question de quatre choses, dans cet ordre : la **surface de contact**, la
+**direction de la force**, le **placement**, et l'**économie**. Ces quatre leviers
+résolvent presque tous les barrés ratés. La force est le dernier recours, et c'est celui
+qui casse les mains.
+
+## Anatomie du geste
+
+### Surface de contact — l'index roulé
+
+La pulpe de l'index est molle et irrégulière : elle comporte des plis aux articulations
+et des creux. Posée à plat contre la touche, elle produit presque à coup sûr une corde
+morte.
+
+Le geste correct est de **rouler légèrement l'index vers l'extérieur**, pour présenter à
+la touche non pas la pulpe mais le bord latéral côté pouce — la zone plus dure, plus
+plate, celle qui va vers l'ongle. Cette rotation vient d'une supination légère de
+l'avant-bras, pas d'une torsion du doigt.
+
+Le réglage fin consiste ensuite à faire glisser l'index de quelques millimètres le long
+de la corde pour que **les plis tombent entre les cordes et non dessus**. Un ajustement
+de deux à trois millimètres change tout.
+
+### Direction de la force
+
+Trois sources de pression, par ordre de préférence :
+
+- **la contre-traction du bras** — le coude et l'épaule tirent vers l'arrière, le manche
+  est pris en tenaille entre l'index et cette traction. C'est le poids du bras qui
+  travaille. Coût en fatigue : faible ;
+- **le contre-appui du pouce** — derrière le manche, il sert de point d'appui ; il ne
+  serre pas, il s'oppose. Coût modéré ;
+- **le serrage pouce/index** — pincer le manche. Coût élevé, à éviter.
+
+### Placement par rapport à la frette
+
+L'index se place aussi près que possible de la frette, du côté du chevalet, sans être
+dessus. La marge est de l'ordre d'un à trois millimètres.
+
+Conséquence pratique importante : **un barré est plus facile en case 5 qu'en case 1.**
+En case 1, l'écartement des frettes est maximal, la tension des cordes est la plus
+haute, et l'angle du bras est le pire. Tous les exercices de cette fiche commencent donc
+en case 5. Le classique « je n'arrive pas à faire un fa » est en grande partie un
+problème de position, pas de technique.
+
+### Le demi-barré, plus important qu'on ne le dit
+
+Le demi-barré ne couvre que deux à quatre cordes, généralement les plus aiguës. Il est
+beaucoup moins coûteux et suffit dans la majorité des situations réelles.
+
+**La règle d'économie : ne barrer que les cordes qui sonnent.** Beaucoup de guitaristes
+font un barré complet six cordes pour un accord où quatre cordes sont jouées. C'est de
+la fatigue gratuite.
+
+### Relâchement
+
+Le point critique et le plus négligé : **relâcher le barré entre deux occurrences**.
+Dans une pièce qui alterne barré et non-barré, la main doit repasser par un état neutre
+à chaque fois. Beaucoup gardent l'index armé « au cas où ». C'est la principale cause de
+fatigue, et un facteur de risque documenté.

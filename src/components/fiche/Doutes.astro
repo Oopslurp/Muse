@@ -1,0 +1,102 @@
+---
+/**
+ * Les [À VÉRIFIER] de la fiche.
+ *
+ * Placés haut dans la page, pas en note de bas de page : un doute qu'il faut
+ * chercher n'est pas un doute affiché. CLAUDE.md, règle de contenu non
+ * négociable — « `[À VÉRIFIER]` conservé et rendu visible dans l'UI ».
+ */
+interface Props {
+  doutes: string[];
+  /** Titre adapté au volume : une fiche à neuf doutes ne se présente pas
+   *  comme une fiche à un seul. */
+  compact?: boolean;
+}
+
+const { doutes, compact = false } = Astro.props;
+---
+
+{
+  doutes.length > 0 && (
+    <details class="doutes" open={doutes.length <= 3 && !compact}>
+      <summary>
+        <span class="doutes__pastille" aria-hidden="true" />
+        <span class="doutes__titre">
+          {doutes.length} point{doutes.length > 1 ? 's' : ''} à vérifier
+        </span>
+        <span class="doutes__hint">
+          {doutes.length > 5
+            ? 'cette fiche est parmi les moins assurées du corpus'
+            : 'à confirmer guitare en main'}
+        </span>
+      </summary>
+      <ol class="doutes__liste">
+        {doutes.map((d) => (
+          <li>{d}</li>
+        ))}
+      </ol>
+    </details>
+  )
+}
+
+<style>
+  .doutes {
+    border: 1px dashed color-mix(in oklab, var(--c-verifier) 45%, var(--color-line));
+    border-radius: var(--radius-card);
+    background: color-mix(in oklab, var(--c-verifier) 5%, transparent);
+    padding: 0.85rem 1.05rem;
+    margin: 1.75rem 0;
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .doutes__pastille {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-verifier);
+    flex: none;
+  }
+  .doutes__titre {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-verifier);
+  }
+  .doutes__hint {
+    font-size: var(--text-xs);
+    font-style: italic;
+    color: var(--color-ink-3);
+  }
+
+  .doutes__liste {
+    margin: 0.85rem 0 0;
+    padding-left: 1.4rem;
+    display: grid;
+    gap: 0.45rem;
+    font-size: var(--text-sm);
+    line-height: 1.55;
+    color: var(--color-ink-2);
+  }
+
+  /* Le chevron indique l'état sans dépendre du marqueur natif. */
+  summary::after {
+    content: '▾';
+    margin-left: auto;
+    font-size: 0.8em;
+    color: var(--color-ink-3);
+    transition: transform 180ms ease;
+  }
+  .doutes[open] summary::after {
+    transform: rotate(180deg);
+  }
+</style>

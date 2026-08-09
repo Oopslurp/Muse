@@ -1,0 +1,83 @@
+---
+code: MD-13
+nom:
+  fr: "Tambora"
+  en: "Tambora"
+  es: "Tambora"
+  alias: []
+famille: main-droite
+style: les-deux
+difficulte: 2
+main: pince
+prerequis: [technique-pouce]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [wikipedia-golpe]
+
+sonCible: >
+  Un accord tambouriné, sourd, dont la hauteur reste perceptible sous la percussion.
+
+gesteCle: >
+  On frappe les cordes — pas la table — juste devant le chevalet, avec le côté du pouce. Rebond immédiat : la main ne reste pas posée, sinon le son est étouffé au lieu d’être tambouriné.
+
+erreurs:
+  - titre: "Frapper trop loin du chevalet"
+    description: >
+      On obtient un slap au lieu d’une tambora : les cordes claquent contre les frettes.
+    diagnostic:
+      canaux: [son]
+      test: >
+        Faire glisser le point de frappe du chevalet vers le manche en répétant.
+      signe: >
+        Du grain métallique apparaît dès qu’on s’éloigne trop du chevalet.
+
+exercices:
+  - id: a
+    titre: "Quatre tamboras sur accord tenu"
+    origine: formule-commune
+    description: >
+      Accord de mi mineur tenu, quatre tamboras en noires, en cherchant à garder la hauteur de l’accord perceptible sous la frappe.
+    audioFidele: false
+    reservesAudio:
+      - "Le golpe est muet à l’audio — la percussion ne s’entendra pas."
+    alphaTex: |
+      \title "Tambora"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :4 (0.6 2.5 2.4 0.3 0.2 0.1) { glpt } r (0.6 2.5 2.4 0.3 0.2 0.1) { glpt } r |
+    provenance:
+      origine: deduit
+      doute: >
+        La tambora n’a pas d’effet dédié en alphaTex ; `glpt` en est l’approximation la moins fausse. À revoir.
+
+seance:
+  moment: [echauffement, debut]
+  dureeMax: 6
+  frequence: "Quotidienne, en entretien."
+  reposMin: 45
+  risque: faible
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: wikipedia-golpe
+    pertinence: >
+      Contexte des frappes de main droite sur la guitare.
+
+doutes:
+  - >
+    Aucune source méthodologique écrite n’a été consultée sur la tambora. La description est déduite du geste standard.
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

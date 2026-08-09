@@ -1,0 +1,472 @@
+---
+code: MD-01
+nom:
+  fr: Butée & pincé
+  en: Rest stroke & free stroke
+  es: Apoyando y tirando
+  alias: [apoyando, tirando, buté, appuyé, rest stroke, free stroke]
+famille: main-droite
+style: les-deux
+difficulte: 2
+main: pince
+prerequis: [ongles]
+profondeur: complete
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [tennant-pumping-nylon, carlevaro-cuaderno-2, pujol-escuela-razonada]
+
+sonCible: >
+  Deux terminaisons d'un même geste. La butée sort du tissu, pleine et projetée ;
+  le pincé s'y intègre, plus léger et plus riche en harmoniques hautes. Un pincé
+  mature atteint au moins 80 % du volume d'une butée.
+
+ecoutes:
+  - oeuvre: Lágrima
+    compositeur: Francisco Tárrega
+    quoiEcouter: >
+      La mélodie sur les cordes aiguës, tenue en butée sur les notes structurelles,
+      contre un accompagnement en pincé. Le contraste de timbre est immédiat.
+    ecoute: false
+  - oeuvre: Étude op. 6 n°11
+    compositeur: Fernando Sor
+    quoiEcouter: >
+      Texture mélodie + accompagnement où l'équilibre butée/pincé est le sujet même
+      de l'étude.
+    ecoute: false
+  - oeuvre: Deux interprètes d'un même prélude
+    interprete: chaîne Siccas Guitars
+    url: https://www.youtube.com/@SiccasGuitars
+    quoiEcouter: >
+      Les captations y sont assez proches et propres pour que la différence de
+      timbre entre écoles s'entende.
+    ecoute: false
+
+erreurs:
+  - titre: La dernière phalange s'effondre
+    description: >
+      L'interphalangienne distale cède sous la corde au lieu de rester ferme. Le son
+      perd son noyau. C'est le défaut le plus fréquent et le plus difficile à voir
+      soi-même.
+    diagnostic:
+      canaux: [son, sensation, video]
+      test: >
+        Se filmer de face, doigt en gros plan, au ralenti si le téléphone le permet.
+        Aucun miroir ne montre ce mouvement.
+      signe: >
+        La note a une attaque molle suivie d'un claquement, comme deux événements
+        distincts. À la sensation, le bout du doigt « plie » sous la corde.
+  - titre: Pincé sous-développé
+    description: >
+      Le cas le plus courant chez les intermédiaires, et la cause n°1 des mélodies
+      qui disparaissent dans les arpèges.
+    diagnostic:
+      canaux: [son, audio]
+      test: >
+        Jouer une gamme en alternant butée et pincé note par note, en cherchant le
+        même volume sur les deux.
+      signe: >
+        Un auditeur entend un motif fort-faible-fort-faible au lieu d'une ligne égale.
+  - titre: Le poignet frappe à la place du doigt
+    diagnostic:
+      canaux: [sensation, visuel]
+      test: >
+        Poser la main qui frette à plat sur l'avant-bras de la main qui pince pendant
+        le jeu.
+      signe: >
+        On sent des contractions rythmiques dans l'avant-bras, et une fatigue côté
+        paume au bout de deux minutes.
+  - titre: L'ongle accroche la corde
+    description: Rampe d'ongle mal limée, ou angle de main trop frontal.
+    diagnostic:
+      canaux: [son, sensation]
+      test: Jouer une gamme lentement en écoutant l'attaque de chaque note.
+      signe: >
+        Un petit « clic » ou « zip » avant la note, et une résistance qui cède d'un coup.
+    renvoi: [ongles]
+  - titre: Co-contraction — la main ne se relâche jamais
+    description: >
+      Fléchisseur et extenseur contractés en même temps. C'est ce qui produit la
+      fatigue, le plafond de vitesse et, à long terme, le risque.
+    diagnostic:
+      canaux: [sensation]
+      test: Jouer huit notes puis s'arrêter net.
+      signe: >
+        La main reste figée en position au lieu de retomber molle. Un guitariste
+        relâché a une main qui tombe à l'arrêt.
+    renvoi: [relachement]
+    sante: true
+  - titre: La butée étouffe une voix qui devait sonner
+    description: >
+      Le doigt en butée se pose sur la corde voisine — et l'arrête. Effet secondaire
+      à connaître, pas accident.
+    diagnostic:
+      canaux: [son]
+      test: Jouer un arpège avec une basse tenue, puis écouter la basse seule.
+      signe: La basse disparaît trop tôt.
+
+paliers:
+  - titre: Isoler
+    objectif: Produire une butée propre sur une corde à vide, doigt par doigt.
+    exercices: [a]
+    tempoDepart: { valeur: 40, unite: notes-min }
+    tempoCible: { valeur: 60, unite: notes-min }
+    critere: >
+      Vingt notes consécutives avec chaque doigt séparément, sans un seul clic
+      d'accrochage et sans que la dernière phalange cède. Vérifié une fois à la vidéo.
+    autoVerifiable: true
+  - titre: Alterner
+    objectif: Alternance i-m en butée, régulière, sur corde à vide.
+    exercices: [b]
+    tempoDepart: { valeur: 60, unite: notes-min }
+    tempoCible: { valeur: 120, unite: notes-min }
+    critere: >
+      Soixante secondes en continu à 120 notes/min. Les yeux fermés, on ne doit pas
+      pouvoir entendre lequel des deux doigts joue.
+    autoVerifiable: true
+  - titre: Transposer au pincé
+    objectif: Le même geste en pincé, sans perte de volume.
+    exercices: [b, c]
+    tempoDepart: { valeur: 60, unite: notes-min }
+    tempoCible: { valeur: 120, unite: notes-min }
+    critere: >
+      Enregistrer huit notes en butée puis huit en pincé. À la réécoute, sans savoir
+      laquelle est laquelle, aucun décrochage de volume ne doit s'entendre.
+    autoVerifiable: true
+    note: >
+      Le palier que tout le monde brûle, et celui qui détermine si la polyphonie
+      sonnera un jour. Ne pas le sauter.
+  - titre: Traverser
+    objectif: Changer de corde sans rupture de son ni de tempo.
+    exercices: [c]
+    tempoDepart: { valeur: 60, unite: notes-min }
+    tempoCible: { valeur: 132, unite: notes-min }
+    critere: >
+      Une gamme sur deux octaves, aller-retour, en butée puis en pincé, sans qu'aucun
+      changement de corde ne s'entende comme un accident.
+    autoVerifiable: true
+  - titre: Mixer
+    objectif: Butée sur la mélodie, pincé sur l'accompagnement, simultanément.
+    exercices: [d]
+    tempoDepart: { valeur: 50, unite: bpm, subdivision: '4' }
+    tempoCible: { valeur: 80, unite: bpm, subdivision: '4' }
+    critere: >
+      Faire écouter à quelqu'un qui ne lit pas la partition et lui demander de
+      fredonner la mélodie. S'il y arrive, la hiérarchie tient.
+    autoVerifiable: false
+
+exercices:
+  - id: a
+    titre: 'Exercice A — attaque isolée, corde à vide'
+    origine: formule-commune
+    description: >
+      Corde 1 à vide. Un seul doigt, huit notes, puis quatre temps de pause, puis
+      doigt suivant. L'objectif n'est pas le tempo mais l'observation : entre chaque
+      note, il faut avoir le temps de sentir le retour au repos du doigt. À faire
+      d'abord en butée, puis en pincé, dans la même séance.
+    tempoDepart: { valeur: 40, unite: notes-min }
+    tempoCible: { valeur: 60, unite: notes-min }
+    audioFidele: false
+    reservesAudio:
+      - Le rendu ne distingue pas la butée du pincé — c'est la même note MIDI.
+    alphaTex: |
+      \title "Ex. A — Attaque isolée"
+      \tempo 40
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      // index
+      :4 0.1{rf 2} 0.1{rf 2} 0.1{rf 2} 0.1{rf 2} |
+      :4 0.1{rf 2} 0.1{rf 2} 0.1{rf 2} 0.1{rf 2} |
+      :4 r r r r |
+      // majeur
+      :4 0.1{rf 3} 0.1{rf 3} 0.1{rf 3} 0.1{rf 3} |
+      :4 0.1{rf 3} 0.1{rf 3} 0.1{rf 3} 0.1{rf 3} |
+      :4 r r r r |
+      // annulaire
+      :4 0.1{rf 4} 0.1{rf 4} 0.1{rf 4} 0.1{rf 4} |
+      :4 0.1{rf 4} 0.1{rf 4} 0.1{rf 4} 0.1{rf 4} |
+      :4 r r r r |
+    provenance:
+      origine: source
+      sourceIds: [tennant-pumping-nylon]
+
+  - id: b
+    titre: 'Exercice B — alternance i-m, corde à vide'
+    origine: formule-commune
+    description: >
+      Alternance stricte i-m sur corde à vide, puis en commençant par m, puis sur les
+      cordes 2 et 3. Le but est de rendre les deux doigts indiscernables à l'oreille.
+      À partir de 96 notes/min, placer le métronome sur une note sur deux : il faut
+      alors poser une note libre entre deux clics, et c'est là que la régularité se
+      révèle.
+    tempoDepart: { valeur: 60, unite: notes-min }
+    tempoCible: { valeur: 120, unite: notes-min }
+    audioFidele: false
+    reservesAudio:
+      - Le rendu ne distingue pas la butée du pincé.
+    alphaTex: |
+      \title "Ex. B — Alternance i-m"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :8 0.1{rf 2} 0.1{rf 3} 0.1{rf 2} 0.1{rf 3} 0.1{rf 2} 0.1{rf 3} 0.1{rf 2} 0.1{rf 3} |
+      :8 0.1{rf 2} 0.1{rf 3} 0.1{rf 2} 0.1{rf 3} 0.1{rf 2} 0.1{rf 3} 0.1{rf 2} 0.1{rf 3} |
+      :8 0.2{rf 2} 0.2{rf 3} 0.2{rf 2} 0.2{rf 3} 0.2{rf 2} 0.2{rf 3} 0.2{rf 2} 0.2{rf 3} |
+      :8 0.3{rf 2} 0.3{rf 3} 0.3{rf 2} 0.3{rf 3} 0.3{rf 2} 0.3{rf 3} 0.3{rf 2} 0.3{rf 3} |
+    provenance:
+      origine: source
+      sourceIds: [tennant-pumping-nylon, carlevaro-cuaderno-1]
+
+  - id: c
+    titre: 'Exercice C — gamme de do majeur, position ouverte'
+    origine: formule-commune
+    description: >
+      Gamme ascendante puis descendante, alternance i-m stricte, sans jamais répéter
+      un doigt — y compris au sommet, là où tout le monde le fait sans s'en rendre
+      compte. Trois passages : tout en butée, tout en pincé, puis butée sur les temps
+      forts et pincé sur les faibles. Le vrai test est le changement de corde, en
+      particulier de la 3 vers la 2 et de la 2 vers la 1.
+    tempoDepart: { valeur: 60, unite: notes-min }
+    tempoCible: { valeur: 132, unite: notes-min }
+    audioFidele: false
+    reservesAudio:
+      - Le rendu ne distingue pas la butée du pincé.
+    alphaTex: |
+      \title "Ex. C — Gamme de do majeur, position ouverte"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :8 3.5{lf 4} 0.4 2.4{lf 3} 3.4{lf 4} 0.3 2.3{lf 3} 0.2 1.2{lf 2} |
+      :8 1.2{lf 2} 0.2 2.3{lf 3} 0.3 3.4{lf 4} 2.4{lf 3} 0.4 3.5{lf 4} |
+    provenance:
+      origine: source
+      sourceIds: [sagreras-lecciones, sonde-alphatex]
+      observe:
+        date: '2026-08-07'
+        note: >
+          Hauteurs confirmées par la sonde alphaTab et par le test unitaire de
+          dérivation des notes : do ré mi fa sol la si do.
+
+  - id: d
+    titre: 'Exercice D — mélodie en butée sur accompagnement en pincé'
+    origine: original
+    description: >
+      Deux voix sur un accord de la mineur puis de mi majeur. La voix supérieure se
+      joue en butée avec l'annulaire, la voix inférieure en pincé avec le pouce et
+      l'index. L'objectif est de faire ressortir la corde 1 d'au moins une nuance
+      complète. Ne monter le tempo que quand la hiérarchie tient sans y penser.
+    tempoDepart: { valeur: 50, unite: bpm, subdivision: '4' }
+    tempoCible: { valeur: 80, unite: bpm, subdivision: '4' }
+    audioFidele: false
+    reservesAudio:
+      - Le rendu ne distingue pas la butée du pincé — donc la hiérarchie des voix, qui est tout l'exercice, ne s'entend pas.
+    alphaTex: |
+      \title "Ex. D — Butée mélodique sur pincé"
+      \tempo 50
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :4 (0.5{rf 1} 1.2{rf 2} 0.1{rf 4}) (0.5{rf 1} 1.2{rf 2} 1.1{rf 4}) (0.5{rf 1} 1.2{rf 2} 3.1{rf 4}) (0.5{rf 1} 1.2{rf 2} 1.1{rf 4}) |
+      :4 (0.6{rf 1} 0.2{rf 2} 0.1{rf 4}) (0.6{rf 1} 0.2{rf 2} 3.1{rf 4}) (0.6{rf 1} 0.2{rf 2} 1.1{rf 4}) (0.6{rf 1} 0.2{rf 2} 0.1{rf 4}) |
+    provenance:
+      origine: deduit
+      doute: >
+        Exercice écrit pour la fiche et jamais entendu. Vérifier que la position de
+        main gauche est tenable en mesure 2, et que la couleur phrygienne produite par
+        la corde 1 case 1 sur l'accord de mi convient. Sinon, remplacer par la case 4.
+
+repertoire:
+  - oeuvre: Lágrima
+    compositeur: Francisco Tárrega
+    mort: 1909
+    droits: domaine-public
+    role: >
+      Mélodie chantante sur cordes aiguës à faire ressortir en butée, sur un
+      accompagnement en pincé. Court, célèbre, tenable.
+    url: https://imslp.org/
+    aPartirDuPalier: 5
+  - oeuvre: Adelita
+    compositeur: Francisco Tárrega
+    mort: 1909
+    droits: domaine-public
+    role: Même problème, plus concentré. Bon premier terrain du palier 5.
+    aPartirDuPalier: 5
+  - oeuvre: Études op. 60 n°1 à 5
+    compositeur: Matteo Carcassi
+    mort: 1853
+    droits: domaine-public
+    role: Progression douce, textures à deux voix.
+    aPartirDuPalier: 4
+  - oeuvre: Étude op. 35 n°22
+    compositeur: Fernando Sor
+    mort: 1839
+    droits: edition-a-verifier
+    noteDroits: >
+      L'œuvre est libre ; la numérotation varie selon les éditions et les doigtés
+      d'une révision moderne peuvent être protégés. À confirmer sur IMSLP.
+    role: La référence sur l'équilibre mélodie/accompagnement. Difficile, mais c'est la bonne cible.
+  - oeuvre: Estudio en Mi menor
+    compositeur: Francisco Tárrega
+    mort: 1909
+    droits: domaine-public
+    role: Arpèges en pincé purs.
+    aPartirDuPalier: 3
+
+seance:
+  moment: [debut]
+  dureeMin: 8
+  dureeMax: 15
+  frequence: >
+    Quotidienne pendant les paliers 1 à 3, puis trois fois par semaine en entretien —
+    et systématiquement avant toute séance de trémolo ou d'arpèges rapides.
+  signalArret:
+    - La qualité de son se dégrade — c'est le détecteur de fatigue le plus sensible, il arrive avant la douleur.
+    - Sensation de brûlure ou de tension dans l'avant-bras.
+    - Au-delà de 15 minutes, l'attention chute et on grave des approximations.
+  reposMin: 60
+  risque: faible
+  provenance:
+    origine: source
+    sourceIds: [tennant-pumping-nylon, pasadena-injury]
+
+sources:
+  - id: tennant-pumping-nylon
+    pertinence: >
+      Technique de la main droite, forme des ongles, équilibre des voix d'accord,
+      et la « Daily Warm-Up Routine » en onze exercices qui recoupe les paliers 1 à 3.
+  - id: carlevaro-cuaderno-2
+    pertinence: >
+      Notion de toques — types d'attaque — et insistance sur la variété de timbre
+      obtenue par le type d'attaque plutôt que par la force.
+  - id: pujol-escuela-razonada
+    pertinence: Origine de la terminologie espagnole apoyando / tirando.
+  - id: shearer-learning
+    pertinence: >
+      Cadre d'apprentissage moteur — décomposition, visualisation, critères de
+      maîtrise — qui structure les cinq paliers de cette fiche.
+  - id: pasadena-injury
+    pertinence: >
+      Mise en garde sur l'étirement à froid : s'étirer avant d'être échauffé peut
+      causer des dommages.
+  - id: alphatab-doc
+    pertinence: Format alphaTex des exercices.
+
+doutes:
+  - >
+    L'angle exact entre la main et les cordes n'est chiffré par aucune source
+    consultée. Toutes le décrivent qualitativement. Se méfier de toute source qui
+    donnerait une valeur en degrés sans la justifier.
+  - >
+    La formulation « la différence entre butée et pincé est un angle de sortie de
+    quelques degrés » est une synthèse personnelle de Tennant et Carlevaro. Cohérente
+    avec la physique de la corde, mais introuvable telle quelle dans une source.
+  - >
+    L'exercice D n'a jamais été entendu. Tenabilité de la main gauche et couleur
+    harmonique à valider.
+  - >
+    La numérotation de l'étude de Sor op. 35 n°22 varie selon les éditions ; celle de
+    l'op. 6 n°11 aussi (« n°17 » dans la sélection Segovia). À confirmer sur IMSLP.
+---
+
+## Le son visé
+
+**Butée.** Timbre plein, épais, centré, avec un fondamental fort et peu d'harmoniques
+aiguës. La note *sort* du reste de la texture. Sensation d'un son poussé vers
+l'auditeur. Attaque nette mais non claquante. C'est le volume maximal disponible sans
+forcer.
+
+**Pincé.** Timbre plus léger, plus riche en harmoniques hautes, plus rond et moins
+projeté. La note s'intègre à la texture au lieu de la dominer. C'est le son du tissu
+polyphonique.
+
+**Le test qui compte.** Jouer la même note en butée puis en pincé, en cherchant *le
+même volume*. Si le pincé sonne beaucoup plus faible, il est sous-développé — c'est le
+cas le plus courant chez les intermédiaires.
+
+## Pourquoi les deux dans une seule fiche
+
+Ce ne sont pas deux techniques mais **deux terminaisons d'un même geste**. Les séparer
+est la première erreur pédagogique du domaine : elle installe l'idée qu'on « change de
+technique », alors qu'on change un angle de sortie. Tennant et Carlevaro traitent tous
+deux le sujet à partir du mouvement commun.
+
+## Anatomie du geste
+
+### Le mouvement commun aux deux
+
+**Articulation motrice : la métacarpo-phalangienne** — la jointure du doigt avec la
+paume, celle qui forme la bosse du poing fermé. C'est elle qui fournit le mouvement.
+Ce point est constant chez Tennant, Shearer et Carlevaro, et c'est le seul consensus
+fort du domaine.
+
+Les autres articulations du doigt ne fournissent pas le geste, elles le tiennent :
+
+- l'**interphalangienne proximale** maintient une forme, elle ne fléchit pas
+  activement pendant l'attaque ; elle peut céder légèrement en fin de course,
+  passivement ;
+- l'**interphalangienne distale** doit rester **ferme**. Si elle s'effondre au moment
+  du contact, le son perd son noyau.
+
+**Le poignet ne participe pas à la production du son** — il positionne, il ne frappe
+pas. Légèrement arqué, ni effondré vers la table ni cassé vers le haut. Si des cordes
+tendineuses saillent au dos de la main, c'est qu'il travaille à la place du doigt.
+
+**L'avant-bras** repose sur l'arête de la caisse, autour de son tiers distal. Il porte
+le poids du bras ; il ne pousse pas.
+
+### Point de contact et angle
+
+Pour un doigt à ongle, la corde suit une séquence en trois temps :
+
+1. elle touche d'abord **la chair** du bout du doigt, du côté du pouce ;
+2. elle glisse ensuite sur **l'ongle** ;
+3. elle le quitte par la **rampe** — le bord latéral limé en pente.
+
+Le son résulte de cette séquence : la chair donne le noyau et la chaleur, l'ongle la
+définition et la brillance. Un contact ongle seul donne un son maigre et claquant ; un
+contact chair seule, un son mou et sourd. Le réglage du timbre passe donc autant par la
+forme de l'ongle que par le geste.
+
+La main est **légèrement inclinée** : les doigts n'attaquent pas exactement
+perpendiculairement à la corde. Cette obliquité permet à la corde de *rouler* sur la
+rampe de l'ongle au lieu de s'y accrocher. Le critère est auditif — pas de clic
+d'accrochage à la sortie.
+
+### Ce qui distingue les deux
+
+**La butée.** Le doigt traverse la corde et poursuit sa course jusqu'à se poser sur la
+corde grave adjacente, où il s'arrête. La trajectoire a une composante plus forte vers
+la table. Le doigt reste posé sur cette corde d'appui — ce qui l'étouffe au passage.
+
+**Le pincé.** Le doigt traverse la corde et passe *au-dessus* de la corde adjacente
+sans la toucher, terminant sa course vers la paume. La trajectoire a une composante
+vers le haut qui dégage la pointe.
+
+Le point que la plupart des explications ratent : la différence n'est pas « on appuie
+ou on n'appuie pas ». La mise en mouvement de la corde est le **même geste**, et ce qui
+change est l'angle de sortie. C'est pour cela qu'un bon pincé peut être presque aussi
+puissant qu'une butée : la puissance vient de l'amplitude de déplacement de la corde
+perpendiculairement à la table, pas de l'atterrissage sur la corde voisine.
+
+### Le relâchement après la note
+
+C'est la partie que personne n'enseigne et qui décide de tout à grande vitesse.
+
+Après l'attaque, le fléchisseur doit **rendre immédiatement**. Le doigt revient à sa
+position d'attente par relâchement, pas par une extension active de l'extenseur.
+Contracter les deux simultanément — la co-contraction — produit la fatigue, le plafond
+de vitesse, et le risque à long terme.
+
+Le critère : entre deux notes, la main passe par un instant de neutralité. Si elle
+reste armée en permanence, il y a co-contraction.

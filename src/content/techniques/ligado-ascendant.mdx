@@ -1,0 +1,77 @@
+---
+code: MG-03
+nom:
+  fr: "Ligado ascendant"
+  en: "Hammer-on"
+  es: "Ligado ascendente"
+  alias: ["hammer-on", "liaison ascendante"]
+famille: main-gauche
+style: les-deux
+difficulte: 2
+main: frette
+prerequis: [placement-mg]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [tennant-pumping-nylon, alphatab-doc]
+
+sonCible: >
+  La note liée doit sonner aussi fort que celle qui la précède. Si elle est plus faible, ce n’est pas un ligado, c’est un accident.
+
+gesteCle: >
+  Le doigt tombe de haut, vite, et près de la frette. C’est la vitesse de chute qui fait le volume, pas la pression finale : le doigt part d’un à deux centimètres au-dessus de la corde, pas de la corde elle-même.
+
+erreurs:
+  - titre: "Appuyer fort et lentement"
+    diagnostic:
+      canaux: [son, sensation]
+      test: >
+        Comparer le volume de la note liée à celui de la note attaquée.
+      signe: >
+        Il faut forcer pour que la note sorte, et elle sort quand même sourde.
+
+exercices:
+  - id: a
+    titre: "Toutes les paires de doigts"
+    origine: formule-commune
+    description: >
+      Corde 1, index case 5, ligado vers l’annulaire case 7, dix fois. Puis toutes les paires : 1-2, 1-3, 1-4, 2-3, 2-4, 3-4. Chercher l’égalité de volume entre les deux notes.
+    audioFidele: true
+    alphaTex: |
+      \title "Ligado ascendant — paires de doigts"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :8 5.1{lf 2 h} 7.1{lf 4} 5.1{lf 2 h} 7.1{lf 4} 5.1{lf 2 h} 6.1{lf 3} 5.1{lf 2 h} 6.1{lf 3} |
+      :8 5.1{lf 2 h} 8.1{lf 5} 5.1{lf 2 h} 8.1{lf 5} 6.1{lf 3 h} 8.1{lf 5} 6.1{lf 3 h} 8.1{lf 5} |
+
+seance:
+  moment: [debut]
+  dureeMax: 8
+  frequence: "4 à 5 fois par semaine."
+  reposMin: 60
+  risque: modere
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension ou brûlure dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: tennant-pumping-nylon
+    pertinence: >
+      Ligados et indépendance des doigts.
+  - id: alphatab-doc
+    pertinence: >
+      Effet de note `h`.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

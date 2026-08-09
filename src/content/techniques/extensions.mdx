@@ -1,0 +1,84 @@
+---
+code: MG-06
+nom:
+  fr: "Extensions"
+  en: "Stretches"
+  es: "Extensiones"
+  alias: ["écarts", "ouverture"]
+famille: main-gauche
+style: les-deux
+difficulte: 3
+main: frette
+prerequis: [placement-mg, deplacements]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [pasadena-injury, msstate-rsi]
+
+sonCible: >
+  Un intervalle large tenu sans que la main ne se torde ni que le son ne se dégrade.
+
+gesteCle: >
+  L’ouverture vient des métacarpo-phalangiennes, à la base des doigts dans la paume — c’est là que se trouve l’amplitude articulaire. Elle ne vient ni d’une torsion du poignet ni d’un écartement forcé des phalanges.
+
+erreurs:
+  - titre: "Compenser par une rotation du poignet"
+    description: >
+      Met le tendon en tension et prépare une blessure.
+    diagnostic:
+      canaux: [visuel, sensation]
+      test: >
+        Observer l’angle du poignet pendant qu’on ouvre.
+      signe: >
+        Le poignet change d’angle : l’ouverture ne se fait pas au bon endroit.
+    sante: true
+
+exercices:
+  - id: a
+    titre: "Ouverture tenue, en séries courtes"
+    origine: formule-commune
+    description: >
+      Index case 5 corde 6, auriculaire case 9 corde 6, tenus ensemble cinq secondes puis relâche dix secondes. Trois répétitions. Jamais plus, jamais dans la douleur.
+    audioFidele: true
+    alphaTex: |
+      \title "Extension index / auriculaire"
+      \tempo 40
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :1 (5.6{lf 2} 9.6{lf 5}) |
+      :1 r |
+
+seance:
+  moment: [jamais-a-froid, milieu]
+  dureeMax: 5
+  frequence: "3 fois par semaine, jamais deux jours de suite."
+  reposMin: 90
+  risque: eleve
+  signalArret:
+    - "Toute sensation d’étirement dans l’articulation plutôt que dans le muscle."
+    - "Toute douleur, même faible."
+    - "Raideur persistante le lendemain."
+  avertissementSante: >
+    Technique à risque. La littérature identifie l’hypermobilité articulaire comme facteur de risque de TMS chez les musiciens, et l’étirement à froid comme dommageable. Ne jamais forcer une extension, ne jamais la travailler à froid, et ne jamais la tenir plus de quelques secondes.
+  provenance:
+    origine: source
+    sourceIds: [pasadena-injury, msstate-rsi]
+
+sources:
+  - id: pasadena-injury
+    pertinence: >
+      Prévention des blessures : l’hypermobilité articulaire est un facteur de risque, et l’étirement à froid peut causer des dommages.
+  - id: msstate-rsi
+    pertinence: >
+      Exercices préventifs pour musiciens.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

@@ -1,0 +1,80 @@
+---
+code: PM-04
+nom:
+  fr: "Harmoniques tapées"
+  en: "Tapped harmonics"
+  es: "Armónicos golpeados"
+  alias: ["hammered harmonics", "harmoniques martelées"]
+famille: percussif-moderne
+style: moderne
+difficulte: 4
+main: les-deux
+prerequis: [harmoniques-naturelles, harmoniques-artificielles, tapping-deux-mains]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [dawes-jamplay, alphatab-doc]
+
+sonCible: >
+  Une cloche, obtenue par une frappe et non par un pincement. Le son signature de McKee et Dawes.
+
+gesteCle: >
+  Frappe sèche et perpendiculaire, exactement sur la frette, avec rebond immédiat — c’est le rebond qui laisse l’harmonique sonner. Un index tendu et raide fonctionne mieux qu’un doigt souple.
+
+erreurs:
+  - titre: "Le doigt reste sur la corde"
+    diagnostic:
+      canaux: [son]
+      test: >
+        Écouter ce qui suit la frappe.
+      signe: >
+        Un « clac » sans hauteur : le rebond manque.
+
+exercices:
+  - id: a
+    titre: "Douze cases au-dessus"
+    origine: formule-commune
+    description: >
+      Main qui frette : corde 6 case 3. Main qui pince : frappe corde 6 case 15. Puis toutes les cordes, case 3 contre case 15.
+    audioFidele: true
+    alphaTex: |
+      \title "Harmoniques tapées"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :4 3.6{th 15} 3.5{th 15} 3.4{th 15} 3.3{th 15} |
+    provenance:
+      origine: deduit
+      doute: >
+        La syntaxe de `th` avec valeur de case n’a pas été testée dans la sonde.
+
+seance:
+  moment: [debut]
+  dureeMax: 8
+  frequence: "3 fois par semaine."
+  reposMin: 60
+  risque: modere
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension ou brûlure dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: dawes-jamplay
+    pertinence: >
+      Les « hammered harmonics » figurent au programme du cours.
+  - id: alphatab-doc
+    pertinence: >
+      Effet de note `th`.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

@@ -17,7 +17,7 @@ export interface NavItem {
 }
 
 export const NAV: readonly NavItem[] = [
-  { href: '/techniques', label: 'Techniques', ready: false, tranche: 2 },
+  { href: '/techniques', label: 'Techniques', ready: true, tranche: 2 },
   { href: '/arbre', label: 'Arbre', ready: false, tranche: 5 },
   { href: '/accordeur', label: 'Accordeur', ready: false, tranche: 4 },
   { href: '/pratique', label: 'Pratique', ready: false, tranche: 6 },
@@ -48,7 +48,7 @@ export const TRANCHES: readonly Tranche[] = [
     n: 2,
     label: 'Contenu',
     detail: 'Migration des fiches en MDX typé, liste filtrable, page de détail.',
-    done: false,
+    done: true,
   },
   {
     n: 3,

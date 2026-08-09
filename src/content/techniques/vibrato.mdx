@@ -1,0 +1,79 @@
+---
+code: MG-07
+nom:
+  fr: "Vibrato"
+  en: "Vibrato"
+  es: "Vibrato"
+  alias: []
+famille: main-gauche
+style: les-deux
+difficulte: 3
+main: frette
+prerequis: [placement-mg]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [pujol-escuela-razonada, alphatab-doc]
+
+sonCible: >
+  Une oscillation régulière et contrôlée, dont on choisit la vitesse et l’amplitude. Un vibrato subi n’est pas un vibrato.
+
+gesteCle: >
+  Deux familles distinctes. Le vibrato classique est longitudinal : l’oscillation se fait dans l’axe de la corde, en balançant l’avant-bras, doigt posé et pression constante. Le vibrato latéral, d’usage acoustique et électrique, tire la corde en travers.
+
+erreurs:
+  - titre: "Vibrato irrégulier en vitesse"
+    description: >
+      Trahit qu’il est produit par le doigt seul au lieu de l’avant-bras.
+    diagnostic:
+      canaux: [son, metronome]
+      test: >
+        Compter les oscillations sur deux secondes.
+      signe: >
+        On ne peut pas les compter régulièrement.
+
+exercices:
+  - id: a
+    titre: "Vibrato au métronome"
+    origine: formule-commune
+    description: >
+      Une note tenue en case 7 corde 3, vibrato à quatre oscillations par seconde au métronome, puis six, puis trois. Le but est de choisir la vitesse, pas de la subir.
+    audioFidele: true
+    alphaTex: |
+      \title "Vibrato mesuré"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :1 7.3{lf 4 v} |
+      :1 7.3{lf 4 vw} |
+
+seance:
+  moment: [echauffement, debut]
+  dureeMax: 6
+  frequence: "Quotidienne, en entretien."
+  reposMin: 45
+  risque: faible
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: pujol-escuela-razonada
+    pertinence: >
+      Vibrato longitudinal dans la tradition espagnole.
+  - id: alphatab-doc
+    pertinence: >
+      Effets `v` et `vw`.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

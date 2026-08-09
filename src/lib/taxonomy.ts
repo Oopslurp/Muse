@@ -2,9 +2,6 @@
  * Vocabulaires contrôlés partagés — familles, difficulté, statut épistémique.
  *
  * Source de vérité pour le contenu : `docs/research/00-taxonomie.md`.
- * Les décomptes ci-dessous seront dérivés des content collections en
- * tranche 2 ; ils sont saisis à la main pour l'instant et doivent rester
- * cohérents avec le document de recherche.
  *
  * Conformément à CLAUDE.md (décision 9) : ce module stocke la donnée,
  * l'affichage produit le libellé. Aucune chaîne visible n'est écrite en dur
@@ -23,7 +20,6 @@ export interface Family {
   /** Variable CSS d'accent. Injectée en style inline plutôt qu'en classe :
    *  Tailwind ne peut pas générer de classes à partir de valeurs dynamiques. */
   colorVar: string;
-  count: number;
 }
 
 export const FAMILIES: readonly Family[] = [
@@ -34,7 +30,6 @@ export const FAMILIES: readonly Family[] = [
     blurb:
       "Ce qui met la corde en mouvement : attaque, arpèges, pouce, trémolo, étouffements.",
     colorVar: '--c-md',
-    count: 13,
   },
   {
     id: 'main-gauche',
@@ -43,7 +38,6 @@ export const FAMILIES: readonly Family[] = [
     blurb:
       'Ce qui définit la hauteur : placement, barré, liaisons, déplacements, vibrato.',
     colorVar: '--c-mg',
-    count: 9,
   },
   {
     id: 'percussif-moderne',
@@ -52,7 +46,6 @@ export const FAMILIES: readonly Family[] = [
     blurb:
       'Kick, caisse claire, golpe, tapping, harmoniques frappées, accordages ouverts.',
     colorVar: '--c-pm',
-    count: 5,
   },
   {
     id: 'transversal',
@@ -61,7 +54,6 @@ export const FAMILIES: readonly Family[] = [
     blurb:
       "Dimensions applicables partout : dynamiques, timbre, placement rythmique, relâchement.",
     colorVar: '--c-tr',
-    count: 6,
   },
 ] as const;
 
@@ -148,9 +140,8 @@ export const STYLE_LABELS: Record<Style, string> = {
 
 /* -------------------------------------------------------------------------- */
 
-/** Décomptes du corpus. À dériver des collections en tranche 2. */
-export const CORPUS = {
-  techniques: FAMILIES.reduce((n, f) => n + f.count, 0),
-  fichesCompletes: 6,
-  fichesCourtes: 27,
-} as const;
+/**
+ * Les décomptes du corpus ne vivent pas ici : ils sont dérivés de la collection
+ * de contenu par `src/lib/corpus.ts`. Un chiffre saisi à la main devient faux à
+ * la première fiche ajoutée, sans que rien ne le signale.
+ */

@@ -1,0 +1,214 @@
+---
+/**
+ * Exercices.
+ *
+ * La source alphaTex est affichée telle quelle en attendant le lecteur
+ * alphaTab (tranche 3). Ce n'est pas un pis-aller complet : la source est
+ * lisible, copiable dans le playground alphaTab, et c'est elle qui fait foi.
+ *
+ * CLAUDE.md, décision 10 : quand `audioFidele` est faux, on n'ampute rien —
+ * on affiche un badge qui nomme précisément ce que le rendu ne restituera pas.
+ */
+import StatusBadge from '~/components/ui/StatusBadge.astro';
+import { statutAffiche, type Provenance } from '~/lib/provenance';
+import { plageTempo, nomOrigineExercice, type Tempo } from '~/lib/format';
+
+interface Exercice {
+  id: string;
+  titre: string;
+  description: string;
+  origine: string;
+  alphaTex?: string | undefined;
+  tempoDepart?: Tempo | undefined;
+  tempoCible?: Tempo | undefined;
+  audioFidele: boolean;
+  reservesAudio: string[];
+  provenance?: Provenance | undefined;
+}
+
+interface Props {
+  exercices: Exercice[];
+}
+
+const { exercices } = Astro.props;
+---
+
+<div class="exos">
+  {
+    exercices.map((e) => {
+      const plage = plageTempo(e.tempoDepart, e.tempoCible);
+      return (
+        <article class="exo" id={`ex-${e.id}`}>
+          <header class="exo__tete">
+            <h3 class="exo__titre">{e.titre}</h3>
+            <div class="exo__meta">
+              {plage && <span class="tempo">{plage}</span>}
+              <span class="origine">{nomOrigineExercice(e.origine)}</span>
+              {e.provenance && <StatusBadge status={statutAffiche(e.provenance)} />}
+            </div>
+          </header>
+
+          <p class="exo__desc">{e.description}</p>
+
+          {e.provenance?.doute && (
+            <p class="exo__doute">
+              <span class="exo__doute-k">À vérifier</span>
+              {e.provenance.doute}
+            </p>
+          )}
+
+          {e.alphaTex && (
+            <div class="tab">
+              <div class="tab__barre">
+                <span class="tab__format">alphaTex</span>
+                {!e.audioFidele && (
+                  <span
+                    class="tab__reserve"
+                    title={e.reservesAudio.join(' · ')}
+                  >
+                    lecture partielle
+                  </span>
+                )}
+                <span class="tab__attente">lecteur en tranche 3</span>
+              </div>
+              <pre><code>{e.alphaTex.trim()}</code></pre>
+              {!e.audioFidele && (
+                <ul class="reserves">
+                  {e.reservesAudio.map((r) => (
+                    <li>{r}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </article>
+      );
+    })
+  }
+</div>
+
+<style>
+  .exos {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .exo {
+    scroll-margin-top: 6rem;
+  }
+
+  .exo__tete {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.4rem;
+  }
+  .exo__titre {
+    font-size: var(--text-lg);
+    margin: 0;
+  }
+  .exo__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tempo {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-2);
+    white-space: nowrap;
+  }
+  .origine {
+    font-size: var(--text-2xs);
+    color: var(--color-ink-3);
+  }
+
+  .exo__desc {
+    margin: 0 0 0.85rem;
+    font-size: var(--text-sm);
+    line-height: 1.62;
+    color: var(--color-ink-2);
+    max-width: 68ch;
+  }
+
+  .exo__doute {
+    margin: 0 0 0.85rem;
+    padding: 0.6rem 0.85rem;
+    border-left: 2px solid var(--color-verifier);
+    background: color-mix(in oklab, var(--c-verifier) 6%, transparent);
+    font-size: var(--text-sm);
+    line-height: 1.55;
+    color: var(--color-ink-2);
+  }
+  .exo__doute-k {
+    display: inline-block;
+    margin-right: 0.55em;
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-verifier);
+  }
+
+  /* ------------------------------------------------------------ tablature */
+  .tab {
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    background: var(--color-surface-2);
+  }
+  .tab__barre {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.8rem;
+    border-bottom: 1px solid var(--color-line);
+    background: var(--color-surface);
+  }
+  .tab__format {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.06em;
+    color: var(--color-ink-3);
+  }
+  .tab__attente {
+    margin-left: auto;
+    font-size: var(--text-2xs);
+    font-style: italic;
+    color: var(--color-ink-3);
+  }
+  .tab__reserve {
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    color: var(--color-verifier);
+    border: 1px dashed color-mix(in oklab, var(--c-verifier) 45%, transparent);
+    border-radius: var(--radius-pill);
+    padding: 0.12em 0.55em;
+    cursor: help;
+  }
+
+  .tab pre {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    color: var(--color-ink-2);
+  }
+
+  .reserves {
+    margin: 0;
+    padding: 0.7rem 1rem 0.85rem 2.1rem;
+    border-top: 1px solid var(--color-line);
+    font-size: var(--text-2xs);
+    color: var(--color-verifier);
+  }
+  .reserves li + li {
+    margin-top: 0.2rem;
+  }
+</style>

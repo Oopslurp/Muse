@@ -6,10 +6,12 @@ import StatusBadge from '~/components/ui/StatusBadge.astro';
 import Difficulty from '~/components/ui/Difficulty.astro';
 import Callout from '~/components/ui/Callout.astro';
 import Button from '~/components/ui/Button.astro';
-import { FAMILIES, STATUSES, CORPUS } from '~/lib/taxonomy';
+import { FAMILIES, STATUSES } from '~/lib/taxonomy';
+import { corpus } from '~/lib/corpus';
 import { TRANCHES } from '~/lib/nav';
 
 const done = TRANCHES.filter((t) => t.done).length;
+const c = await corpus();
 ---
 
 <BaseLayout title="Muse">
@@ -32,8 +34,8 @@ const done = TRANCHES.filter((t) => t.done).length;
       </p>
 
       <div class="hero__actions">
-        <Button href="/techniques" variant="primary" disabled>
-          Parcourir les techniques
+        <Button href="/techniques" variant="primary">
+          Parcourir les {c.fiches} fiches
         </Button>
         <Button href="/style-guide" variant="secondary">Voir le design system</Button>
       </div>
@@ -41,15 +43,15 @@ const done = TRANCHES.filter((t) => t.done).length;
       <dl class="specs">
         <div>
           <dt>Techniques</dt>
-          <dd>{CORPUS.techniques}</dd>
+          <dd>{c.techniques}</dd>
         </div>
         <div>
           <dt>Fiches approfondies</dt>
-          <dd>{CORPUS.fichesCompletes}</dd>
+          <dd>{c.completes}</dd>
         </div>
         <div>
-          <dt>Familles</dt>
-          <dd>{FAMILIES.length}</dd>
+          <dt>Fiches</dt>
+          <dd>{c.fiches}</dd>
         </div>
         <div>
           <dt>Tranches livrées</dt>
@@ -155,12 +157,12 @@ const done = TRANCHES.filter((t) => t.done).length;
     <div class="grid grid--2">
       {
         FAMILIES.map((f) => (
-          <Card colorVar={f.colorVar} muted>
+          <Card colorVar={f.colorVar} href={`/techniques?famille=${f.id}`}>
             <div class="fam__top">
               <Badge colorVar={f.colorVar} size="sm" variant="solid">
                 {f.code}
               </Badge>
-              <span class="fam__count">{f.count} techniques</span>
+              <span class="fam__count">{c.parFamille[f.id]} fiches</span>
             </div>
             <h3 class="fam__title">{f.label}</h3>
             <p class="fam__blurb">{f.blurb}</p>

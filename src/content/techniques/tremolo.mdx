@@ -1,0 +1,410 @@
+---
+code: MD-08
+nom:
+  fr: Trémolo
+  en: Tremolo
+  es: Trémolo
+  alias: [p-a-m-i, trémolo classique]
+famille: main-droite
+style: classique
+difficulte: 5
+main: pince
+prerequis: [apoyando-tirando, arpeges-pima, appui-prepare]
+profondeur: complete
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [tennant-pumping-nylon, giuliani-op1, carlevaro-cuaderno-2]
+
+sonCible: >
+  Une seule note tenue, pas quatre notes rapides. Si l'auditeur peut compter les notes,
+  ce n'est pas encore du trémolo. L'égalité rythmique passe avant tout le reste, et la
+  vitesse ne figure nulle part dans les critères.
+
+ecoutes:
+  - oeuvre: Recuerdos de la Alhambra
+    compositeur: Francisco Tárrega
+    quoiEcouter: >
+      L'intervalle entre la note de basse et la première note du trémolo. C'est là que
+      se loge le galop — et il s'entend chez des professionnels.
+    ecoute: false
+  - oeuvre: Un Sueño en la Floresta
+    compositeur: Agustín Barrios Mangoré
+    quoiEcouter: Trémolo étendu, tessiture plus large, ligne de basse plus mobile.
+    ecoute: false
+  - oeuvre: Trois interprètes de Recuerdos, comparés
+    quoiEcouter: >
+      Écouter uniquement l'intervalle entre le pouce et l'annulaire. C'est l'exercice
+      d'écoute le plus formateur du domaine.
+    ecoute: false
+
+erreurs:
+  - titre: Le galop
+    description: >
+      Écart trop grand entre la note du pouce et la première note de l'annulaire.
+      L'annulaire attend que le pouce ait dégagé. Résultat : un regroupement par trois
+      au lieu d'un flux régulier. C'est le problème n°1 du trémolo, et de loin.
+    diagnostic:
+      canaux: [audio, metronome]
+      test: >
+        Enregistrer quatre mesures et réécouter au ralenti. Sans matériel : compter
+        « un-deux-trois-quatre » à voix haute sur chaque note.
+      signe: Impossible de caler la voix sur les notes ; on entend un regroupement par trois.
+  - titre: L'annulaire est plus faible
+    diagnostic:
+      canaux: [son]
+      test: >
+        Accent tournant : jouer le cycle en accentuant volontairement l'annulaire, puis
+        le majeur, puis l'index.
+      signe: >
+        Celui qu'on a le plus de mal à accentuer est le plus faible. Si accentuer
+        l'annulaire casse le cycle entier, il n'est pas sous contrôle.
+    renvoi: [arpeges-pima]
+  - titre: Trop vite trop tôt
+    description: >
+      La plupart des gens travaillent trente pour cent au-dessus de leur tempo de
+      contrôle réel, et n'ancrent donc que du galop.
+    diagnostic:
+      canaux: [son, metronome]
+      test: Descendre le métronome jusqu'à ce que le trémolo soit vraiment égal.
+      signe: >
+        Le tempo obtenu est très inférieur à celui auquel on travaillait. C'est le vrai
+        tempo de travail.
+  - titre: Pouce métronomique
+    description: La basse doit avoir une ligne, une direction, des nuances — pas être un tic-tac.
+    diagnostic:
+      canaux: [audio]
+      test: Enregistrer et réécouter en ignorant volontairement la mélodie.
+      signe: La basse n'a aucune direction musicale.
+    renvoi: [technique-pouce]
+  - titre: Crispation progressive
+    description: >
+      Chaque doigt travaille un quart du temps. S'il n'est pas relâché les trois autres
+      quarts, la main sature en quelques secondes.
+    diagnostic:
+      canaux: [sensation, audio]
+      test: Comparer la mesure 16 à la mesure 4.
+      signe: >
+        La 16 est nettement moins bonne. Ce n'est pas de l'endurance qui manque, c'est
+        du relâchement — aucun exercice de force n'y changera rien.
+    renvoi: [relachement]
+    sante: true
+  - titre: Un doigt reste sur la corde
+    description: Dégagement insuffisant, souvent lié à une amplitude de geste trop grande.
+    diagnostic:
+      canaux: [son]
+      test: Écouter la résonance de la note aiguë isolément.
+      signe: Elle claque au lieu de sonner — le doigt suivant l'a coupée.
+
+paliers:
+  - titre: Le cycle en accord
+    objectif: Comprendre la formule sans la vitesse.
+    exercices: [a]
+    tempoDepart: { valeur: 40, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 60, unite: bpm, subdivision: '8' }
+    critere: Deux minutes en continu, égalité perçue à la réécoute d'un enregistrement.
+    autoVerifiable: true
+  - titre: Égalité en doubles-croches
+    objectif: Le vrai trémolo, lent.
+    exercices: [abis]
+    tempoDepart: { valeur: 40, unite: bpm, subdivision: '16' }
+    tempoCible: { valeur: 60, unite: bpm, subdivision: '16' }
+    critere: >
+      Test du décalage : placer le métronome sur la deuxième note du cycle, celle de
+      l'annulaire, au lieu de la première. Tenir huit mesures.
+    autoVerifiable: true
+    note: >
+      Le test le plus important de la fiche, et le seul impossible à tricher. Si
+      l'égalité n'était qu'apparente, on perd pied immédiatement.
+  - titre: Pouce indépendant
+    objectif: Une ligne de basse mobile sous un trémolo stable.
+    exercices: [b, c]
+    tempoDepart: { valeur: 40, unite: bpm, subdivision: '16' }
+    tempoCible: { valeur: 72, unite: bpm, subdivision: '16' }
+    critere: >
+      Basse sur trois cordes différentes dans la même mesure, sans que la régularité de
+      la mélodie ne bouge.
+    autoVerifiable: true
+  - titre: Contrôle dynamique
+    objectif: Faire chanter, pas seulement rouler.
+    exercices: [c]
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '16' }
+    tempoCible: { valeur: 84, unite: bpm, subdivision: '16' }
+    critere: Quatre mesures en piano puis quatre en forte, sans changement de tempo ni d'égalité.
+    autoVerifiable: true
+  - titre: Répertoire
+    objectif: Application musicale.
+    exercices: [c]
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '16' }
+    tempoCible: { valeur: 100, unite: bpm, subdivision: '16' }
+    critere: >
+      Recuerdos de la Alhambra en entier, sans dégradation audible entre le début et la
+      fin de la pièce.
+    autoVerifiable: false
+
+exercices:
+  - id: a
+    titre: 'Exercice A — cycle p-a-m-i en croches'
+    origine: formule-commune
+    description: >
+      La mineur. Le pouce sur la corde 5 à vide, l'annulaire, le majeur et l'index
+      répètent la corde 1 à vide. Trois régimes dans la même séance : appui simultané,
+      appui séquentiel, puis attaque en vol. Commencer en croches et ne passer aux
+      doubles que lorsque les croches sont parfaitement égales.
+    tempoDepart: { valeur: 40, unite: bpm, subdivision: '8' }
+    tempoCible: { valeur: 60, unite: bpm, subdivision: '8' }
+    audioFidele: true
+    alphaTex: |
+      \title "Ex. A — Cycle p-a-m-i, croches"
+      \tempo 40
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :8 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} |
+      :8 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} |
+    provenance:
+      origine: source
+      sourceIds: [tennant-pumping-nylon, giuliani-op1]
+
+  - id: abis
+    titre: 'Exercice A bis — le même en doubles-croches'
+    origine: formule-commune
+    description: >
+      Quatre cycles par mesure. C'est ici que le test du décalage devient praticable :
+      placer le clic du métronome sur la deuxième note du cycle et tenir.
+    tempoDepart: { valeur: 40, unite: bpm, subdivision: '16' }
+    tempoCible: { valeur: 60, unite: bpm, subdivision: '16' }
+    audioFidele: true
+    alphaTex: |
+      \title "Ex. A bis — Cycle p-a-m-i, doubles-croches"
+      \tempo 40
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :16 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} |
+      :16 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} |
+    provenance:
+      origine: source
+      sourceIds: [tennant-pumping-nylon]
+
+  - id: b
+    titre: 'Exercice B — le pouce seul'
+    origine: original
+    description: >
+      Travailler la basse sans la mélodie. C'est l'exercice que personne ne fait et qui
+      débloque le plus de choses. Ligne mobile sur trois cordes graves, en noires puis
+      en croches, avec un crescendo puis un decrescendo sur chaque phrase de quatre
+      mesures. Le but est que le pouce devienne une voix autonome, pas un marqueur de
+      temps.
+    tempoDepart: { valeur: 60, unite: bpm, subdivision: '4' }
+    audioFidele: true
+    alphaTex: |
+      \title "Ex. B — Ligne de basse au pouce seul"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :4 0.5{rf 1} 2.4{rf 1} 0.5{rf 1} 2.4{rf 1} |
+      :4 1.6{rf 1} 3.5{rf 1} 1.6{rf 1} 3.5{rf 1} |
+      :4 3.5{rf 1} 3.6{rf 1} 3.5{rf 1} 3.6{rf 1} |
+      :4 0.6{rf 1} 2.5{rf 1} 0.6{rf 1} 2.5{rf 1} |
+    provenance:
+      origine: deduit
+
+  - id: c
+    titre: 'Exercice C — trémolo à basse mobile'
+    origine: original
+    description: >
+      Assemblage des deux précédents : la ligne de basse de l'exercice B sous un
+      trémolo continu. C'est ici que le trémolo devient réellement difficile, parce que
+      le pouce doit changer de corde entre deux cycles sans que la mélodie ne bronche.
+      La mélodie reste un mi tenu sur les quatre accords — sur l'accord de fa, cela
+      produit une septième majeure. C'est volontaire : ça concentre le travail sur le
+      pouce.
+    tempoDepart: { valeur: 50, unite: bpm, subdivision: '16' }
+    tempoCible: { valeur: 84, unite: bpm, subdivision: '16' }
+    audioFidele: true
+    alphaTex: |
+      \title "Ex. C — Trémolo à basse mobile"
+      \tempo 50
+      \ts (4 4)
+      \track "Guitare"
+      \staff {score tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      \ks C
+      :16 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 2.4{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 0.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 2.4{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} |
+      :16 1.6{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 3.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 1.6{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 3.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} |
+      :16 3.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 3.6{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 3.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 3.6{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} |
+      :16 0.6{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 2.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 0.6{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} 2.5{rf 1 lr} 0.1{rf 4} 0.1{rf 3} 0.1{rf 2} |
+    provenance:
+      origine: deduit
+      doute: >
+        La septième majeure produite sur l'accord de fa est un choix esthétique à
+        valider à l'oreille. Si elle gêne, changer la note de mélodie plutôt que
+        l'accord.
+
+  - id: destructuration
+    titre: 'Variantes de déstructuration — à intercaler à tous les paliers'
+    origine: consigne
+    description: >
+      Six variantes qui attaquent le galop de front, sans tablature parce que ce sont
+      des consignes. Accent tournant : accentuer tour à tour chaque doigt du cycle, pour
+      révéler celui qui n'est pas sous contrôle. Métronome décalé : clic sur
+      l'annulaire au lieu du pouce, pour voir si l'égalité est réelle ou si l'on
+      s'appuie sur la basse. Rythme pointé : croche pointée et double alternées, puis
+      l'inverse, pour casser l'automatisme. Trémolo à trois doigts : p-m-i seulement,
+      pour isoler la difficulté d'entrée de l'annulaire. Trémolo silencieux : le geste
+      complet sans toucher les cordes, à vitesse cible, pour révéler les tensions sans
+      le masque du son. Inversion : p-i-m-a au lieu de p-a-m-i, très inconfortable et
+      excellent pour l'indépendance.
+    audioFidele: true
+    provenance:
+      origine: source
+      sourceIds: [tennant-pumping-nylon]
+
+repertoire:
+  - oeuvre: Recuerdos de la Alhambra
+    compositeur: Francisco Tárrega
+    mort: 1909
+    droits: domaine-public
+    role: >
+      La pièce. Trémolo continu, barrés longs, ligne de basse mobile. Cible finale de
+      la fiche.
+    url: https://imslp.org/
+    aPartirDuPalier: 5
+  - oeuvre: Un Sueño en la Floresta
+    compositeur: Agustín Barrios Mangoré
+    mort: 1944
+    droits: domaine-public-ue
+    noteDroits: Domaine public en Union européenne depuis 2015. Statut hors UE non vérifié.
+    role: Trémolo étendu, tessiture large. Très difficile.
+  - oeuvre: 120 Studi per la mano destra, op. 1 — formule p-a-m-i
+    compositeur: Mauro Giuliani
+    mort: 1829
+    droits: domaine-public
+    role: "Préparation directe : la formule du trémolo y figure comme formule d'arpège."
+    url: https://imslp.org/
+    aPartirDuPalier: 1
+
+seance:
+  moment: [milieu]
+  dureeMin: 8
+  dureeMax: 10
+  frequence: >
+    Quotidienne et courte, très supérieur à deux fois par semaine et long. C'est un
+    apprentissage moteur fin : c'est la répétition espacée qui compte.
+  signalArret:
+    - Réapparition du galop — c'est l'alarme, elle précède toujours la douleur.
+    - Tension dans le dos de la main.
+  reposMin: 60
+  risque: modere
+  avertissementSante: >
+    Technique très répétitive à haute fréquence de mouvement : elle coche toutes les
+    cases du risque de trouble musculo-squelettique. Séances courtes, pauses réelles, et
+    ne jamais monter le métronome à l'intérieur d'une même séance.
+  provenance:
+    origine: deduit
+    doute: >
+      Aucune source ne chiffre de durée pour le trémolo. Les dix minutes sont une valeur
+      prudentielle déduite du caractère très répétitif du geste.
+
+sources:
+  - id: tennant-pumping-nylon
+    pertinence: >
+      La deuxième édition ajoute explicitement de nouveaux exercices de trémolo. C'est
+      l'un des rares traitements systématiques disponibles.
+  - id: giuliani-op1
+    pertinence: La formule p-a-m-i y figure comme formule d'arpège. Domaine public.
+  - id: carlevaro-cuaderno-2
+    pertinence: Mécanique du dégagement et classification des attaques.
+  - id: imslp
+    pertinence: Partition de Recuerdos de la Alhambra, domaine public.
+
+doutes:
+  - >
+    La formule du trémolo flamenco p-i-a-m-i, à cinq notes, est celle rencontrée le plus
+    souvent mais n'a pas été confirmée sur une méthode flamenca.
+  - >
+    L'analyse « le pouce et l'annulaire doivent travailler dans des plans séparés » est
+    une synthèse mécanique personnelle, non trouvée telle quelle dans une source. À
+    tester comme hypothèse de travail.
+  - >
+    Les tempos cibles pour Recuerdos sont un ordre de grandeur, pas une prescription :
+    les interprétations varient largement.
+  - >
+    Le statut de Barrios hors Union européenne n'a pas été vérifié.
+  - >
+    La septième majeure de l'exercice C sur l'accord de fa est un choix esthétique
+    non validé à l'oreille.
+---
+
+## Ce qui est vraiment nouveau par rapport à l'arpège
+
+Mécaniquement, p-a-m-i est **une formule d'arpège de Giuliani**, à une différence près :
+l'annulaire, le majeur et l'index jouent tous **la même corde**.
+
+C'est cette différence qui fait toute la difficulté. Dans un arpège ordinaire, chaque
+doigt a sa corde : ils ne se gênent pas et ils ont l'espace pour se réarmer. Dans le
+trémolo, trois doigts se partagent le même point de l'espace en séquence rapide. Chacun
+doit attaquer, **dégager immédiatement** pour libérer la corde, puis se réarmer —
+pendant que les deux autres font la même chose au même endroit.
+
+Le trémolo est donc avant tout **un problème de dégagement**, pas d'attaque.
+
+## Anatomie du geste
+
+### L'articulation
+
+Moteur à la métacarpo-phalangienne, comme partout, mais avec une **amplitude réduite au
+minimum** : un trémolo se joue avec de très petits mouvements. Toute amplitude
+superflue coûte du temps et devient impossible à grande vitesse.
+
+L'interphalangienne distale doit rester ferme — critique ici : une dernière phalange qui
+cède ajoute un délai variable, donc de l'irrégularité. L'attaque se fait obligatoirement
+en pincé : une butée poserait le doigt sur la corde voisine et casserait le cycle.
+
+La main est **immobile**. C'est la technique où l'immobilité du poignet est la plus
+visible et la plus nécessaire.
+
+### Le problème du passage pouce → annulaire
+
+C'est le nœud de la technique. Entre la note du pouce et la première note de
+l'annulaire, deux choses se produisent en même temps : le pouce doit dégager sa corde
+grave, souvent en se déplaçant vers une autre corde pour le cycle suivant, et
+l'annulaire doit arriver sur la corde aiguë.
+
+Ces deux mouvements se contrarient : le pouce va vers le bas et l'intérieur, l'annulaire
+doit arriver au-dessus. Chez la plupart des joueurs, l'annulaire **attend** que le pouce
+ait fini. D'où le galop.
+
+L'hypothèse de travail retenue ici : le pouce et l'annulaire doivent occuper **des plans
+séparés**. Avancer le poignet pour que le pouce dispose d'un couloir devant les doigts —
+le même réglage que pour les arpèges, mais plus critique. Et l'annulaire doit être déjà
+en place, préparé ou quasi posé sur la corde, avant même que le pouce ne joue.
+
+### Le rôle du pouce
+
+Le pouce ne se contente pas de jouer une note. Dans *Recuerdos* et la plupart du
+répertoire, il joue une **ligne de basse mobile**, parfois arpégée sur deux ou trois
+cordes graves par mesure. Il doit donc se déplacer, garder une dynamique inférieure à
+celle de la mélodie, et rester rythmiquement stable.
+
+Le travailler séparément est indispensable, et systématiquement négligé.
+
+## Le piège à connaître
+
+Le trémolo donne l'illusion du progrès quand on accélère. Il faut résister : **un
+trémolo lent et parfaitement égal est musical, un trémolo rapide et galopant est
+inécoutable** — y compris en concert. Tout le travail consiste à repousser la vitesse à
+laquelle l'égalité se casse, pas à jouer plus vite.
+
+Compter six à dix-huit mois pour arriver au dernier palier, et considérer que c'est
+normal. Un trémolo mal ancré met des années à se corriger.

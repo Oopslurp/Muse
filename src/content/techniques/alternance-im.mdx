@@ -1,0 +1,78 @@
+---
+code: MD-03
+nom:
+  fr: "Alternance i-m"
+  en: "Finger alternation"
+  es: "Alternancia"
+  alias: ["alternance des doigts", "a-m-i"]
+famille: main-droite
+style: les-deux
+difficulte: 2
+main: pince
+prerequis: [apoyando-tirando]
+profondeur: courte
+revuLe: '2026-08-09'
+version: 1
+
+provenance:
+  origine: source
+  sourceIds: [tennant-pumping-nylon, carlevaro-cuaderno-1]
+
+sonCible: >
+  Une ligne mélodique parfaitement égale, où l’on ne devine pas quel doigt joue quelle note.
+
+gesteCle: >
+  Chaque doigt se réarme pendant que l’autre joue. Celui qui vient de jouer doit être revenu en position d’attente avant que l’autre n’attaque — sinon on plafonne autour de huit notes par seconde.
+
+erreurs:
+  - titre: "Répétition involontaire d’un doigt"
+    description: >
+      Presque toujours au changement de corde, et en particulier au sommet d’une gamme.
+    diagnostic:
+      canaux: [son, sensation]
+      test: >
+        Chanter « i-m-i-m » à voix haute en jouant.
+      signe: >
+        La voix et les doigts se désynchronisent au moment du changement de corde.
+
+exercices:
+  - id: a
+    titre: "Chromatique sur une corde"
+    origine: formule-commune
+    description: >
+      Gamme chromatique sur quatre cases d’une même corde, aller-retour, en alternance stricte. Puis en commençant par le majeur. Puis en a-m-i.
+    audioFidele: true
+    alphaTex: |
+      \title "Alternance i-m — chromatique"
+      \tempo 60
+      \ts (4 4)
+      \track "Guitare"
+      \staff {tabs}
+      \tuning (E4 B3 G3 D3 A2 E2)
+      :8 5.1{rf 2} 6.1{rf 3} 7.1{rf 2} 8.1{rf 3} 8.1{rf 2} 7.1{rf 3} 6.1{rf 2} 5.1{rf 3} |
+
+seance:
+  moment: [echauffement, debut]
+  dureeMax: 8
+  frequence: "Quotidienne, en entretien."
+  reposMin: 45
+  risque: faible
+  signalArret:
+    - "La qualité de son se dégrade."
+    - "Tension dans l’avant-bras."
+  provenance:
+    origine: deduit
+
+sources:
+  - id: tennant-pumping-nylon
+    pertinence: >
+      Chapitre sur les gammes et l’alternance.
+  - id: carlevaro-cuaderno-1
+    pertinence: >
+      Gammes diatoniques et doigtés de main droite.
+
+doutes: []
+---
+
+Fiche courte. Elle donne le geste, une erreur typique et un exercice — assez pour travailler, pas assez pour tout comprendre. À développer si l'usage le justifie.
+

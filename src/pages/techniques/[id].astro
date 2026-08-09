@@ -1,0 +1,285 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import FicheHeader from '~/components/fiche/FicheHeader.astro';
+import Doutes from '~/components/fiche/Doutes.astro';
+import Seance from '~/components/fiche/Seance.astro';
+import Paliers from '~/components/fiche/Paliers.astro';
+import Erreurs from '~/components/fiche/Erreurs.astro';
+import Exercices from '~/components/fiche/Exercices.astro';
+import Annexes from '~/components/fiche/Annexes.astro';
+import Callout from '~/components/ui/Callout.astro';
+import { construireGraphe } from '~/lib/graph';
+
+export const getStaticPaths = (async () => {
+  const fiches = await getCollection('techniques');
+  return fiches
+    .filter((f) => !f.data.brouillon)
+    .map((fiche) => ({ params: { id: fiche.id }, props: { fiche } }));
+}) satisfies GetStaticPaths;
+
+const { fiche } = Astro.props;
+const d = fiche.data;
+const { Content } = await render(fiche);
+
+const toutes = (await getCollection('techniques')).filter((f) => !f.data.brouillon);
+const graphe = construireGraphe(toutes);
+const parId = new Map(toutes.map((f) => [f.id, f.data]));
+
+const resoudre = (ids: string[]) =>
+  ids
+    .map((id) => {
+      const t = parId.get(id);
+      return t ? { id, nom: t.nom.fr, code: t.code, famille: t.famille } : null;
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null)
+    .sort((a, b) => a.code.localeCompare(b.code, 'fr'));
+
+const noeud = graphe.noeuds.find((n) => n.id === fiche.id);
+const prerequis = resoudre(d.prerequis);
+const debloque = resoudre(noeud?.debloque ?? []);
+
+const nomsTechniques = Object.fromEntries(toutes.map((f) => [f.id, f.data.nom.fr]));
+const titresExercices = Object.fromEntries(d.exercices.map((e) => [e.id, e.titre]));
+
+/** Sommaire : seulement les sections réellement présentes. */
+const sections = [
+  d.paliers.length > 0 && { href: '#progression', label: 'Progression' },
+  d.erreurs.length > 0 && { href: '#erreurs', label: 'Erreurs & autodiagnostic' },
+  d.exercices.length > 0 && { href: '#exercices', label: 'Exercices' },
+  d.repertoire.length > 0 && { href: '#repertoire', label: 'Répertoire' },
+  d.sources.length > 0 && { href: '#sources', label: 'Sources' },
+].filter((x): x is { href: string; label: string } => Boolean(x));
+---
+
+<BaseLayout title={d.nom.fr} description={d.sonCible}>
+  <article class="fiche">
+    <FicheHeader
+      code={d.code}
+      nom={d.nom}
+      famille={d.famille}
+      style={d.style}
+      difficulte={d.difficulte}
+      main={d.main}
+      profondeur={d.profondeur}
+      permanent={d.permanent}
+      provenance={d.provenance}
+      sonCible={d.sonCible}
+      prerequis={prerequis}
+      debloque={debloque}
+    />
+
+    {d.doutes.length > 0 && <Doutes doutes={d.doutes} />}
+
+    {
+      d.permanent && (
+        <Callout title="Transversal permanent">
+          Cette technique ne se travaille pas «&nbsp;après&nbsp;» les autres&nbsp;: elle
+          s'applique à toutes, en même temps. Elle n'apparaît pas comme prérequis
+          dans le graphe pour ne pas le relier à trente nœuds, mais elle en est un.
+        </Callout>
+      )
+    }
+
+    <div class="corps">
+      <div class="corps__principal">
+        {
+          d.gesteCle && (
+            <section class="geste">
+              <p class="geste__k">Le geste</p>
+              <p class="geste__v">{d.gesteCle}</p>
+            </section>
+          )
+        }
+
+        <div class="prose">
+          <Content />
+        </div>
+
+        {
+          d.paliers.length > 0 && (
+            <section id="progression" class="bloc">
+              <h2>Progression</h2>
+              <p class="bloc__lede">
+                Un palier se franchit sur un critère observable, jamais sur une
+                impression. Quand le critère demande un retour extérieur, la fiche
+                le signale au lieu de faire semblant.
+              </p>
+              <Paliers paliers={d.paliers} titresExercices={titresExercices} />
+            </section>
+          )
+        }
+
+        {
+          d.erreurs.length > 0 && (
+            <section id="erreurs" class="bloc">
+              <h2>Erreurs fréquentes &amp; autodiagnostic</h2>
+              <p class="bloc__lede">
+                Cette section remplace le professeur. Chaque erreur porte un test
+                praticable seul et le signe qu'on observe si elle est présente.
+              </p>
+              <Erreurs erreurs={d.erreurs} nomsTechniques={nomsTechniques} />
+            </section>
+          )
+        }
+
+        {
+          d.exercices.length > 0 && (
+            <section id="exercices" class="bloc">
+              <h2>Exercices</h2>
+              <Exercices exercices={d.exercices} />
+            </section>
+          )
+        }
+
+        <div id="repertoire">
+          <Annexes ecoutes={d.ecoutes} repertoire={d.repertoire} sources={d.sources} />
+        </div>
+      </div>
+
+      <aside class="corps__cote">
+        <div class="colle">
+          <Seance seance={d.seance} />
+
+          {
+            sections.length > 1 && (
+              <nav class="sommaire" aria-label="Sommaire de la fiche">
+                <p class="sommaire__k">Sur cette page</p>
+                <ul>
+                  {sections.map((s) => (
+                    <li>
+                      <a href={s.href}>{s.label}</a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )
+          }
+
+          <p class="revu">
+            Revue le{' '}
+            {new Date(d.revuLe).toLocaleDateString('fr-FR', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}{' '}
+            · version {d.version}
+          </p>
+        </div>
+      </aside>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .fiche {
+    padding-bottom: var(--spacing-section);
+  }
+
+  .corps {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    gap: clamp(2rem, 1rem + 3vw, 3.5rem);
+    align-items: start;
+    margin-top: 2rem;
+  }
+
+  .colle {
+    position: sticky;
+    top: 6rem;
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  /* ---------------------------------------------------------- geste clé */
+  .geste {
+    border-left: 3px solid var(--color-brass-bright);
+    padding: 0.2rem 0 0.2rem 1rem;
+    margin-bottom: 1.75rem;
+  }
+  .geste__k {
+    margin: 0 0 0.2rem;
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-brass);
+  }
+  .geste__v {
+    margin: 0;
+    font-size: var(--text-base);
+    line-height: 1.6;
+  }
+
+  /* -------------------------------------------------------------- blocs */
+  .bloc {
+    margin-top: 3rem;
+  }
+  .bloc > h2 {
+    font-size: var(--text-h2);
+    margin: 0 0 0.6rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .bloc__lede {
+    max-width: 68ch;
+    margin: 0 0 1.5rem;
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    color: var(--color-ink-3);
+  }
+
+  /* ----------------------------------------------------------- sommaire */
+  .sommaire {
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    padding: 1rem 1.15rem;
+  }
+  .sommaire__k {
+    margin: 0 0 0.55rem;
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+  .sommaire ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+  .sommaire a {
+    font-size: var(--text-sm);
+    color: var(--color-ink-2);
+    text-decoration: none;
+  }
+  .sommaire a:hover {
+    color: var(--color-brass);
+    text-decoration: underline;
+  }
+
+  .revu {
+    margin: 0;
+    font-size: var(--text-2xs);
+    color: var(--color-ink-3);
+    text-align: right;
+  }
+
+  @media (max-width: 62rem) {
+    .corps {
+      grid-template-columns: 1fr;
+    }
+    .colle {
+      position: static;
+    }
+    /* Le protocole de séance passe avant le contenu sur petit écran :
+       la durée maximale et le signal d'arrêt ne doivent pas se lire après
+       coup. */
+    .corps__cote {
+      order: -1;
+    }
+  }
+</style>
