@@ -245,7 +245,7 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | 0 | Sonde alphaTex | Vérification du format, corrections du corpus | ✅ **close** |
 | 1 | **Fondations** | Astro, Tailwind, design system (tokens couleur, échelle typo, espacements, composants de base), layout, mode sombre, accueil | ✅ **close** |
 | 2 | **Contenu** | Content collections typées selon `05-modele-donnees.md`, migration des fiches en MDX, liste + filtres, page de détail | ✅ **close** |
-| 3 | Tablatures | alphaTab : rendu, lecture, curseur, tempo, boucle A/B, métronome. Composant réutilisable inséré via MDX | ⏳ |
+| 3 | **Tablatures** | alphaTab : rendu, lecture, curseur, tempo, boucle par mesure, métronome | ✅ **close** |
 | 4 | Accordeur | Page dédiée, chromatique, selon `06-accordeur.md`. Cents, aiguille lissée, choix d'accordage, gestion propre du micro **et de son refus** | ⏳ |
 | 5 | Arbre de compétences | Graphe de prérequis cliquable + progression | ⏳ |
 | 6 | Pratique | Métronome, minuteur de séance, journal IndexedDB, suivi par technique, export/import JSON | ⏳ |
@@ -379,6 +379,24 @@ Si le symptôme réapparaît malgré tout : `rm -rf node_modules/.vite .astro` p
 **Validation des tablatures** — `npm run validate` parse les 63 blocs alphaTex du projet, ceux de `docs/research` et ceux du frontmatter MDX. Il garantit la validité **syntaxique**, pas la justesse musicale : il n'aurait attrapé aucune des deux erreurs de contenu de la recherche.
 
 **Îlot React** — un seul pour l'instant : [FiltreTechniques](src/components/react/FiltreTechniques.tsx). Il justifie son hydratation (quatre facettes combinables, recherche, décompte en temps réel) et reflète son état dans l'URL, pour qu'une vue filtrée se mette en favori et que les liens « famille » retombent dessus.
+
+### Lecteur de tablature (tranche 3)
+
+[LecteurTab](src/components/react/LecteurTab.tsx), îlot React hydraté **à la visibilité** : une fiche peut compter cinq exercices, et chacun ouvre un contexte audio. La banque de sons (954 Ko) n'est chargée qu'à la **première lecture**, pas à l'affichage de la partition.
+
+**Trois pièges alphaTab, tous silencieux, tous rencontrés :**
+
+1. **`core.useWorkers: false` est obligatoire.** alphaTab crée son worker de mise en page à partir du chemin de son propre script, qu'il ne retrouve pas une fois passé par Vite. Le worker ne démarre jamais et le rendu échoue **sans lever d'erreur** : la surface existe, sa hauteur reste à zéro, aucun SVG n'est produit. Nos partitions font deux à quatre mesures — le fil principal suffit.
+2. **Le plugin Vite du paquet est cassé** en 1.8.4 : son point d'entrée réexporte `dist/vite/alphaTab.vite.mjs`, qui n'existe pas. Les ressources sont copiées par [tools/copy-alphatab-assets.mjs](tools/copy-alphatab-assets.mjs), lancé avant `dev` et `build`. Bravura en woff2 seulement, soundfont en sf3 : 1,26 Mo au lieu de 3 Mo.
+3. **Les couleurs sont figées à l'initialisation.** alphaTab rend en SVG ; sans recalcul, une partition composée en clair reste en encre sombre après bascule en sombre. Le composant observe `data-theme` **et** `prefers-color-scheme`, puis relance `updateSettings()` + `render()`.
+
+**La partition suit le thème** plutôt que de rester sur un papier blanc fixe : le site sert surtout le soir. Les lignes de portée prennent `--c-ink-3` et non un filet, trop pâle en sombre.
+
+**Boucle aimantée aux mesures** : les bornes viennent de `masterBar.start`, jamais d'une position en pixels ou en secondes. Le tempo démarre au **tempo de départ du palier**, avec des raccourcis vers départ et cible.
+
+**Décision 10 en action** : `audioFidele: false` n'a jamais désactivé la lecture. Le bloc « ce que la lecture ne restitue pas » nomme les réserves, exercice par exercice.
+
+⚠️ **Poids** : le chunk du lecteur pèse 1,1 Mo non compressé (alphaTab entier, synthétiseur compris). Acceptable en local, à revoir en tranche 7.
 
 ### Conventions alphaTex établies par la sonde
 

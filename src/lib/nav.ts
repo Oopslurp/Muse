@@ -53,8 +53,8 @@ export const TRANCHES: readonly Tranche[] = [
   {
     n: 3,
     label: 'Tablatures',
-    detail: 'alphaTab : rendu, lecture, curseur, boucle A/B, métronome.',
-    done: false,
+    detail: 'alphaTab : rendu, lecture, curseur, boucle par mesure, métronome.',
+    done: true,
   },
   {
     n: 4,

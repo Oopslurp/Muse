@@ -18,7 +18,9 @@
     "test:notes": "node tools/test-notes.mts",
     "shot": "node tools/shot.mjs",
     "audit:layout": "node tools/audit-layout.mjs",
-    "audit:console": "node tools/audit-console.mjs"
+    "audit:console": "node tools/audit-console.mjs",
+    "predev": "node tools/copy-alphatab-assets.mjs",
+    "prebuild": "node tools/copy-alphatab-assets.mjs"
   },
   "keywords": [],
   "author": "",

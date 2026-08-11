@@ -1,0 +1,470 @@
+/**
+ * Lecteur de tablature — îlot React autour d'alphaTab.
+ *
+ * Ce que ce composant apporte par rapport à un lecteur générique, et qui
+ * justifie de l'écrire plutôt que d'intégrer Soundslice :
+ *
+ *  · le tempo démarre au **tempo de départ du palier**, pas au tempo d'écriture ;
+ *  · la boucle s'aimante aux **frontières de mesure** — une boucle qui commence
+ *    quarante millisecondes trop tôt est inutilisable, et personne ne la règle
+ *    au pixel (emprunt assumé à Soundslice, voir 04-benchmark.md) ;
+ *  · quand le rendu MIDI est infidèle, on **lit quand même** et on nomme
+ *    précisément ce qui manque (CLAUDE.md, décision 10).
+ *
+ * La banque de sons pèse presque un mégaoctet : elle n'est chargée qu'à la
+ * première lecture, pas à l'affichage de la partition. La partition, elle,
+ * s'affiche sans audio ni contexte audio.
+ */
+
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import * as alphaTab from '@coderline/alphatab';
+import './LecteurTab.css';
+
+export interface LecteurTabProps {
+  /** Source alphaTex de l'exercice. */
+  alphaTex: string;
+  /** Tempo de départ du palier, en pulsations par minute. */
+  tempoDepart?: number | undefined;
+  /** Tempo cible du palier, proposé comme raccourci. */
+  tempoCible?: number | undefined;
+  /** Ce que le rendu MIDI ne restitue pas. Vide si la lecture est fidèle. */
+  reservesAudio?: string[];
+  /** Rendu plus dense — pour les exercices d'une ou deux mesures. */
+  compact?: boolean;
+}
+
+const CHEMIN = {
+  police: '/alphatab/font/',
+  soundfont: '/alphatab/soundfont/sonivox.sf3',
+};
+
+/** Durée d'une mesure 4/4 en tics alphaTab, repli quand on ne peut pas mieux. */
+const TICS_MESURE_4_4 = 3840;
+
+/** Lit un jeton du design system : alphaTab rend en SVG, il lui faut des couleurs. */
+function jeton(nom: string, repli: string): string {
+  if (typeof window === 'undefined') return repli;
+  return getComputedStyle(document.documentElement).getPropertyValue(nom).trim() || repli;
+}
+
+/**
+ * Couleurs de la partition, tirées du thème courant.
+ *
+ * La portée suit le thème plutôt que de rester sur un papier blanc fixe : le
+ * site sert surtout le soir, et un rectangle blanc au milieu d'une page sombre
+ * est agressif. Les lignes de portée prennent une encre atténuée plutôt qu'un
+ * filet, qui serait trop pâle en sombre.
+ */
+const couleursPartition = () => ({
+  staffLineColor: jeton('--c-ink-3', '#7c7062'),
+  barSeparatorColor: jeton('--c-ink-3', '#7c7062'),
+  barNumberColor: jeton('--c-brass', '#8a6a1b'),
+  mainGlyphColor: jeton('--c-ink', '#1c1815'),
+  secondaryGlyphColor: jeton('--c-ink-2', '#4e453b'),
+  scoreInfoColor: jeton('--c-ink-3', '#7c7062'),
+});
+
+const borner = (v: number, max: number): number =>
+  Number.isFinite(v) ? Math.min(Math.max(1, Math.round(v)), Math.max(1, max)) : 1;
+
+export default function LecteurTab({
+  alphaTex,
+  tempoDepart,
+  tempoCible,
+  reservesAudio = [],
+  compact = false,
+}: LecteurTabProps) {
+  const hote = useRef<HTMLDivElement>(null);
+  const apiRef = useRef<alphaTab.AlphaTabApi | null>(null);
+  /** Début de chaque mesure, en tics. C'est ce qui rend la boucle aimantée. */
+  const bornesRef = useRef<number[]>([]);
+  const soundfontPret = useRef(false);
+
+  const [pret, setPret] = useState(false);
+  const [chargement, setChargement] = useState(false);
+  const [erreur, setErreur] = useState<string | null>(null);
+  const [joue, setJoue] = useState(false);
+  /** Les curseurs restent cachés tant qu'on n'a pas lancé la lecture : au
+   *  repos, une barre rouge sur la mesure 1 ressemble à une erreur. */
+  const [aDemarre, setADemarre] = useState(false);
+
+  const [nbMesures, setNbMesures] = useState(0);
+  const [tempoEcrit, setTempoEcrit] = useState(0);
+  const [tempo, setTempo] = useState(tempoDepart ?? 0);
+
+  const [metronome, setMetronome] = useState(false);
+  const [decompte, setDecompte] = useState(true);
+  const [boucle, setBoucle] = useState(false);
+  const [mesureDe, setMesureDe] = useState(1);
+  const [mesureA, setMesureA] = useState(1);
+
+  /* ---------------------------------------------------- initialisation */
+  useEffect(() => {
+    const conteneur = hote.current;
+    if (!conteneur) return;
+
+    let vivant = true;
+    let instance: alphaTab.AlphaTabApi;
+
+    try {
+      instance = new alphaTab.AlphaTabApi(conteneur, {
+        core: {
+          tex: true,
+          fontDirectory: CHEMIN.police,
+          logLevel: alphaTab.LogLevel.Error,
+          /**
+           * Rendu sur le fil principal.
+           *
+           * alphaTab délègue la mise en page à un Web Worker qu'il crée à
+           * partir du chemin de son propre script — chemin qu'il ne sait pas
+           * retrouver une fois le paquet passé par Vite. Le worker ne démarre
+           * alors jamais, et le rendu échoue **sans erreur** : la surface est
+           * créée, sa hauteur reste à zéro, aucun SVG n'est produit.
+           *
+           * Les partitions du site font deux à quatre mesures. Les composer
+           * sur le fil principal coûte quelques millisecondes.
+           */
+          useWorkers: false,
+        },
+        notation: {
+          // Titre, sous-titre et nom de piste sont déjà dans la fiche : les
+          // réafficher dans la partition double l'information et gonfle la
+          // hauteur du bloc pour rien. L'accordage, lui, reste — il change
+          // d'un exercice à l'autre et ne se devine pas.
+          elements: {
+            scoreTitle: false,
+            scoreSubTitle: false,
+            scoreArtist: false,
+            scoreAlbum: false,
+            scoreWordsAndMusic: false,
+            scoreCopyright: false,
+            trackNames: false,
+          },
+        },
+        display: {
+          scale: compact ? 0.85 : 0.95,
+          stretchForce: 0.9,
+          layoutMode: alphaTab.LayoutMode.Page,
+          resources: couleursPartition(),
+        },
+        player: {
+          playerMode: alphaTab.PlayerMode.EnabledAutomatic,
+          outputMode: alphaTab.PlayerOutputMode.WebAudioAudioWorklets,
+          enableCursor: true,
+          enableAnimatedBeatCursor: true,
+          enableElementHighlighting: true,
+          // Deuxième chemin vers la boucle : sélectionner une plage à la souris
+          // directement sur la partition.
+          enableUserInteraction: true,
+          scrollMode: alphaTab.ScrollMode.Off,
+        },
+      });
+    } catch (e) {
+      setErreur(e instanceof Error ? e.message : String(e));
+      return;
+    }
+
+    apiRef.current = instance;
+
+    instance.error.on((e) => {
+      if (vivant) setErreur(e instanceof Error ? e.message : String(e));
+    });
+
+    instance.scoreLoaded.on((score) => {
+      if (!vivant) return;
+      bornesRef.current = score.masterBars.map((mb) => mb.start);
+      setNbMesures(score.masterBars.length);
+      setMesureA(score.masterBars.length);
+      const ecrit = Math.round(score.tempo);
+      setTempoEcrit(ecrit);
+      setTempo((t) => (t > 0 ? t : ecrit));
+      setPret(true);
+    });
+
+    instance.playerStateChanged.on((e) => {
+      if (vivant) setJoue(e.state === alphaTab.synth.PlayerState.Playing);
+    });
+
+    instance.tex(alphaTex);
+
+    return () => {
+      vivant = false;
+      apiRef.current = null;
+      try {
+        instance.destroy();
+      } catch {
+        /* le composant disparaît de toute façon */
+      }
+    };
+  }, [alphaTex, compact]);
+
+  /**
+   * Recolore la partition quand le thème change.
+   *
+   * alphaTab fige ses couleurs à l'initialisation et rend en SVG : sans ce
+   * recalcul, une partition composée en clair reste en encre sombre après
+   * bascule en sombre, et devient illisible sur son propre fond.
+   */
+  useEffect(() => {
+    const recolorer = () => {
+      const api = apiRef.current;
+      if (!api) return;
+      api.settings.display.resources.fillFromJson(couleursPartition());
+      api.updateSettings();
+      api.render();
+    };
+
+    const surHtml = new MutationObserver(recolorer);
+    surHtml.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    // Le thème « système » ne touche pas à l'attribut : il faut aussi écouter
+    // la préférence du système elle-même.
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    media.addEventListener('change', recolorer);
+
+    return () => {
+      surHtml.disconnect();
+      media.removeEventListener('change', recolorer);
+    };
+  }, []);
+
+  /* --------------------------------------------------- réglages en direct */
+  useEffect(() => {
+    const api = apiRef.current;
+    // alphaTab n'expose pas un tempo absolu mais un facteur de vitesse.
+    if (api && tempoEcrit > 0) api.playbackSpeed = tempo / tempoEcrit;
+  }, [tempo, tempoEcrit]);
+
+  useEffect(() => {
+    if (apiRef.current) apiRef.current.metronomeVolume = metronome ? 1 : 0;
+  }, [metronome]);
+
+  useEffect(() => {
+    if (apiRef.current) apiRef.current.countInVolume = decompte ? 1 : 0;
+  }, [decompte]);
+
+  /** Boucle en tics, alignée sur les frontières de mesure. */
+  useEffect(() => {
+    const api = apiRef.current;
+    const bornes = bornesRef.current;
+    if (!api || bornes.length === 0) return;
+
+    if (!boucle) {
+      api.isLooping = false;
+      api.playbackRange = null;
+      return;
+    }
+
+    const premier = Math.min(mesureDe, mesureA) - 1;
+    const dernier = Math.max(mesureDe, mesureA) - 1;
+    const debut = bornes[premier] ?? 0;
+    // La dernière mesure n'a pas de borne suivante : on prolonge d'une durée
+    // de mesure, déduite de l'écart entre les deux dernières.
+    const derniereDuree =
+      bornes.length >= 2
+        ? (bornes[bornes.length - 1] ?? 0) - (bornes[bornes.length - 2] ?? 0)
+        : TICS_MESURE_4_4;
+    const fin = bornes[dernier + 1] ?? (bornes[dernier] ?? 0) + derniereDuree;
+
+    api.isLooping = true;
+    api.playbackRange = { startTick: debut, endTick: fin };
+    if (api.tickPosition < debut || api.tickPosition >= fin) api.tickPosition = debut;
+  }, [boucle, mesureDe, mesureA]);
+
+  /* -------------------------------------------------------------- actions */
+  const basculerLecture = useCallback(async () => {
+    const api = apiRef.current;
+    if (!api) return;
+
+    if (!soundfontPret.current) {
+      setChargement(true);
+      try {
+        const rep = await fetch(CHEMIN.soundfont);
+        if (!rep.ok) throw new Error(`banque de sons indisponible (HTTP ${rep.status})`);
+        const donnees = new Uint8Array(await rep.arrayBuffer());
+        const attente = new Promise<void>((resolve) => {
+          api.soundFontLoaded.on(resolve);
+          // Filet : si l'événement ne vient pas, on laisse quand même jouer.
+          setTimeout(resolve, 10000);
+        });
+        api.loadSoundFont(donnees, false);
+        await attente;
+        soundfontPret.current = true;
+      } catch (e) {
+        setErreur(e instanceof Error ? e.message : String(e));
+        setChargement(false);
+        return;
+      }
+      setChargement(false);
+    }
+    setADemarre(true);
+    api.playPause();
+  }, []);
+
+  const arreter = useCallback(() => apiRef.current?.stop(), []);
+
+  const pourcent = tempoEcrit > 0 ? Math.round((tempo / tempoEcrit) * 100) : 100;
+
+  const plage = useMemo(() => {
+    const ancre = tempoDepart ?? tempoEcrit ?? 60;
+    const haut = Math.max(Math.round((tempoCible ?? tempoEcrit ?? 120) * 1.6), 80);
+    return { bas: Math.max(20, Math.round(ancre * 0.5)), haut };
+  }, [tempoDepart, tempoCible, tempoEcrit]);
+
+  const enPanne = erreur !== null;
+
+  return (
+    <div
+      className={[
+        'lt',
+        compact ? 'lt--compact' : '',
+        aDemarre ? '' : 'lt--repos',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      <div className="lt__barre">
+        <button
+          type="button"
+          className="lt__jouer"
+          onClick={basculerLecture}
+          disabled={enPanne || chargement || !pret}
+          aria-label={joue ? 'Pause' : 'Lire'}
+        >
+          {chargement ? (
+            <span className="lt__spin" aria-hidden="true" />
+          ) : joue ? (
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="3.5" y="2.5" width="3.5" height="11" rx="1" />
+              <rect x="9" y="2.5" width="3.5" height="11" rx="1" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M4 2.6v10.8a.7.7 0 0 0 1.07.6l8.4-5.4a.7.7 0 0 0 0-1.2l-8.4-5.4A.7.7 0 0 0 4 2.6Z" />
+            </svg>
+          )}
+        </button>
+
+        <button type="button" className="lt__btn" onClick={arreter} disabled={enPanne || !pret}>
+          Stop
+        </button>
+
+        <label className="lt__tempo">
+          <span className="lt__k">Tempo</span>
+          <input
+            type="range"
+            min={plage.bas}
+            max={plage.haut}
+            step={1}
+            value={tempo}
+            disabled={enPanne || tempoEcrit === 0}
+            onChange={(e) => setTempo(Number(e.target.value))}
+            aria-label="Tempo, en pulsations par minute"
+          />
+          <output className="lt__bpm">
+            ♩&nbsp;{tempo}
+            <span className="lt__pct">{pourcent}&nbsp;%</span>
+          </output>
+        </label>
+
+        {tempoDepart !== undefined && tempoDepart !== tempo && (
+          <button
+            type="button"
+            className="lt__lien"
+            onClick={() => setTempo(tempoDepart)}
+            title="Revenir au tempo de départ du palier"
+          >
+            départ ♩&nbsp;{tempoDepart}
+          </button>
+        )}
+        {tempoCible !== undefined && tempoCible !== tempo && (
+          <button
+            type="button"
+            className="lt__lien"
+            onClick={() => setTempo(tempoCible)}
+            title="Passer au tempo cible du palier"
+          >
+            cible ♩&nbsp;{tempoCible}
+          </button>
+        )}
+      </div>
+
+      <div className="lt__barre lt__barre--bas">
+        <label className="lt__case">
+          <input
+            type="checkbox"
+            checked={metronome}
+            onChange={(e) => setMetronome(e.target.checked)}
+            disabled={enPanne}
+          />
+          Métronome
+        </label>
+        <label className="lt__case">
+          <input
+            type="checkbox"
+            checked={decompte}
+            onChange={(e) => setDecompte(e.target.checked)}
+            disabled={enPanne}
+          />
+          Décompte
+        </label>
+
+        <label className="lt__case">
+          <input
+            type="checkbox"
+            checked={boucle}
+            onChange={(e) => setBoucle(e.target.checked)}
+            disabled={enPanne || nbMesures === 0}
+          />
+          Boucler
+        </label>
+
+        <span className={boucle ? 'lt__mesures' : 'lt__mesures lt__mesures--off'}>
+          <input
+            type="number"
+            min={1}
+            max={Math.max(nbMesures, 1)}
+            value={mesureDe}
+            disabled={!boucle || enPanne}
+            onChange={(e) => setMesureDe(borner(Number(e.target.value), nbMesures))}
+            aria-label="Première mesure de la boucle"
+          />
+          <span aria-hidden="true">→</span>
+          <input
+            type="number"
+            min={1}
+            max={Math.max(nbMesures, 1)}
+            value={mesureA}
+            disabled={!boucle || enPanne}
+            onChange={(e) => setMesureA(borner(Number(e.target.value), nbMesures))}
+            aria-label="Dernière mesure de la boucle"
+          />
+          <span className="lt__sur">sur {nbMesures || '—'}</span>
+        </span>
+      </div>
+
+      {reservesAudio.length > 0 && (
+        <div className="lt__reserves">
+          <p className="lt__reserves-k">Ce que la lecture ne restitue pas</p>
+          <ul>
+            {reservesAudio.map((r) => (
+              <li key={r}>{r}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {enPanne && (
+        <p className="lt__erreur">
+          Le lecteur n'a pas démarré&nbsp;: {erreur}. La source alphaTex reste lisible
+          sous la partition.
+        </p>
+      )}
+
+      <div className="lt__partition" ref={hote} />
+    </div>
+  );
+}

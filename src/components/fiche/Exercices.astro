@@ -2,16 +2,27 @@
 /**
  * Exercices.
  *
- * La source alphaTex est affichée telle quelle en attendant le lecteur
- * alphaTab (tranche 3). Ce n'est pas un pis-aller complet : la source est
- * lisible, copiable dans le playground alphaTab, et c'est elle qui fait foi.
+ * Chaque exercice avec tablature reçoit un lecteur alphaTab, hydraté à la
+ * visibilité : une fiche peut en compter cinq, et chacun ouvre un contexte
+ * audio. Les charger tous à l'ouverture de la page épuiserait la limite du
+ * navigateur pour rien.
+ *
+ * La source alphaTex reste accessible sous la partition. Elle fait foi, elle
+ * se copie dans le playground alphaTab, et elle reste lisible si le lecteur
+ * ne démarre pas.
  *
  * CLAUDE.md, décision 10 : quand `audioFidele` est faux, on n'ampute rien —
- * on affiche un badge qui nomme précisément ce que le rendu ne restituera pas.
+ * on lit quand même et on nomme précisément ce que le rendu ne restitue pas.
  */
 import StatusBadge from '~/components/ui/StatusBadge.astro';
+import LecteurTab from '~/components/react/LecteurTab';
 import { statutAffiche, type Provenance } from '~/lib/provenance';
 import { plageTempo, nomOrigineExercice, type Tempo } from '~/lib/format';
+
+/** Le lecteur raisonne en pulsations par minute ; les tempos en notes par
+ *  minute ne s'y traduisent pas et sont donc ignorés. */
+const bpm = (t: Tempo | undefined): number | undefined =>
+  t && t.unite === 'bpm' ? t.valeur : undefined;
 
 interface Exercice {
   id: string;
@@ -59,26 +70,20 @@ const { exercices } = Astro.props;
 
           {e.alphaTex && (
             <div class="tab">
-              <div class="tab__barre">
-                <span class="tab__format">alphaTex</span>
-                {!e.audioFidele && (
-                  <span
-                    class="tab__reserve"
-                    title={e.reservesAudio.join(' · ')}
-                  >
-                    lecture partielle
-                  </span>
-                )}
-                <span class="tab__attente">lecteur en tranche 3</span>
-              </div>
-              <pre><code>{e.alphaTex.trim()}</code></pre>
-              {!e.audioFidele && (
-                <ul class="reserves">
-                  {e.reservesAudio.map((r) => (
-                    <li>{r}</li>
-                  ))}
-                </ul>
-              )}
+              <LecteurTab
+                client:visible
+                alphaTex={e.alphaTex}
+                tempoDepart={bpm(e.tempoDepart)}
+                tempoCible={bpm(e.tempoCible)}
+                reservesAudio={e.audioFidele ? [] : e.reservesAudio}
+              />
+              <details class="source">
+                <summary>
+                  <span class="source__format">alphaTex</span>
+                  <span class="source__hint">la source fait foi</span>
+                </summary>
+                <pre><code>{e.alphaTex.trim()}</code></pre>
+              </details>
             </div>
           )}
         </article>
@@ -159,58 +164,55 @@ const { exercices } = Astro.props;
 
   /* ------------------------------------------------------------ tablature */
   .tab {
-    border: 1px solid var(--color-line);
-    border-radius: var(--radius-card);
-    overflow: hidden;
-    background: var(--color-surface-2);
+    min-width: 0;
   }
-  .tab__barre {
+
+  /* La source alphaTex, repliée. Elle reste la référence — c'est elle qu'on
+     copie dans le playground et elle qui subsiste si le lecteur échoue. */
+  .source {
+    margin-top: 0.45rem;
+  }
+  .source summary {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    padding: 0.45rem 0.8rem;
-    border-bottom: 1px solid var(--color-line);
-    background: var(--color-surface);
+    gap: 0.55rem;
+    cursor: pointer;
+    list-style: none;
+    padding: 0.15rem 0;
   }
-  .tab__format {
+  .source summary::-webkit-details-marker {
+    display: none;
+  }
+  .source summary::before {
+    content: '▸';
+    font-size: 0.7em;
+    color: var(--color-ink-3);
+    transition: transform 160ms ease;
+  }
+  .source[open] summary::before {
+    transform: rotate(90deg);
+  }
+  .source__format {
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
     letter-spacing: 0.06em;
-    color: var(--color-ink-3);
+    color: var(--color-ink-2);
   }
-  .tab__attente {
-    margin-left: auto;
+  .source__hint {
     font-size: var(--text-2xs);
     font-style: italic;
     color: var(--color-ink-3);
   }
-  .tab__reserve {
-    font-size: var(--text-2xs);
-    font-weight: 600;
-    color: var(--color-verifier);
-    border: 1px dashed color-mix(in oklab, var(--c-verifier) 45%, transparent);
-    border-radius: var(--radius-pill);
-    padding: 0.12em 0.55em;
-    cursor: help;
-  }
 
-  .tab pre {
-    margin: 0;
+  .source pre {
+    margin: 0.4rem 0 0;
     padding: 0.9rem 1rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-2);
     overflow-x: auto;
     font-size: 0.82rem;
     line-height: 1.65;
     color: var(--color-ink-2);
-  }
-
-  .reserves {
-    margin: 0;
-    padding: 0.7rem 1rem 0.85rem 2.1rem;
-    border-top: 1px solid var(--color-line);
-    font-size: var(--text-2xs);
-    color: var(--color-verifier);
-  }
-  .reserves li + li {
-    margin-top: 0.2rem;
   }
 </style>
