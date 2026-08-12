@@ -327,6 +327,7 @@ npm run test:notes    # dérivation des noms de notes (10 cas)
 
 npm run shot          # captures de contrôle dans .captures/ (Chrome headless)
 npm run audit:console # exceptions, erreurs console, îlots vides, débordement
+npm run audit:lecture # appuie sur « lire » et vérifie que le curseur avance
 npm run audit:layout -- <url> <largeur>   # remonte à l'élément qui déborde
 ```
 
@@ -341,13 +342,22 @@ Les tranches 0 à 2 ont été livrées **sans jamais regarder le rendu**, faute 
 
 ⚠️ **Un HTML correct ne prouve rien.** La page « Techniques » a servi 29 Ko de HTML valide tout en s'affichant vide, pendant des heures, pour deux raisons successives : des en-têtes COEP qui bloquaient les modules, puis un pré-bundling Vite cassé qui rendait `jsxDEV` indéfini. Aucune des deux n'est visible dans la réponse du serveur. **Toujours exécuter le JS** — `npm run audit:console` fait exactement ça et échoue en code 1.
 
+⚠️ **Charger la page ne prouve pas davantage.** La tranche 3 entière a été livrée avec un lecteur muet, sans qu'aucun contrôle ne s'en aperçoive : `audit:console` voyait cinq routes saines, les captures montraient de belles partitions. Le worker audio mourait en silence au chargement. **Ce qui a un bouton doit être cliqué** — `npm run audit:lecture` appuie sur « lire », vérifie que le curseur avance, et échoue en code 1.
+
 **À lancer à la fin de chaque tranche**, avant le commit :
 
 ```bash
 npm run audit:console                              # contre le dev
-MUSE_URL=http://localhost:4321 npm run audit:console
+npm run audit:lecture
+npm run build && npm run preview                   # puis contre le build
+MUSE_URL=http://localhost:4322 npm run audit:console
+MUSE_URL=http://localhost:4322 npm run audit:lecture
 npm run shot                                       # et regarder les images
 ```
+
+Le build mérite son propre passage : le plugin alphaTab n'emprunte pas le même chemin en développement et en production.
+
+**Pour vérifier que `audit:lecture` échoue vraiment** — un garde-fou qui n'a jamais échoué ne prouve rien : commenter la ligne `alphaTab({ … })` dans `astro.config.mjs`, vider `node_modules/.vite`, relancer `dev`. Les deux lecteurs doivent ressortir muets.
 
 ### Le piège du pré-bundling Vite
 
@@ -382,13 +392,14 @@ Si le symptôme réapparaît malgré tout : `rm -rf node_modules/.vite .astro` p
 
 ### Lecteur de tablature (tranche 3)
 
-[LecteurTab](src/components/react/LecteurTab.tsx), îlot React hydraté **à la visibilité** : une fiche peut compter cinq exercices, et chacun ouvre un contexte audio. La banque de sons (954 Ko) n'est chargée qu'à la **première lecture**, pas à l'affichage de la partition.
+[LecteurTab](src/components/react/LecteurTab.tsx), îlot React hydraté **à la visibilité**. Rien de la machinerie audio n'existe avant le premier appui sur « lire » : le lecteur démarre en `PlayerMode.Disabled` et n'est allumé qu'au clic. alphaTab crée son worker de synthèse **et son contexte audio** dès que le lecteur existe ; une fiche compte jusqu'à quatre exercices et le simple défilement les hydrate tous.
 
-**Trois pièges alphaTab, tous silencieux, tous rencontrés :**
+**Quatre pièges alphaTab, tous silencieux, tous rencontrés :**
 
-1. **`core.useWorkers: false` est obligatoire.** alphaTab crée son worker de mise en page à partir du chemin de son propre script, qu'il ne retrouve pas une fois passé par Vite. Le worker ne démarre jamais et le rendu échoue **sans lever d'erreur** : la surface existe, sa hauteur reste à zéro, aucun SVG n'est produit. Nos partitions font deux à quatre mesures — le fil principal suffit.
-2. **Le plugin Vite du paquet est cassé** en 1.8.4 : son point d'entrée réexporte `dist/vite/alphaTab.vite.mjs`, qui n'existe pas. Les ressources sont copiées par [tools/copy-alphatab-assets.mjs](tools/copy-alphatab-assets.mjs), lancé avant `dev` et `build`. Bravura en woff2 seulement, soundfont en sf3 : 1,26 Mo au lieu de 3 Mo.
-3. **Les couleurs sont figées à l'initialisation.** alphaTab rend en SVG ; sans recalcul, une partition composée en clair reste en encre sombre après bascule en sombre. Le composant observe `data-theme` **et** `prefers-color-scheme`, puis relance `updateSettings()` + `render()`.
+1. **Le worker de synthèse est indispensable, et Vite le perd.** alphaTab le charge par `new URL('./alphaTab.worker.mjs', import.meta.url)` — une URL qui pointe dans `node_modules/.vite/deps/` une fois le paquet pré-bundlé, où le fichier n'existe pas. `new Worker()` **ne lève pas** sur une URL absente : le worker meurt à son chargement, le synthétiseur reste muet, `soundFontLoaded` n'arrive jamais. Le plugin **`@coderline/alphatab-vite`** réécrit ces URL ; il est branché dans [astro.config.mjs](astro.config.mjs). ⚠️ **`core.useWorkers: false` ne protège pas de ça** — ce réglage ne concerne que le moteur de rendu.
+2. **`@coderline/alphatab/vite`, le plugin embarqué dans le paquet principal, est cassé** en 1.8.4 : il réexporte `dist/vite/alphaTab.vite.mjs`, qui n'existe pas. Il est de toute façon déprécié au profit du paquet séparé ci-dessus. Les ressources restent copiées par [tools/copy-alphatab-assets.mjs](tools/copy-alphatab-assets.mjs) (`assetOutputDir: false`), plus léger que la copie du plugin : Bravura en woff2 seulement, soundfont en sf3, 1,26 Mo au lieu de 3 Mo.
+3. **Le plugin bundle worker et worklet hors du chemin de minification de Vite.** Sans `worker.rolldownOptions.output.minify`, ils sortent bruts — 2,3 Mo pièce au lieu de 1,15.
+4. **Les couleurs sont figées à l'initialisation.** alphaTab rend en SVG ; sans recalcul, une partition composée en clair reste en encre sombre après bascule en sombre. Le composant observe `data-theme` **et** `prefers-color-scheme`, puis relance `updateSettings()` + `render()`. ⚠️ `resources.fillFromJson()` existe à l'exécution mais **pas dans les typages** : passer par `Color.fromJson` propriété par propriété. Même chose pour `notation.elements`, qui veut une `Map`, pas un objet.
 
 **La partition suit le thème** plutôt que de rester sur un papier blanc fixe : le site sert surtout le soir. Les lignes de portée prennent `--c-ink-3` et non un filet, trop pâle en sombre.
 
@@ -396,7 +407,9 @@ Si le symptôme réapparaît malgré tout : `rm -rf node_modules/.vite .astro` p
 
 **Décision 10 en action** : `audioFidele: false` n'a jamais désactivé la lecture. Le bloc « ce que la lecture ne restitue pas » nomme les réserves, exercice par exercice.
 
-⚠️ **Poids** : le chunk du lecteur pèse 1,1 Mo non compressé (alphaTab entier, synthétiseur compris). Acceptable en local, à revoir en tranche 7.
+**Une panne de lecture ne coupe pas les commandes.** Elle s'affiche et on peut réessayer. Le délai d'attente du synthétiseur (20 s) est un **diagnostic, pas un filet** : une version antérieure laissait jouer quand même à son expiration, ce qui transformait un worker mort en disque qui tourne dix secondes puis s'arrête sans un mot.
+
+⚠️ **Poids** : trois chunks d'environ 1,15 Mo non compressé — le lecteur, le worker de synthèse, le worklet audio. Chacun embarque le cœur d'alphaTab. Les deux derniers ne sont chargés qu'au premier appui sur « lire ». Acceptable en local, à revoir en tranche 7.
 
 ### Conventions alphaTex établies par la sonde
 

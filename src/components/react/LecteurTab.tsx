@@ -11,9 +11,11 @@
  *  · quand le rendu MIDI est infidèle, on **lit quand même** et on nomme
  *    précisément ce qui manque (CLAUDE.md, décision 10).
  *
- * La banque de sons pèse presque un mégaoctet : elle n'est chargée qu'à la
- * première lecture, pas à l'affichage de la partition. La partition, elle,
- * s'affiche sans audio ni contexte audio.
+ * Rien de la machinerie audio n'existe avant le premier appui sur « lire » :
+ * ni worker de synthèse, ni contexte audio, ni banque de sons. Une fiche
+ * compte jusqu'à quatre exercices et le simple défilement les hydrate tous ;
+ * les navigateurs plafonnent le nombre de contextes audio par page, et chaque
+ * worker analyse un mégaoctet de JavaScript. Voir `reveillerAudio`.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -64,8 +66,102 @@ const couleursPartition = () => ({
   scoreInfoColor: jeton('--c-ink-3', '#7c7062'),
 });
 
+type PalettePartition = ReturnType<typeof couleursPartition>;
+
+/**
+ * Repeint des ressources déjà vivantes.
+ *
+ * À la construction, alphaTab accepte les couleurs sous forme de chaînes ; une
+ * fois l'objet créé, ce sont des `Color`. On convertit donc, en gardant la
+ * teinte précédente si le jeton CSS est illisible — une partition dans la
+ * mauvaise couleur reste lisible, une partition transparente non.
+ */
+function repeindre(res: alphaTab.RenderingResources, palette: PalettePartition): void {
+  for (const cle of Object.keys(palette) as (keyof PalettePartition)[]) {
+    res[cle] = alphaTab.model.Color.fromJson(palette[cle]) ?? res[cle];
+  }
+}
+
+/**
+ * Éléments d'en-tête à masquer.
+ *
+ * Titre, sous-titre et nom de piste sont déjà dans la fiche : les réafficher
+ * dans la partition double l'information et gonfle la hauteur du bloc pour
+ * rien. L'accordage, lui, reste — il change d'un exercice à l'autre et ne se
+ * devine pas.
+ */
+const enTetesMasques = (): Map<alphaTab.NotationElement, boolean> =>
+  new Map(
+    [
+      alphaTab.NotationElement.ScoreTitle,
+      alphaTab.NotationElement.ScoreSubTitle,
+      alphaTab.NotationElement.ScoreArtist,
+      alphaTab.NotationElement.ScoreAlbum,
+      alphaTab.NotationElement.ScoreWordsAndMusic,
+      alphaTab.NotationElement.ScoreCopyright,
+      alphaTab.NotationElement.TrackNames,
+    ].map((e) => [e, false])
+  );
+
 const borner = (v: number, max: number): number =>
   Number.isFinite(v) ? Math.min(Math.max(1, Math.round(v)), Math.max(1, max)) : 1;
+
+/**
+ * Réveille le synthétiseur, jusque-là éteint.
+ *
+ * alphaTab crée son worker de synthèse **et son contexte audio** dès que le
+ * lecteur existe, qu'on joue ou non. On le laisse donc désactivé à
+ * l'initialisation et on ne l'allume qu'ici, au premier appui.
+ *
+ * `updateSettings()` reconstruit le lecteur. alphaTab lui reporte les volumes,
+ * la vitesse et le bouclage, qu'il tient en cache — mais **pas** la plage de
+ * lecture, seul réglage à rejouer après coup.
+ */
+function reveillerAudio(api: alphaTab.AlphaTabApi): void {
+  if (api.settings.player.playerMode !== alphaTab.PlayerMode.Disabled) return;
+  api.settings.player.playerMode = alphaTab.PlayerMode.EnabledAutomatic;
+  api.updateSettings();
+}
+
+/**
+ * Attend que le synthétiseur soit prêt à jouer.
+ *
+ * Ce délai n'est pas un filet qui laisse passer : c'est un diagnostic. Une
+ * version précédente laissait jouer quand même à son expiration. Quand le
+ * worker audio ne démarrait pas — ce qui fut le cas pendant toute la tranche 3,
+ * faute du plugin Vite d'alphaTab — le bouton tournait dix secondes puis
+ * s'arrêtait sans rien dire ni rien jouer. Un échec bruyant vaut mieux.
+ */
+function attendrePret(api: alphaTab.AlphaTabApi, ms = 20_000): Promise<void> {
+  if (api.isReadyForPlayback) return Promise.resolve();
+
+  return new Promise<void>((resolve, reject) => {
+    let clos = false;
+    let minuteur: ReturnType<typeof setTimeout>;
+    let desabonner: (() => void) | undefined;
+
+    const terminer = (echec?: Error) => {
+      if (clos) return;
+      clos = true;
+      clearTimeout(minuteur);
+      desabonner?.();
+      if (echec) reject(echec);
+      else resolve();
+    };
+
+    minuteur = setTimeout(
+      () =>
+        terminer(
+          new Error(
+            `le synthétiseur n'a pas répondu en ${Math.round(ms / 1000)} s ` +
+              `(son worker audio n'a probablement pas démarré)`
+          )
+        ),
+      ms
+    );
+    desabonner = api.playerReady.on(() => terminer());
+  });
+}
 
 export default function LecteurTab({
   alphaTex,
@@ -78,7 +174,6 @@ export default function LecteurTab({
   const apiRef = useRef<alphaTab.AlphaTabApi | null>(null);
   /** Début de chaque mesure, en tics. C'est ce qui rend la boucle aimantée. */
   const bornesRef = useRef<number[]>([]);
-  const soundfontPret = useRef(false);
 
   const [pret, setPret] = useState(false);
   const [chargement, setChargement] = useState(false);
@@ -113,34 +208,21 @@ export default function LecteurTab({
           fontDirectory: CHEMIN.police,
           logLevel: alphaTab.LogLevel.Error,
           /**
-           * Rendu sur le fil principal.
+           * Mise en page sur le fil principal.
            *
-           * alphaTab délègue la mise en page à un Web Worker qu'il crée à
-           * partir du chemin de son propre script — chemin qu'il ne sait pas
-           * retrouver une fois le paquet passé par Vite. Le worker ne démarre
-           * alors jamais, et le rendu échoue **sans erreur** : la surface est
-           * créée, sa hauteur reste à zéro, aucun SVG n'est produit.
+           * Le plugin `@coderline/alphatab-vite` sait désormais résoudre les
+           * workers d'alphaTab (voir astro.config.mjs), donc ce réglage n'est
+           * plus un contournement : c'est un choix. Nos partitions font deux à
+           * quatre mesures et une fiche en affiche jusqu'à quatre ; les
+           * composer ici coûte quelques millisecondes, contre autant de
+           * workers à démarrer et un mégaoctet de JavaScript à analyser chacun.
            *
-           * Les partitions du site font deux à quatre mesures. Les composer
-           * sur le fil principal coûte quelques millisecondes.
+           * Ce réglage ne concerne **que** la mise en page. Le synthétiseur
+           * audio exige un worker dans tous les cas, quoi qu'on mette ici.
            */
           useWorkers: false,
         },
-        notation: {
-          // Titre, sous-titre et nom de piste sont déjà dans la fiche : les
-          // réafficher dans la partition double l'information et gonfle la
-          // hauteur du bloc pour rien. L'accordage, lui, reste — il change
-          // d'un exercice à l'autre et ne se devine pas.
-          elements: {
-            scoreTitle: false,
-            scoreSubTitle: false,
-            scoreArtist: false,
-            scoreAlbum: false,
-            scoreWordsAndMusic: false,
-            scoreCopyright: false,
-            trackNames: false,
-          },
-        },
+        notation: { elements: enTetesMasques() },
         display: {
           scale: compact ? 0.85 : 0.95,
           stretchForce: 0.9,
@@ -148,7 +230,8 @@ export default function LecteurTab({
           resources: couleursPartition(),
         },
         player: {
-          playerMode: alphaTab.PlayerMode.EnabledAutomatic,
+          // Éteint jusqu'au premier appui sur « lire » — voir `reveillerAudio`.
+          playerMode: alphaTab.PlayerMode.Disabled,
           outputMode: alphaTab.PlayerOutputMode.WebAudioAudioWorklets,
           enableCursor: true,
           enableAnimatedBeatCursor: true,
@@ -209,7 +292,7 @@ export default function LecteurTab({
     const recolorer = () => {
       const api = apiRef.current;
       if (!api) return;
-      api.settings.display.resources.fillFromJson(couleursPartition());
+      repeindre(api.settings.display.resources, couleursPartition());
       api.updateSettings();
       api.render();
     };
@@ -246,8 +329,14 @@ export default function LecteurTab({
     if (apiRef.current) apiRef.current.countInVolume = decompte ? 1 : 0;
   }, [decompte]);
 
-  /** Boucle en tics, alignée sur les frontières de mesure. */
-  useEffect(() => {
+  /**
+   * Boucle en tics, alignée sur les frontières de mesure.
+   *
+   * Isolée de son effet : il faut aussi la rejouer à la création du lecteur,
+   * `playbackRange` étant le seul réglage qu'alphaTab ne met pas en cache pour
+   * le reporter sur un nouveau synthétiseur.
+   */
+  const appliquerBoucle = useCallback(() => {
     const api = apiRef.current;
     const bornes = bornesRef.current;
     if (!api || bornes.length === 0) return;
@@ -274,25 +363,27 @@ export default function LecteurTab({
     if (api.tickPosition < debut || api.tickPosition >= fin) api.tickPosition = debut;
   }, [boucle, mesureDe, mesureA]);
 
+  useEffect(appliquerBoucle, [appliquerBoucle]);
+
   /* -------------------------------------------------------------- actions */
   const basculerLecture = useCallback(async () => {
     const api = apiRef.current;
     if (!api) return;
 
-    if (!soundfontPret.current) {
+    if (!api.isReadyForPlayback) {
       setChargement(true);
+      setErreur(null);
       try {
+        reveillerAudio(api);
+
+        // La banque de sons pèse presque un mégaoctet : elle n'arrive qu'ici,
+        // jamais à l'affichage de la partition.
         const rep = await fetch(CHEMIN.soundfont);
         if (!rep.ok) throw new Error(`banque de sons indisponible (HTTP ${rep.status})`);
-        const donnees = new Uint8Array(await rep.arrayBuffer());
-        const attente = new Promise<void>((resolve) => {
-          api.soundFontLoaded.on(resolve);
-          // Filet : si l'événement ne vient pas, on laisse quand même jouer.
-          setTimeout(resolve, 10000);
-        });
-        api.loadSoundFont(donnees, false);
-        await attente;
-        soundfontPret.current = true;
+        api.loadSoundFont(new Uint8Array(await rep.arrayBuffer()), false);
+
+        await attendrePret(api);
+        appliquerBoucle();
       } catch (e) {
         setErreur(e instanceof Error ? e.message : String(e));
         setChargement(false);
@@ -302,7 +393,7 @@ export default function LecteurTab({
     }
     setADemarre(true);
     api.playPause();
-  }, []);
+  }, [appliquerBoucle]);
 
   const arreter = useCallback(() => apiRef.current?.stop(), []);
 
@@ -314,6 +405,11 @@ export default function LecteurTab({
     return { bas: Math.max(20, Math.round(ancre * 0.5)), haut };
   }, [tempoDepart, tempoCible, tempoEcrit]);
 
+  /**
+   * Une erreur de lecture n'éteint pas les commandes : elle s'affiche et on
+   * peut réessayer. Seul un échec au chargement de la partition les désactive
+   * — dans ce cas `pret` reste faux et il n'y a rien à commander.
+   */
   const enPanne = erreur !== null;
 
   return (
@@ -331,7 +427,7 @@ export default function LecteurTab({
           type="button"
           className="lt__jouer"
           onClick={basculerLecture}
-          disabled={enPanne || chargement || !pret}
+          disabled={chargement || !pret}
           aria-label={joue ? 'Pause' : 'Lire'}
         >
           {chargement ? (
@@ -348,7 +444,7 @@ export default function LecteurTab({
           )}
         </button>
 
-        <button type="button" className="lt__btn" onClick={arreter} disabled={enPanne || !pret}>
+        <button type="button" className="lt__btn" onClick={arreter} disabled={!pret}>
           Stop
         </button>
 
@@ -360,7 +456,7 @@ export default function LecteurTab({
             max={plage.haut}
             step={1}
             value={tempo}
-            disabled={enPanne || tempoEcrit === 0}
+            disabled={tempoEcrit === 0}
             onChange={(e) => setTempo(Number(e.target.value))}
             aria-label="Tempo, en pulsations par minute"
           />
@@ -398,7 +494,7 @@ export default function LecteurTab({
             type="checkbox"
             checked={metronome}
             onChange={(e) => setMetronome(e.target.checked)}
-            disabled={enPanne}
+            disabled={!pret}
           />
           Métronome
         </label>
@@ -407,7 +503,7 @@ export default function LecteurTab({
             type="checkbox"
             checked={decompte}
             onChange={(e) => setDecompte(e.target.checked)}
-            disabled={enPanne}
+            disabled={!pret}
           />
           Décompte
         </label>
@@ -417,7 +513,7 @@ export default function LecteurTab({
             type="checkbox"
             checked={boucle}
             onChange={(e) => setBoucle(e.target.checked)}
-            disabled={enPanne || nbMesures === 0}
+            disabled={!pret || nbMesures === 0}
           />
           Boucler
         </label>
@@ -428,7 +524,7 @@ export default function LecteurTab({
             min={1}
             max={Math.max(nbMesures, 1)}
             value={mesureDe}
-            disabled={!boucle || enPanne}
+            disabled={!boucle || !pret}
             onChange={(e) => setMesureDe(borner(Number(e.target.value), nbMesures))}
             aria-label="Première mesure de la boucle"
           />
@@ -438,7 +534,7 @@ export default function LecteurTab({
             min={1}
             max={Math.max(nbMesures, 1)}
             value={mesureA}
-            disabled={!boucle || enPanne}
+            disabled={!boucle || !pret}
             onChange={(e) => setMesureA(borner(Number(e.target.value), nbMesures))}
             aria-label="Dernière mesure de la boucle"
           />
@@ -459,8 +555,10 @@ export default function LecteurTab({
 
       {enPanne && (
         <p className="lt__erreur">
-          Le lecteur n'a pas démarré&nbsp;: {erreur}. La source alphaTex reste lisible
-          sous la partition.
+          Lecture impossible&nbsp;: {erreur}.{' '}
+          {pret
+            ? 'Le bouton reste actif, une nouvelle tentative est possible.'
+            : 'La source alphaTex reste lisible sous la partition.'}
         </p>
       )}
 
