@@ -405,6 +405,8 @@ Si le symptôme réapparaît malgré tout : `rm -rf node_modules/.vite .astro` p
 
 **Boucle aimantée aux mesures** : les bornes viennent de `masterBar.start`, jamais d'une position en pixels ou en secondes. Le tempo démarre au **tempo de départ du palier**, avec des raccourcis vers départ et cible.
 
+**Décompte** : alphaTab n'émet **aucun** `positionChanged` pendant le décompte — le curseur y glissait d'une note par simple animation puis s'y figeait, ce qui se lisait comme une lecture qui avance sans rien jouer. Le curseur est donc masqué tant que les clics tournent, et un compteur les affiche. Il est piloté par les événements `AlphaTabMetronome` (`midiEventsPlayedFilter`), pas par un minuteur maison qui dériverait de ce qu'on entend. Fin du décompte = premier `positionChanged`. ⚠️ Le décompte se rejoue à **chaque** appui, y compris à la reprise après pause.
+
 **Décision 10 en action** : `audioFidele: false` n'a jamais désactivé la lecture. Le bloc « ce que la lecture ne restitue pas » nomme les réserves, exercice par exercice.
 
 **Une panne de lecture ne coupe pas les commandes.** Elle s'affiche et on peut réessayer. Le délai d'attente du synthétiseur (20 s) est un **diagnostic, pas un filet** : une version antérieure laissait jouer quand même à son expiration, ce qui transformait un worker mort en disque qui tourne dix secondes puis s'arrête sans un mot.

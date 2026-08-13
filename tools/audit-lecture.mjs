@@ -24,6 +24,12 @@
  *  1. aucun worker ni contexte audio avant le clic — le lecteur est paresseux ;
  *  2. la lecture démarre et le curseur avance ;
  *  3. rien n'est tombé en chemin (exception, message d'erreur du lecteur).
+ *
+ * Le premier lecteur garde son décompte, et l'audit vérifie en plus que le
+ * compteur s'affiche et que le curseur reste masqué tant que les clics tournent.
+ * alphaTab n'émet aucune position pendant le décompte : le curseur y glissait
+ * d'une note par pure animation, ce qui donnait une lecture qui avance sans
+ * rien jouer. Les lecteurs suivants coupent le décompte, qui coûte une mesure.
  */
 
 import { execFile } from 'node:child_process';
@@ -151,9 +157,10 @@ try {
 
 let echecs = 0;
 
-for (const cible of CIBLES) {
+for (const [rang, cible] of CIBLES.entries()) {
   const [route, ancre] = cible.split('#');
   const portee = ancre ? `#${ancre} .lt` : '.lt';
+  const avecDecompte = rang === 0;
   const problemes = [];
   exceptions = [];
 
@@ -178,20 +185,43 @@ for (const cible of CIBLES) {
   if (!(await evaluer(`!!document.querySelector(${JSON.stringify(bouton)})`))) {
     problemes.push(`aucun lecteur trouvé sous ${portee}`);
   } else {
-    // Décompte coupé : une mesure de silence à ♩40 fait six secondes.
-    await cliquer(`${portee} .lt__case:nth-of-type(2) input`);
+    // Décompte coupé sauf sur le premier : une mesure à ♩40 fait six secondes.
+    if (!avecDecompte) await cliquer(`${portee} .lt__case:nth-of-type(2) input`);
 
     if (!(await cliquer(bouton))) problemes.push('bouton de lecture désactivé');
     else {
+      if (avecDecompte) {
+        // On attend le **deuxième** clic : un compteur figé sur « 1 » prouverait
+        // seulement que le voile s'affiche, pas qu'il suit le métronome. Entre
+        // l'apparition du voile et le premier clic, il montre un point.
+        let vu = null;
+        for (let i = 0; i < 24 && !vu; i++) {
+          await attendre(400);
+          vu = await evaluer(`(() => {
+            const l = document.querySelector(${JSON.stringify(portee)});
+            const n = l?.querySelector('.lt__decompte-n');
+            const t = n?.textContent?.trim() ?? '';
+            if (!/^[2-9]\\d*\\/\\d+$/.test(t)) return null;
+            const c = l.querySelector('.at-cursor-beat');
+            return JSON.stringify({
+              compte: t,
+              curseur: c ? getComputedStyle(c).opacity : '0',
+            });
+          })()`);
+        }
+        if (!vu) problemes.push("le décompte ne s'affiche pas, ou son compteur n'avance pas");
+        else if (JSON.parse(vu).curseur !== '0') {
+          problemes.push('le curseur reste visible pendant le décompte — il avance sans son');
+        }
+      }
+
       // 2. Le curseur avance-t-il ?
       let depart = -1;
-      let maxi = -1;
       let bouge = false;
       for (let i = 0; i < OBSERVATION; i++) {
         await attendre(1000);
         const x = await abscisseCurseur(portee);
         if (x >= 0 && depart < 0) depart = x;
-        if (x > maxi) maxi = x;
         // Une boucle ou un passage à la ligne ramène l'abscisse en arrière :
         // c'est un mouvement, pas une immobilité.
         if (depart >= 0 && x >= 0 && Math.abs(x - depart) > 20) bouge = true;

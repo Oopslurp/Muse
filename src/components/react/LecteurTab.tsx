@@ -183,7 +183,21 @@ export default function LecteurTab({
    *  repos, une barre rouge sur la mesure 1 ressemble à une erreur. */
   const [aDemarre, setADemarre] = useState(false);
 
+  /**
+   * Décompte en cours, et numéro du clic entendu.
+   *
+   * Pendant le décompte, alphaTab n'émet **aucun** `positionChanged` : le
+   * curseur ne progresse donc pas au rythme des clics, il glisse une fois vers
+   * la note suivante par pure animation, puis s'y fige. On voit alors la barre
+   * avancer sans rien entendre — ce qui se lit comme une panne. On masque donc
+   * le curseur tant que le décompte tourne, et on montre le compte à la place.
+   */
+  const [enDecompte, setEnDecompte] = useState(false);
+  const [clicDecompte, setClicDecompte] = useState(0);
+  const decompteEnCours = useRef(false);
+
   const [nbMesures, setNbMesures] = useState(0);
+  const [pulsationsMesure, setPulsationsMesure] = useState(0);
   const [tempoEcrit, setTempoEcrit] = useState(0);
   const [tempo, setTempo] = useState(tempoDepart ?? 0);
 
@@ -258,14 +272,55 @@ export default function LecteurTab({
       bornesRef.current = score.masterBars.map((mb) => mb.start);
       setNbMesures(score.masterBars.length);
       setMesureA(score.masterBars.length);
+      // Le décompte d'alphaTab dure une mesure. Aucun exercice du corpus ne
+      // change de métrique en route : la première mesure fait donc foi.
+      setPulsationsMesure(score.masterBars[0]?.timeSignatureNumerator ?? 0);
       const ecrit = Math.round(score.tempo);
       setTempoEcrit(ecrit);
       setTempo((t) => (t > 0 ? t : ecrit));
       setPret(true);
     });
 
+    const finDecompte = () => {
+      decompteEnCours.current = false;
+      setEnDecompte(false);
+      setClicDecompte(0);
+    };
+
     instance.playerStateChanged.on((e) => {
-      if (vivant) setJoue(e.state === alphaTab.synth.PlayerState.Playing);
+      if (!vivant) return;
+      const enLecture = e.state === alphaTab.synth.PlayerState.Playing;
+      setJoue(enLecture);
+      // alphaTab rejoue le décompte à **chaque** appui, y compris à la reprise
+      // après pause. On le suit donc à partir de l'état, pas d'un premier clic.
+      if (enLecture && instance.countInVolume > 0) {
+        decompteEnCours.current = true;
+        setEnDecompte(true);
+        setClicDecompte(0);
+      } else finDecompte();
+    });
+
+    /**
+     * Le décompte, tel qu'alphaTab l'entend.
+     *
+     * Le compteur vient des événements de métronome eux-mêmes plutôt que d'un
+     * minuteur de notre côté : recalculer la durée d'un clic à partir du tempo
+     * et de la métrique donnerait un affichage qui dérive de ce qu'on entend.
+     */
+    instance.midiEventsPlayedFilter = [alphaTab.midi.MidiEventType.AlphaTabMetronome];
+    instance.midiEventsPlayed.on((e) => {
+      if (!vivant || !decompteEnCours.current) return;
+      for (const ev of e.events) {
+        if (ev instanceof alphaTab.midi.AlphaTabMetronomeEvent && ev.isMetronome) {
+          setClicDecompte(ev.metronomeNumerator + 1);
+        }
+      }
+    });
+
+    // `positionChanged` n'est émis que pendant la lecture principale : sa
+    // première venue marque exactement la fin du décompte.
+    instance.playerPositionChanged.on(() => {
+      if (vivant && decompteEnCours.current) finDecompte();
     });
 
     instance.tex(alphaTex);
@@ -418,6 +473,7 @@ export default function LecteurTab({
         'lt',
         compact ? 'lt--compact' : '',
         aDemarre ? '' : 'lt--repos',
+        enDecompte ? 'lt--decompte' : '',
       ]
         .filter(Boolean)
         .join(' ')}
@@ -562,7 +618,23 @@ export default function LecteurTab({
         </p>
       )}
 
-      <div className="lt__partition" ref={hote} />
+      <div className="lt__scene">
+        <div className="lt__partition" ref={hote} />
+
+        {/* Annoncé une fois, pas à chaque clic : une synthèse vocale qui
+            récite « 1, 2, 3, 4 » couvrirait le décompte qu'on écoute. */}
+        {enDecompte && (
+          <div className="lt__decompte" role="status" aria-live="polite">
+            <p>
+              <span className="lt__decompte-k">Décompte</span>
+              <span className="lt__decompte-n" aria-hidden="true">
+                {clicDecompte || '·'}
+                {pulsationsMesure > 0 && <em>/{pulsationsMesure}</em>}
+              </span>
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -227,6 +227,10 @@
 }
 
 /* ------------------------------------------------------------ partition */
+.lt__scene {
+  position: relative;
+}
+
 .lt__partition {
   padding: 0.5rem 0.25rem;
   overflow-x: auto;
@@ -263,10 +267,67 @@
 }
 
 /* Au repos, aucun curseur : une barre posée sur la mesure 1 avant toute
-   lecture se lit comme un défaut, pas comme une position. */
+   lecture se lit comme un défaut, pas comme une position.
+
+   Pendant le décompte non plus. alphaTab n'émet pas de position tant que les
+   clics tournent : le curseur glisse une fois vers la note suivante par simple
+   animation, puis s'y fige. On croit voir la lecture avancer en silence. */
 .lt--repos .at-cursor-bar,
-.lt--repos .at-cursor-beat {
+.lt--repos .at-cursor-beat,
+.lt--decompte .at-cursor-bar,
+.lt--decompte .at-cursor-beat {
   opacity: 0;
+}
+
+/* ------------------------------------------------------------- décompte */
+.lt__decompte {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  /* Voile : la partition reste lisible — on prépare ses mains sur les
+     premières notes pendant les clics — mais on voit qu'on n'y est pas encore. */
+  background: color-mix(in oklab, var(--c-bg) 55%, transparent);
+}
+
+/* Plaque opaque : le chiffre tombe où il tombe, parfois en plein sur une
+   portée. Sans fond à lui, il devient illisible une fois sur deux. */
+.lt__decompte > * {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0.5rem 1.4rem 0.7rem;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.lt__decompte-k {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+
+.lt__decompte-n {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  line-height: 1;
+  font-weight: 700;
+  color: var(--color-brass);
+}
+
+/* Le total en retrait : c'est le chiffre courant qu'on lit d'un pupitre. */
+.lt__decompte-n em {
+  font-style: normal;
+  font-size: 0.42em;
+  color: var(--color-ink-3);
 }
 
 .lt--compact .lt__partition {
