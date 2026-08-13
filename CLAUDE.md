@@ -246,7 +246,7 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | 1 | **Fondations** | Astro, Tailwind, design system (tokens couleur, échelle typo, espacements, composants de base), layout, mode sombre, accueil | ✅ **close** |
 | 2 | **Contenu** | Content collections typées selon `05-modele-donnees.md`, migration des fiches en MDX, liste + filtres, page de détail | ✅ **close** |
 | 3 | **Tablatures** | alphaTab : rendu, lecture, curseur, tempo, boucle par mesure, métronome | ✅ **close** |
-| 4 | Accordeur | Page dédiée, chromatique, selon `06-accordeur.md`. Cents, aiguille lissée, choix d'accordage, gestion propre du micro **et de son refus** | ⏳ |
+| 4 | **Accordeur** | Page dédiée, chromatique, selon `06-accordeur.md`. Cents, aiguille lissée, choix d'accordage, gestion propre du micro **et de son refus** | ✅ **close** |
 | 5 | Arbre de compétences | Graphe de prérequis cliquable + progression | ⏳ |
 | 6 | Pratique | Métronome, minuteur de séance, journal IndexedDB, suivi par technique, export/import JSON | ⏳ |
 | 7 | Finitions | Recherche, perf, responsive, impression PDF d'une fiche, déploiement | ⏳ |
@@ -324,10 +324,12 @@ npm run serve     # serveur statique local (sans dépendance), port 5173
 npm run dev       # site en développement, port 4321
 npm run build     # construction statique
 npm run test:notes    # dérivation des noms de notes (10 cas)
+npm run test:accordeur # moteur de l'accordeur sur signaux de synthèse (19 cas)
 
 npm run shot          # captures de contrôle dans .captures/ (Chrome headless)
 npm run audit:console # exceptions, erreurs console, îlots vides, débordement
 npm run audit:lecture # appuie sur « lire » et vérifie que le curseur avance
+npm run audit:accordeur # joue un mi2 détendu dans un faux micro, lit l'écran
 npm run audit:layout -- <url> <largeur>   # remonte à l'élément qui déborde
 ```
 
@@ -349,9 +351,11 @@ Les tranches 0 à 2 ont été livrées **sans jamais regarder le rendu**, faute 
 ```bash
 npm run audit:console                              # contre le dev
 npm run audit:lecture
+npm run audit:accordeur
 npm run build && npm run preview                   # puis contre le build
 MUSE_URL=http://localhost:4322 npm run audit:console
 MUSE_URL=http://localhost:4322 npm run audit:lecture
+MUSE_URL=http://localhost:4322 npm run audit:accordeur
 npm run shot                                       # et regarder les images
 ```
 
@@ -384,7 +388,7 @@ Si le symptôme réapparaît malgré tout : `rm -rf node_modules/.vite .astro` p
 
 > La monotonie de difficulté a attrapé **trois incohérences** de la taxonomie de recherche. Corrections retenues : `glissando` a pour prérequis le placement et non les déplacements ; `accordages-alternatifs` passe en difficulté 3 (la fiche dit elle-même « conceptuellement exigeant ») ; `alternance-pouce` a pour prérequis les étouffements plutôt que l'équilibre des voix.
 
-**Noms de notes** — dérivés par [src/lib/notes.ts](src/lib/notes.ts) depuis `(accordage, corde, case)`, avec `npm run test:notes` (10 cas). La table des accordages y vit aussi : l'accordeur de la tranche 4 la réutilisera. Rappel du piège : le modèle alphaTab **inverse** la numérotation des cordes par rapport au texte source — pour lire une hauteur, utiliser `note.realValue`.
+**Noms de notes** — dérivés par [src/lib/notes.ts](src/lib/notes.ts) depuis `(accordage, corde, case)`, avec `npm run test:notes` (10 cas). La table des accordages y vit aussi, portée à **13 accordages** par la tranche 4 qui les réutilise. Rappel du piège : le modèle alphaTab **inverse** la numérotation des cordes par rapport au texte source — pour lire une hauteur, utiliser `note.realValue`.
 
 **Validation des tablatures** — `npm run validate` parse les 63 blocs alphaTex du projet, ceux de `docs/research` et ceux du frontmatter MDX. Il garantit la validité **syntaxique**, pas la justesse musicale : il n'aurait attrapé aucune des deux erreurs de contenu de la recherche.
 
@@ -412,6 +416,29 @@ Si le symptôme réapparaît malgré tout : `rm -rf node_modules/.vite .astro` p
 **Une panne de lecture ne coupe pas les commandes.** Elle s'affiche et on peut réessayer. Le délai d'attente du synthétiseur (20 s) est un **diagnostic, pas un filet** : une version antérieure laissait jouer quand même à son expiration, ce qui transformait un worker mort en disque qui tourne dix secondes puis s'arrête sans un mot.
 
 ⚠️ **Poids** : trois chunks d'environ 1,15 Mo non compressé — le lecteur, le worker de synthèse, le worklet audio. Chacun embarque le cœur d'alphaTab. Les deux derniers ne sont chargés qu'au premier appui sur « lire ». Acceptable en local, à revoir en tranche 7.
+
+### Accordeur (tranche 4)
+
+Trois fichiers, trois responsabilités : [accordeur.ts](src/lib/accordeur.ts) décide (gates, plausibilité, lissage, cents) et ne connaît ni le navigateur ni React ; [micro.ts](src/lib/micro.ts) tient la chaîne Web Audio ; [Accordeur](src/components/react/Accordeur.tsx) affiche.
+
+**Ce découpage est ce qui rend l'accordeur testable.** `npm run test:accordeur` fabrique des sinusoïdes harmoniques et fait tourner la chaîne complète, détection MPM comprise : les 78 cordes des 13 accordages, le si1 de BADGAD à 61,74 Hz, l'erreur d'octave, le rejet du silence, l'hystérésis, le diapason. 19 cas. Un accordeur qu'on ne peut vérifier qu'une guitare à la main est un accordeur qu'on ne vérifie jamais.
+
+**Et `npm run audit:accordeur` va jusqu'à l'écran** : Chrome sait remplacer le micro par un fichier (`--use-file-for-fake-audio-capture`, voir [tools/faux-micro.mjs](tools/faux-micro.mjs)). On lui joue un mi2 détendu de 30 cents et on vérifie que la page affiche `E2 · tends · −30 cents`, plus le verrou de corde, le mode chromatique et **le refus du micro** — l'écran doit nommer la panne *et* la marche à suivre. ⚠️ Le WAV commence par trois secondes de silence : l'accordeur calibre le bruit de la pièce pendant ses deux premières, et une note tenue pendant le calibrage placerait le seuil au-dessus d'elle. Le gate ne s'ouvrirait jamais.
+
+**Les trois traitements du navigateur sont refusés** (décision 5), et surtout : on relit `track.getSettings()` après coup. C'est le risque n°1 du document de recherche — les navigateurs ne respectent pas tous la consigne. Si l'un des trois est resté actif, la page le dit au lieu de laisser croire à une détection capricieuse.
+
+**Quatre points où le code s'écarte de `06-accordeur.md`, tous délibérés :**
+
+1. **Plage de plausibilité en mode accordage : 55–400 Hz, pas 60–350.** Le document se contredit (§2 contre §4 et §8). À 60 Hz de plancher, un si1 détendu de 50 cents (59,99 Hz) serait rejeté — or c'est la note qui dimensionne tout le reste du document.
+2. **La référence est la corde, pas le demi-ton le plus proche.** `OptionsAnalyse.cibles` porte les six cordes de l'accordage, ou une seule si l'utilisateur la verrouille. Un mi2 détendu de 70 cents s'afficherait sinon « ré♯2, +30 » : exact, et parfaitement inutilisable.
+3. **La nouvelle attaque réinitialise aussi le nom de note affiché**, pas seulement la médiane et l'EMA. Le garder ferait afficher la corde précédente pendant les trois images que met l'hystérésis à céder. Défaut attrapé par un test, pas à l'usage.
+4. **`@chordbook/tuner` a été lu, et suivi de loin.** Il demande `{ audio: true }` sans aucune contrainte — donc avec les trois traitements actifs, ce que le document appelle la cause n°1 des accordeurs web défaillants. Il règle aussi `smoothingTimeConstant`, qui ne concerne **que** les données fréquentielles et n'a aucun effet sur `getFloatTimeDomainData`, seul utilisé pour la détection.
+
+**Lissage : les deux étages se composent.** Médiane sur 5, puis hystérésis sur 3 images : le nom de note ne bascule qu'après **cinq** images, le temps que la médiane penche d'abord. ~85 ms à 60 Hz, bien en deçà des 250 ms visés.
+
+**Ordre des cordes** — corde 1 (aiguë) en premier en interne, comme partout dans le projet ; l'affichage inverse, parce qu'on lit un manche grave à gauche. `06-accordeur.md` §7 tabule dans l'autre sens et prévenait lui-même que deux ordres cohabitant produiraient des bugs silencieux : il n'y en a qu'un.
+
+**Reste `déduit` faute d'observation guitare en main** : le comportement de `clarity` pendant l'attaque d'une corde grave d'acoustique, le taux réel d'erreurs d'octave sur la corde 6, et le seuil de bruit dans une vraie pièce. La page le dit, dans son encadré « à vérifier ».
 
 ### Conventions alphaTex établies par la sonde
 

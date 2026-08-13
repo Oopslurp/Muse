@@ -19,7 +19,7 @@ export interface NavItem {
 export const NAV: readonly NavItem[] = [
   { href: '/techniques', label: 'Techniques', ready: true, tranche: 2 },
   { href: '/arbre', label: 'Arbre', ready: false, tranche: 5 },
-  { href: '/accordeur', label: 'Accordeur', ready: false, tranche: 4 },
+  { href: '/accordeur', label: 'Accordeur', ready: true, tranche: 4 },
   { href: '/pratique', label: 'Pratique', ready: false, tranche: 6 },
 ] as const;
 
@@ -59,8 +59,8 @@ export const TRANCHES: readonly Tranche[] = [
   {
     n: 4,
     label: 'Accordeur',
-    detail: 'Chromatique, aiguille lissée, accordages alternatifs.',
-    done: false,
+    detail: 'Chromatique, aiguille lissée, 13 accordages, tout en local.',
+    done: true,
   },
   {
     n: 5,

@@ -66,16 +66,29 @@ export function midiDepuisNom(nom: string): number {
 /** Construit un accordage depuis des noms scientifiques, aigu → grave. */
 export const accordage = (...noms: string[]): Accordage => noms.map(midiDepuisNom);
 
-/** Accordages de référence. L'accordeur (tranche 4) réutilisera cette table. */
+/**
+ * Accordages de référence, **aigu → grave**.
+ *
+ * ⚠️ `docs/research/06-accordeur.md` §7 les tabule dans l'autre sens, corde 6
+ * en premier. La convention interne est celle d'alphaTex (CLAUDE.md), et la
+ * conversion se fait à l'affichage — un accordeur se lit grave à gauche.
+ * Le document de recherche prévenait lui-même que deux ordres cohabitant
+ * produiraient des bugs silencieux : il n'y en a qu'un ici.
+ */
 export const ACCORDAGES = {
   standard: accordage('E4', 'B3', 'G3', 'D3', 'A2', 'E2'),
+  'demi-ton-bas': accordage('E4', 'B3', 'G3', 'D3', 'A2', 'E2').map((m) => m - 1),
   'drop-d': accordage('E4', 'B3', 'G3', 'D3', 'A2', 'D2'),
-  dadgad: accordage('D4', 'A3', 'G3', 'D3', 'A2', 'D2'),
+  'drop-c': accordage('D4', 'A3', 'F3', 'C3', 'G2', 'C2'),
   'open-g': accordage('D4', 'B3', 'G3', 'D3', 'G2', 'D2'),
   'open-d': accordage('D4', 'A3', 'F#3', 'D3', 'A2', 'D2'),
   'open-c': accordage('E4', 'C4', 'G3', 'C3', 'G2', 'C2'),
+  'open-e': accordage('E4', 'B3', 'G#3', 'E3', 'B2', 'E2'),
+  'open-dm': accordage('D4', 'A3', 'F3', 'D3', 'A2', 'D2'),
+  dadgad: accordage('D4', 'A3', 'G3', 'D3', 'A2', 'D2'),
   cgdgad: accordage('D4', 'A3', 'G3', 'D3', 'G2', 'C2'),
-  'demi-ton-bas': accordage('E4', 'B3', 'G3', 'D3', 'A2', 'E2').map((m) => m - 1),
+  cgdgcd: accordage('D4', 'C4', 'G3', 'D3', 'G2', 'C2'),
+  badgad: accordage('D4', 'A3', 'G3', 'D3', 'A2', 'B1'),
 } as const satisfies Record<string, Accordage>;
 
 export type AccordageId = keyof typeof ACCORDAGES;
@@ -83,13 +96,37 @@ export type AccordageId = keyof typeof ACCORDAGES;
 /** Étiquettes lisibles. Le contenu stocke l'identifiant, pas le libellé. */
 export const ACCORDAGE_LABELS: Record<AccordageId, string> = {
   standard: 'Standard',
+  'demi-ton-bas': 'Un demi-ton plus bas',
   'drop-d': 'Drop D',
-  dadgad: 'DADGAD',
+  'drop-c': 'Drop C',
   'open-g': 'Open G',
   'open-d': 'Open D',
   'open-c': 'Open C',
+  'open-e': 'Open E',
+  'open-dm': 'Open Dm',
+  dadgad: 'DADGAD',
   cgdgad: 'CGDGAD',
-  'demi-ton-bas': 'Un demi-ton plus bas',
+  cgdgcd: 'CGDGCD',
+  badgad: 'BADGAD',
+};
+
+export type FamilleAccordage = 'standard' | 'drop' | 'ouvert' | 'moderne';
+
+/** Regroupement pour le choix d'accordage. Propriété de l'accordage, pas de l'écran. */
+export const ACCORDAGE_FAMILLE: Record<AccordageId, FamilleAccordage> = {
+  standard: 'standard',
+  'demi-ton-bas': 'standard',
+  'drop-d': 'drop',
+  'drop-c': 'drop',
+  'open-g': 'ouvert',
+  'open-d': 'ouvert',
+  'open-c': 'ouvert',
+  'open-e': 'ouvert',
+  'open-dm': 'ouvert',
+  dadgad: 'moderne',
+  cgdgad: 'moderne',
+  cgdgcd: 'moderne',
+  badgad: 'moderne',
 };
 
 /**
@@ -118,6 +155,16 @@ export function noteDe(
     classe: ((midi % 12) + 12) % 12,
     octave: Math.floor(midi / 12) - 1,
     hz: 440 * 2 ** ((midi - 69) / 12),
+  };
+}
+
+/** Note complète depuis un numéro MIDI. L'accordeur ne connaît que celui-là. */
+export function noteDeMidi(midi: number, diapason = 440): Note {
+  return {
+    midi,
+    classe: ((midi % 12) + 12) % 12,
+    octave: Math.floor(midi / 12) - 1,
+    hz: diapason * 2 ** ((midi - 69) / 12),
   };
 }
 

@@ -21,6 +21,7 @@
 import { execFile } from 'node:child_process';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { drapeauxFauxMicro, fabriquerCorde } from './faux-micro.mjs';
 
 const CHROME = [
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
@@ -63,6 +64,18 @@ const VUES = [
   },
   { nom: 'design-system', route: '/style-guide' },
   { nom: 'liste-mobile', route: '/techniques', largeur: 390, hauteur: 1400 },
+  { nom: 'accordeur-repos', route: '/accordeur' },
+  // Le cadran ne s'affiche qu'une fois le micro ouvert : on clique, et Chrome
+  // écoute un fichier WAV à la place du micro (voir faux-micro.mjs). Le fichier
+  // commence par trois secondes de silence, que l'accordeur passe à calibrer.
+  { nom: 'accordeur', route: '/accordeur', clic: '.ac__demarrer', pause: 7000 },
+  {
+    nom: 'accordeur-clair',
+    route: '/accordeur',
+    theme: 'light',
+    clic: '.ac__demarrer',
+    pause: 7000,
+  },
 ];
 
 const args = process.argv.slice(2);
@@ -77,6 +90,8 @@ const chrome = execFile(CHROME, [
   '--disable-gpu',
   '--hide-scrollbars',
   '--force-color-profile=srgb',
+  // Sans micro, l'accordeur ne montrerait jamais que son écran d'accueil.
+  ...drapeauxFauxMicro(fabriquerCorde(82.4069, -30, 'mi2-detendu')),
   `--remote-debugging-port=${PORT}`,
   `--user-data-dir=${process.env.TEMP ?? '/tmp'}/muse-shot`,
   'about:blank',
@@ -125,6 +140,31 @@ for (const v of vues) {
 
   await envoyer('Page.navigate', { url });
   await attendre(2200);
+
+  if (v.clic) {
+    // Autorisation accordée d'office : une capture ne peut pas répondre à une
+    // demande de permission. `audit:accordeur` teste le refus, lui.
+    await envoyer('Browser.setPermission', {
+      origin: BASE,
+      permission: { name: 'microphone' },
+      setting: 'granted',
+    });
+    const p = await envoyer('Runtime.evaluate', {
+      returnByValue: true,
+      expression: `(() => {
+        const e = document.querySelector(${JSON.stringify(v.clic)});
+        if (!e) return null;
+        const r = e.getBoundingClientRect();
+        return { x: Math.round(r.x + r.width / 2), y: Math.round(r.y + r.height / 2) };
+      })()`,
+    });
+    const pos = p.result?.result?.value;
+    if (pos) {
+      for (const type of ['mousePressed', 'mouseReleased'])
+        await envoyer('Input.dispatchMouseEvent', { type, ...pos, button: 'left', clickCount: 1 });
+    }
+    await attendre(v.pause ?? 3000);
+  }
 
   if (v.ancre) {
     await envoyer('Runtime.evaluate', {

@@ -1,0 +1,372 @@
+/**
+ * Accordeur — habillage.
+ *
+ * Fichier séparé plutôt que <style> Astro : le composant est du React, le
+ * scoping d'Astro ne s'y applique pas. Préfixe `ac` pour éviter toute fuite.
+ *
+ * Aucune variante `dark:` : les jetons `--c-*` sont redéfinis par thème
+ * (voir global.css). `bg-surface text-ink` suffit, ici comme ailleurs.
+ */
+
+.ac {
+  display: grid;
+  gap: 1.1rem;
+}
+
+/* ------------------------------------------------------------- accueil */
+.ac__accueil {
+  display: grid;
+  gap: 0.9rem;
+  justify-items: start;
+  padding: 2rem 1.6rem 2.2rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.ac__titre {
+  margin: 0;
+  font-size: var(--text-2xl);
+}
+
+.ac__intro {
+  margin: 0;
+  max-width: 56ch;
+  color: var(--color-ink-2);
+  line-height: 1.65;
+}
+
+.ac__demarrer {
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-bg);
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-pill);
+  padding: 0.6em 1.4em;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.ac__demarrer:hover:not(:disabled) {
+  background: var(--color-brass);
+  border-color: var(--color-brass);
+}
+.ac__demarrer:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* Un refus de micro sans marche à suivre est la première cause de « ça ne
+   marche pas ». On dit ce qui s'est passé, puis quoi faire. */
+.ac__panne {
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--color-sante);
+  border-radius: 0 var(--radius-card) var(--radius-card) 0;
+  background: var(--color-sante-bg);
+}
+.ac__panne-titre {
+  margin: 0 0 0.3rem;
+  font-weight: 600;
+  color: var(--color-sante);
+}
+.ac__panne-remede {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-ink-2);
+}
+
+/* -------------------------------------------------------------- cadran */
+.ac__cadran {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: center;
+  padding: 1.8rem 1.2rem 1.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  transition: opacity 220ms ease;
+}
+/* En veille on gèle la dernière valeur et on la grise. Afficher une hauteur
+   détectée dans le silence est ce qui rend les accordeurs web insupportables ;
+   effacer l'écran entre deux pincements l'est presque autant. */
+.ac__cadran--veille {
+  opacity: 0.5;
+}
+
+.ac__jauge {
+  position: relative;
+  width: 100%;
+  max-width: 44rem;
+  height: 4.2rem;
+  border-radius: var(--radius-card);
+  background: var(--color-surface-2);
+  overflow: hidden;
+}
+
+/* Zone juste : ±3 cents. Franche, jamais dégradée — il faut un moment de
+   validation, pas un gradient qu'on interprète. */
+.ac__zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 47%;
+  width: 6%;
+  background: color-mix(in oklab, var(--c-observe) 16%, transparent);
+  border-inline: 1px solid color-mix(in oklab, var(--c-observe) 45%, transparent);
+}
+.ac__jauge--juste .ac__zone {
+  background: color-mix(in oklab, var(--c-observe) 34%, transparent);
+}
+
+/* Les graduations restent discrètes : elles servent de repère, elles ne
+   doivent jamais entrer en concurrence avec l'aiguille. */
+.ac__grad {
+  position: absolute;
+  top: 50%;
+  translate: -50% -50%;
+  width: 1px;
+  height: 0.7rem;
+  background: var(--color-ink-3);
+  opacity: 0.35;
+}
+.ac__grad--centre {
+  height: 100%;
+  opacity: 0.85;
+  background: color-mix(in oklab, var(--c-observe) 70%, transparent);
+}
+
+/* L'aiguille se lit d'un pupitre : plus épaisse que les graduations, et
+   cernée pour tenir sur le fond vert de la zone juste comme sur le creux. */
+.ac__aiguille {
+  position: absolute;
+  top: 0.3rem;
+  bottom: 0.3rem;
+  width: 5px;
+  translate: -50% 0;
+  border-radius: 3px;
+  background: var(--color-brass);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--c-bg) 55%, transparent);
+  transition: left 90ms linear, opacity 160ms ease, background-color 160ms ease;
+}
+.ac__jauge--juste .ac__aiguille {
+  background: var(--color-observe);
+}
+/* En butée, l'écart dépasse la plage du cadran : on plaque l'aiguille au bord
+   au lieu de la laisser sortir, et le chiffre en cents continue de dire vrai. */
+.ac__aiguille--butee {
+  width: 6px;
+  border-radius: 0;
+}
+.ac__aiguille--muette {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ac__aiguille {
+    transition: opacity 160ms ease;
+  }
+}
+
+.ac__lecture {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin-top: 0.4rem;
+}
+.ac__note {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 9vw, 4.5rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+.ac__note-fr {
+  margin: 0;
+  font-size: var(--text-base);
+  font-style: italic;
+  color: var(--color-ink-3);
+}
+
+/* « À gauche » n'a aucun sens quand on a la tête dans les mécaniques. */
+.ac__sens {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-2);
+}
+.ac__sens--juste {
+  color: var(--color-observe);
+}
+.ac__sens--tends,
+.ac__sens--détends {
+  color: var(--color-brass);
+}
+.ac__sens--rien {
+  color: var(--color-ink-3);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-size: var(--text-sm);
+}
+
+.ac__cents {
+  margin: 0;
+  min-height: 1.4em;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-2);
+}
+.ac__doute {
+  color: var(--color-verifier);
+}
+
+/* -------------------------------------------------------------- cordes */
+.ac__cordes {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.ac__corde {
+  display: grid;
+  gap: 0.1rem;
+  justify-items: center;
+  font: inherit;
+  padding: 0.5rem 0.2rem 0.6rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: var(--color-ink-2);
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+.ac__corde:hover {
+  border-color: var(--color-line-strong);
+}
+.ac__corde-n {
+  font-size: var(--text-2xs);
+  color: var(--color-ink-3);
+}
+.ac__corde-note {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+/* Corde entendue en ce moment. */
+.ac__corde--actif {
+  border-color: var(--color-brass);
+  color: var(--color-ink);
+}
+/* Corde verrouillée : la fenêtre de plausibilité se referme autour d'elle. */
+.ac__corde--verrou {
+  border-color: var(--color-brass);
+  background: color-mix(in oklab, var(--c-brass) 14%, transparent);
+  color: var(--color-ink);
+}
+/* Déjà amenée dans les ±3 cents pendant cette séance. */
+.ac__corde--faite .ac__corde-n::after {
+  content: ' ●';
+  color: var(--color-observe);
+}
+
+.ac__aide {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  color: var(--color-ink-3);
+  max-width: 68ch;
+}
+
+/* ------------------------------------------------------------ réglages */
+.ac__reglages {
+  display: flex;
+  align-items: end;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  padding-top: 0.3rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.ac__groupe {
+  display: inline-flex;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.ac__onglet {
+  font: inherit;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-2);
+  background: transparent;
+  border: 0;
+  padding: 0.45em 1em;
+  cursor: pointer;
+}
+.ac__onglet--actif {
+  background: var(--color-ink);
+  color: var(--color-bg);
+}
+
+.ac__champ {
+  display: grid;
+  gap: 0.25rem;
+}
+.ac__k {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+.ac__champ select {
+  font: inherit;
+  font-size: var(--text-xs);
+  color: var(--color-ink);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  border-radius: 6px;
+  padding: 0.4em 0.6em;
+}
+
+.ac__stop {
+  font: inherit;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-2);
+  background: transparent;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-pill);
+  padding: 0.45em 1em;
+  cursor: pointer;
+  margin-left: auto;
+}
+.ac__stop:hover {
+  color: var(--color-sante);
+  border-color: var(--color-sante);
+}
+
+/* Le risque n°1 du document de recherche : un navigateur qui réapplique les
+   traitements qu'on lui a demandé de couper. On le lit, on le dit. */
+.ac__avertissement {
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border-left: 3px solid var(--color-verifier);
+  background: color-mix(in oklab, var(--c-verifier) 8%, transparent);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--color-ink-2);
+}
+
+.ac__piste {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--color-ink-3);
+}

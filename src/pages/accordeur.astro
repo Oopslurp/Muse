@@ -1,0 +1,134 @@
+---
+/**
+ * Accordeur — tranche 4.
+ *
+ * L'îlot est hydraté `client:load` : c'est le seul contenu de la page, et
+ * l'attendre au défilement n'aurait aucun sens.
+ *
+ * Spécification : docs/research/06-accordeur.md. Décisions : CLAUDE.md n°5.
+ */
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Accordeur from '~/components/react/Accordeur';
+import Callout from '~/components/ui/Callout.astro';
+import { REGLAGES } from '~/lib/accordeur';
+import { ACCORDAGES } from '~/lib/notes';
+
+const nbAccordages = Object.keys(ACCORDAGES).length;
+---
+
+<BaseLayout
+  title="Accordeur"
+  description="Accordeur chromatique dans le navigateur : détection de hauteur par McLeod Pitch Method, aiguille en cents, accordages alternatifs. Tout est calculé en local, rien n'est envoyé."
+>
+  <header class="tete">
+    <p class="eyebrow">L'atelier</p>
+    <h1>Accordeur</h1>
+    <p class="lede">
+      Chromatique, avec {nbAccordages} accordages du standard au BADGAD. L'écart s'affiche
+      en cents, la correction s'écrit en toutes lettres, et la note porte son octave —
+      l'accordage à l'octave est l'erreur qui coûte des cordes.
+    </p>
+  </header>
+
+  <Accordeur client:load />
+
+  <section class="notes">
+    <h2>Ce que fait cet accordeur, et ce qu'il ne fait pas</h2>
+
+    <dl>
+      <dt>Rien ne sort de la machine</dt>
+      <dd>
+        Le son est analysé dans la page. Aucun enregistrement, aucun appel réseau,
+        aucun compte. Couper le micro libère la piste et ferme le contexte audio.
+      </dd>
+
+      <dt>Les traitements du navigateur sont désactivés</dt>
+      <dd>
+        Réduction de bruit, gain automatique et annulation d'écho sont conçus pour la
+        voix en visioconférence&nbsp;: ils font disparaître une note tenue au bout d'une
+        seconde et ruinent le seuil de détection. C'est la cause n°1 des accordeurs web
+        qui «&nbsp;marchent mal sans raison&nbsp;». La page les refuse — et vérifie après
+        coup ce que le navigateur a réellement appliqué, car tous ne respectent pas la
+        consigne.
+      </dd>
+
+      <dt>±3 cents suffisent</dt>
+      <dd>
+        En deçà, on mesure le bruit et la dérive naturelle de l'instrument. Surtout&nbsp;:
+        une guitare parfaitement juste à vide ne sonne pas juste pour autant — le
+        tempérament égal, l'intonation du chevalet, la hauteur des cordes et la pression
+        du doigt introduisent des écarts bien plus grands. Viser ±1 cent donne une fausse
+        impression de précision et rend l'accordage frustrant.
+      </dd>
+
+      <dt>Fenêtre de {REGLAGES.fenetre} échantillons</dt>
+      <dd>
+        Une autocorrélation a besoin de trois à quatre périodes complètes. À {REGLAGES.fenetre}
+        échantillons, la fenêtre couvre 5,2 périodes du si1 de l'accordage BADGAD
+        (61,74&nbsp;Hz), la note la plus grave à gérer. Plus large, l'aiguille deviendrait
+        molle et on ne verrait plus la note se stabiliser en tournant la mécanique.
+      </dd>
+
+      <dt>Pas de son de référence</dt>
+      <dd>
+        Accorder à l'oreille sur un son synthétique est moins précis que l'accordeur
+        lui-même, et entretient une mauvaise habitude. Un bourdon tenu, utile pour
+        vérifier l'intonation en jouant, serait une autre affaire — ce n'est pas dans
+        cette tranche.
+      </dd>
+    </dl>
+
+    <Callout tone="verifier" title="Ce qui reste à éprouver à la guitare">
+      <p>
+        Le moteur est vérifié sur signaux de synthèse&nbsp;: les 78 cordes des {nbAccordages}
+        accordages, l'erreur d'octave, le rejet du silence, l'hystérésis. Ce que la
+        synthèse ne peut pas dire&nbsp;: le comportement de la clarté pendant l'attaque
+        d'une corde grave d'acoustique, le taux réel d'erreurs d'octave sur la corde 6,
+        et le seuil de bruit dans une vraie pièce. Ces trois points sont marqués
+        <strong>déduits</strong> tant qu'ils n'ont pas été observés instrument en main.
+      </p>
+    </Callout>
+  </section>
+</BaseLayout>
+
+<style>
+  .tete {
+    padding: clamp(2.25rem, 1.5rem + 3vw, 3.75rem) 0 2rem;
+    max-width: 62ch;
+  }
+  .tete h1 {
+    font-size: var(--text-h1);
+    line-height: 1.05;
+    margin: 0.35rem 0 1rem;
+  }
+  .lede {
+    margin: 0;
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--color-ink-2);
+  }
+
+  .notes {
+    margin: 3rem 0 1rem;
+    max-width: 68ch;
+  }
+  .notes h2 {
+    font-size: var(--text-xl);
+    margin: 0 0 1.2rem;
+  }
+  .notes dl {
+    margin: 0 0 1.6rem;
+    display: grid;
+    gap: 1.1rem;
+  }
+  .notes dt {
+    font-weight: 650;
+    color: var(--color-ink);
+    margin-bottom: 0.2rem;
+  }
+  .notes dd {
+    margin: 0;
+    line-height: 1.65;
+    color: var(--color-ink-2);
+  }
+</style>
