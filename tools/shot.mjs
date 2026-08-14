@@ -64,6 +64,11 @@ const VUES = [
   },
   { nom: 'design-system', route: '/style-guide' },
   { nom: 'liste-mobile', route: '/techniques', largeur: 390, hauteur: 1400 },
+  { nom: 'arbre', route: '/arbre' },
+  { nom: 'arbre-clair', route: '/arbre', theme: 'light' },
+  // Une technique choisie : la chaîne de prérequis se dessine, le panneau
+  // s'ouvre. C'est l'écran qui justifie l'îlot.
+  { nom: 'arbre-choix', route: '/arbre', clic: '[data-noeud="tremolo"]', pause: 1200 },
   { nom: 'accordeur-repos', route: '/accordeur' },
   // Le cadran ne s'affiche qu'une fois le micro ouvert : on clique, et Chrome
   // écoute un fichier WAV à la place du micro (voir faux-micro.mjs). Le fichier

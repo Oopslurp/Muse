@@ -247,7 +247,7 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | 2 | **Contenu** | Content collections typées selon `05-modele-donnees.md`, migration des fiches en MDX, liste + filtres, page de détail | ✅ **close** |
 | 3 | **Tablatures** | alphaTab : rendu, lecture, curseur, tempo, boucle par mesure, métronome | ✅ **close** |
 | 4 | **Accordeur** | Page dédiée, chromatique, selon `06-accordeur.md`. Cents, aiguille lissée, choix d'accordage, gestion propre du micro **et de son refus** | ✅ **close** |
-| 5 | Arbre de compétences | Graphe de prérequis cliquable + progression | ⏳ |
+| 5 | **Arbre de compétences** | Graphe de prérequis cliquable + progression | ✅ **close** |
 | 6 | Pratique | Métronome, minuteur de séance, journal IndexedDB, suivi par technique, export/import JSON | ⏳ |
 | 7 | Finitions | Recherche, perf, responsive, impression PDF d'une fiche, déploiement | ⏳ |
 
@@ -330,6 +330,7 @@ npm run shot          # captures de contrôle dans .captures/ (Chrome headless)
 npm run audit:console # exceptions, erreurs console, îlots vides, débordement
 npm run audit:lecture # appuie sur « lire » et vérifie que le curseur avance
 npm run audit:accordeur # joue un mi2 détendu dans un faux micro, lit l'écran
+npm run audit:progression # note une technique, recharge, vérifie qu'elle a tenu
 npm run audit:layout -- <url> <largeur>   # remonte à l'élément qui déborde
 ```
 
@@ -352,10 +353,12 @@ Les tranches 0 à 2 ont été livrées **sans jamais regarder le rendu**, faute 
 npm run audit:console                              # contre le dev
 npm run audit:lecture
 npm run audit:accordeur
+npm run audit:progression
 npm run build && npm run preview                   # puis contre le build
 MUSE_URL=http://localhost:4322 npm run audit:console
 MUSE_URL=http://localhost:4322 npm run audit:lecture
 MUSE_URL=http://localhost:4322 npm run audit:accordeur
+MUSE_URL=http://localhost:4322 npm run audit:progression
 npm run shot                                       # et regarder les images
 ```
 
@@ -443,6 +446,33 @@ Trois fichiers, trois responsabilités : [accordeur.ts](src/lib/accordeur.ts) d�
 **Ordre des cordes** — corde 1 (aiguë) en premier en interne, comme partout dans le projet ; l'affichage inverse, parce qu'on lit un manche grave à gauche. `06-accordeur.md` §7 tabule dans l'autre sens et prévenait lui-même que deux ordres cohabitant produiraient des bugs silencieux : il n'y en a qu'un.
 
 **Reste `déduit` faute d'observation guitare en main** : le comportement de `clarity` pendant l'attaque d'une corde grave d'acoustique, le taux réel d'erreurs d'octave sur la corde 6, et le seuil de bruit dans une vraie pièce. La page le dit, dans son encadré « à vérifier ».
+
+### Arbre de compétences et progression (tranche 5)
+
+**La disposition du graphe est calculée au build** — [arbre.ts](src/lib/arbre.ts), appelé depuis `/arbre`. Elle ne dépend que du contenu ; la recalculer à chaque chargement ferait payer au navigateur un travail qui ne change jamais. L'îlot ne reçoit que des coordonnées.
+
+Six couches en **colonnes**, de gauche à droite, huit nœuds au plus par couche. En lignes il faudrait huit colonnes de large et le graphe deviendrait illisible. L'ordre interne à une colonne vient de quatre passes de barycentres, à partir d'un ordre initial déterministe (famille puis code) : **un graphe qui bouge à chaque build est impossible à relire.**
+
+⚠️ `/arbre` appelle `construireGraphe` comme `/techniques` : les trois invariants (prérequis existants, acyclicité, monotonie) ne s'exécutent que si une page en dépend.
+
+**Progression — [progression.ts](src/lib/progression.ts), Dexie/IndexedDB.** Deux choses distinctes, à ne pas confondre :
+
+| | Ce que c'est | Où |
+|---|---|---|
+| **Avancement** (`neuf` / `en-cours` / `acquis`) | Où j'en suis. Pédagogique. | Arbre + fiche |
+| **Observation** (`date` + note libre) | Vérifié guitare en main — la promotion de la **décision 1**. Épistémique. | Fiche |
+
+L'observation **n'écrase pas l'origine** : la pastille produite au build continue d'afficher `sourcé` ou `déduit`, l'observation s'ajoute à côté. Deux champs, jamais un enum — c'est ce qui permet d'écrire « la source affirme ceci, j'ai constaté cela ». L'état est indexé par identifiant de fiche, donc il survit aux mises à jour du contenu.
+
+⚠️ **La base n'est jamais instanciée à l'import.** Astro rend les îlots React en HTML au build, sous Node, où `indexedDB` n'existe pas : un `new Dexie()` au niveau du module ferait échouer la construction. Singleton paresseux, ouvert au premier usage.
+
+**« Ouverte » est dérivé, jamais stocké** : une technique dont *tous* les prérequis sont tenus. C'est l'information qu'on vient chercher dans un arbre de compétences.
+
+**`npm run audit:progression`** note une technique, recharge la page, et vérifie qu'elle a tenu — puis que la fiche montre le même état et que l'observation a survécu. Une progression locale qui ne se réécrit pas est le pire des défauts : les boutons répondent, les compteurs bougent, et tout disparaît au rechargement suivant sans un mot dans la console. Vérifié en échec en commentant le `put`.
+
+> ⚠️ Le décompte « ouvertes » **ne bouge pas** quand on marque un point d'entrée : il cesse d'être ouvert en devenant tenu, pendant que sa dépendante s'ouvre. L'audit vise donc la dépendante nommément. Deux assertions trop grossières ont dû être corrigées ici — c'était le test qui avait tort, pas le code.
+
+**Reste à faire, et assumé** : la promotion `observé` porte sur la fiche entière, pas sur chaque affirmation qu'elle contient. Le schéma le permettrait (`provenance` existe aussi sur les exercices et les erreurs) ; l'interface, pas encore.
 
 ### Conventions alphaTex établies par la sonde
 

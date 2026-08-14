@@ -18,7 +18,7 @@ export interface NavItem {
 
 export const NAV: readonly NavItem[] = [
   { href: '/techniques', label: 'Techniques', ready: true, tranche: 2 },
-  { href: '/arbre', label: 'Arbre', ready: false, tranche: 5 },
+  { href: '/arbre', label: 'Arbre', ready: true, tranche: 5 },
   { href: '/accordeur', label: 'Accordeur', ready: true, tranche: 4 },
   { href: '/pratique', label: 'Pratique', ready: false, tranche: 6 },
 ] as const;
@@ -65,8 +65,8 @@ export const TRANCHES: readonly Tranche[] = [
   {
     n: 5,
     label: 'Arbre de compétences',
-    detail: 'Graphe de prérequis cliquable et progression.',
-    done: false,
+    detail: 'Graphe de prérequis cliquable, progression locale et exportable.',
+    done: true,
   },
   {
     n: 6,

@@ -10,6 +10,7 @@ import Erreurs from '~/components/fiche/Erreurs.astro';
 import Exercices from '~/components/fiche/Exercices.astro';
 import Annexes from '~/components/fiche/Annexes.astro';
 import Callout from '~/components/ui/Callout.astro';
+import SuiviFiche from '~/components/react/SuiviFiche';
 import { construireGraphe } from '~/lib/graph';
 
 export const getStaticPaths = (async () => {
@@ -141,6 +142,11 @@ const sections = [
       <aside class="corps__cote">
         <div class="colle">
           <Seance seance={d.seance} />
+
+          {/* Avancement partagé avec l'arbre, et promotion « observé » —
+              CLAUDE.md décision 1. Hydraté à la visibilité : il n'est utile
+              qu'une fois la fiche lue, et il n'y a rien à afficher avant. */}
+          <SuiviFiche client:visible id={fiche.id} />
 
           {
             sections.length > 1 && (

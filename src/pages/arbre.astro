@@ -1,0 +1,141 @@
+---
+/**
+ * Arbre de compétences — tranche 5.
+ *
+ * La disposition du graphe est calculée ici, au build : elle ne dépend que du
+ * contenu. L'îlot ne reçoit que des coordonnées et s'occupe de l'interaction
+ * et de la progression, qui elle vit dans le navigateur.
+ *
+ * ⚠️ `construireGraphe` valide les trois invariants (prérequis existants,
+ * acyclicité, monotonie de difficulté) et **lève**. Cette page en dépend
+ * autant que `/techniques` : une vérification qu'aucune page n'exécute ne
+ * s'exécute jamais.
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Arbre from '~/components/react/Arbre';
+import Callout from '~/components/ui/Callout.astro';
+import { construireGraphe } from '~/lib/graph';
+import { disposer } from '~/lib/arbre';
+import { FAMILIES } from '~/lib/taxonomy';
+
+const fiches = (await getCollection('techniques')).filter((f) => !f.data.brouillon);
+const graphe = construireGraphe(fiches);
+const disposition = disposer(graphe);
+
+const familles = FAMILIES.map((f) => ({ id: f.id as string, label: f.label, colorVar: f.colorVar }));
+const entrees = graphe.noeuds.filter((n) => n.entree).length;
+---
+
+<BaseLayout
+  title="Arbre de compétences"
+  description="Le graphe des prérequis entre techniques, cliquable, avec le suivi de progression conservé en local et exportable."
+>
+  <header class="tete">
+    <p class="eyebrow">Le parcours</p>
+    <h1>Arbre de compétences</h1>
+    <p class="lede">
+      {graphe.noeuds.length} techniques, {graphe.aretes.length} liens de prérequis
+      et {disposition.couches.length} couches. {entrees} points d'entrée ne demandent
+      rien en amont — tout le reste en découle.
+    </p>
+    <p class="meta">
+      La progression est enregistrée <strong>dans ce navigateur</strong>, nulle part
+      ailleurs. Elle s'exporte en JSON depuis le bas de la page.
+    </p>
+  </header>
+
+  <Arbre client:load disposition={disposition} familles={familles} />
+
+  <section class="notes">
+    <h2>Comment le lire</h2>
+    <dl>
+      <dt>De gauche à droite</dt>
+      <dd>
+        Chaque colonne est une couche&nbsp;: la distance la plus longue depuis un point
+        d'entrée. Une technique n'apparaît jamais avant ce qu'elle demande. L'ordre à
+        l'intérieur d'une colonne minimise les croisements&nbsp;; il n'a pas d'autre sens.
+      </dd>
+
+      <dt>Le filet en pointillé</dt>
+      <dd>
+        Une technique dont <em>tous</em> les prérequis sont tenus. C'est ce qui est ouvert
+        maintenant, et c'est l'information qu'on vient chercher.
+      </dd>
+
+      <dt>« Tenue » veut dire quelque chose</dt>
+      <dd>
+        À froid, sans échauffement particulier, à tempo de travail. Un geste qui ne
+        marche qu'après vingt minutes de mise en route n'est pas tenu&nbsp;: il est en
+        travail.
+      </dd>
+
+      <dt>Rien n'interdit de sauter une étape</dt>
+      <dd>
+        Le graphe décrit ce qui fait gagner du temps, pas une barrière. Une technique
+        verrouillée reste cliquable, sa fiche reste ouverte.
+      </dd>
+    </dl>
+
+    <Callout tone="verifier" title="Ce que ce graphe n'est pas">
+      <p>
+        Les liens de prérequis sont un <strong>jugement</strong> issu de la phase de
+        recherche, pas une donnée sourcée technique par technique. Trois d'entre eux ont
+        déjà été corrigés parce que l'invariant de monotonie les a attrapés au build.
+        D'autres sont sans doute discutables&nbsp;: ils décrivent un ordre raisonnable,
+        pas le seul possible.
+      </p>
+    </Callout>
+  </section>
+</BaseLayout>
+
+<style>
+  .tete {
+    padding: clamp(2.25rem, 1.5rem + 3vw, 3.75rem) 0 2rem;
+    max-width: 62ch;
+  }
+  .tete h1 {
+    font-size: var(--text-h1);
+    line-height: 1.05;
+    margin: 0.35rem 0 1rem;
+  }
+  .lede {
+    margin: 0;
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--color-ink-2);
+  }
+  .meta {
+    margin: 0.85rem 0 0;
+    font-size: var(--text-sm);
+    color: var(--color-ink-3);
+  }
+  .meta strong {
+    color: var(--color-ink-2);
+    font-weight: 650;
+  }
+
+  .notes {
+    margin: 3rem 0 1rem;
+    max-width: 68ch;
+  }
+  .notes h2 {
+    font-size: var(--text-xl);
+    margin: 0 0 1.2rem;
+  }
+  .notes dl {
+    margin: 0 0 1.6rem;
+    display: grid;
+    gap: 1.1rem;
+  }
+  .notes dt {
+    font-weight: 650;
+    color: var(--color-ink);
+    margin-bottom: 0.2rem;
+  }
+  .notes dd {
+    margin: 0;
+    line-height: 1.65;
+    color: var(--color-ink-2);
+  }
+</style>
