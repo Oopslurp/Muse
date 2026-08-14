@@ -250,6 +250,9 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | 5 | **Arbre de compétences** | Graphe de prérequis cliquable + progression | ✅ **close** |
 | 6 | **Pratique** | Métronome, minuteur de séance, journal IndexedDB, suivi par technique, export/import JSON | ✅ **close** |
 | 7 | Finitions | Recherche, perf, responsive, impression PDF d'une fiche, déploiement | ⏳ |
+| 8 | Reprise | Dette, défauts connus, décisions en attente — voir [docs/dette.md](docs/dette.md), plus l'audit Codex | ⏳ |
+
+> **[docs/dette.md](docs/dette.md) recense ce qui est imparfait, incomplet ou non vérifié**, avec les décisions qui attendent une réponse. Le tenir à jour à chaque tranche : un défaut connu qui n'est écrit nulle part est un défaut oublié.
 
 **Reporté, ne pas le rouvrir avant l'échéance indiquée :**
 - **Promotion des fiches courtes en fiches longues** → après la tranche 3. Candidates notées : `MD-05 appui préparé`, `TR-04 équilibre des voix`, `MG-09 étouffements MG`.
