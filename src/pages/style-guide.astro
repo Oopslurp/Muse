@@ -337,7 +337,7 @@ const difficulties: Diff[] = [1, 2, 3, 4, 5];
   /* ------------------------------------------------------------ couleurs */
   .swatches {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(11rem, 100%), 1fr));
     gap: 0.9rem;
   }
   .sw {
@@ -431,7 +431,7 @@ const difficulties: Diff[] = [1, 2, 3, 4, 5];
 
   .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
     gap: 1rem;
   }
   .card__h {

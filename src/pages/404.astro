@@ -1,0 +1,93 @@
+---
+/**
+ * Page introuvable.
+ *
+ * Un 404 n'a pas à s'excuser : il dit où on est et propose la sortie la plus
+ * proche. La recherche est dans l'en-tête, à la touche `/`.
+ */
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { corpus } from '~/lib/corpus';
+import { NAV } from '~/lib/nav';
+
+const c = await corpus();
+const sections = NAV.filter((n) => n.ready);
+---
+
+<BaseLayout title="Page introuvable" description="Cette adresse ne correspond à rien sur Muse.">
+  <section class="perdu">
+    <p class="eyebrow">404</p>
+    <h1>Cette adresse ne mène nulle part</h1>
+    <p class="lede">
+      Le lien est peut-être ancien, ou la page n'a jamais existé. Rien n'est perdu&nbsp;:
+      le site tient en quatre sections et {c.fiches} fiches.
+    </p>
+
+    <ul class="sorties">
+      {
+        sections.map((s) => (
+          <li>
+            <a href={s.href}>{s.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="astuce">
+      La recherche s'ouvre à la touche <kbd>/</kbd> depuis n'importe quelle page.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .perdu {
+    padding: clamp(3rem, 2rem + 6vw, 7rem) 0 4rem;
+    max-width: 54ch;
+  }
+  .perdu h1 {
+    font-size: var(--text-h1);
+    line-height: 1.05;
+    margin: 0.35rem 0 1rem;
+  }
+  .lede {
+    margin: 0 0 1.8rem;
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--color-ink-2);
+  }
+
+  .sorties {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0 0 1.6rem;
+    padding: 0;
+    list-style: none;
+  }
+  .sorties a {
+    display: inline-block;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-ink);
+    text-decoration: none;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    padding: 0.45em 1.1em;
+  }
+  .sorties a:hover {
+    border-color: var(--color-brass);
+    color: var(--color-brass);
+  }
+
+  .astuce {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-ink-3);
+  }
+  .astuce kbd {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    padding: 0.15em 0.4em;
+    border: 1px solid var(--color-line);
+    border-radius: 4px;
+  }
+</style>

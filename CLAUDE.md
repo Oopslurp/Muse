@@ -249,7 +249,7 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | 4 | **Accordeur** | Page dédiée, chromatique, selon `06-accordeur.md`. Cents, aiguille lissée, choix d'accordage, gestion propre du micro **et de son refus** | ✅ **close** |
 | 5 | **Arbre de compétences** | Graphe de prérequis cliquable + progression | ✅ **close** |
 | 6 | **Pratique** | Métronome, minuteur de séance, journal IndexedDB, suivi par technique, export/import JSON | ✅ **close** |
-| 7 | Finitions | Recherche, perf, responsive, impression PDF d'une fiche, déploiement | ⏳ |
+| 7 | **Finitions** | Recherche, perf, responsive, impression PDF d'une fiche, déploiement | ✅ **close** |
 | 8 | Reprise | Dette, défauts connus, décisions en attente — voir [docs/dette.md](docs/dette.md), plus l'audit Codex | ⏳ |
 
 > **[docs/dette.md](docs/dette.md) recense ce qui est imparfait, incomplet ou non vérifié**, avec les décisions qui attendent une réponse. Le tenir à jour à chaque tranche : un défaut connu qui n'est écrit nulle part est un défaut oublié.
@@ -335,6 +335,9 @@ npm run audit:lecture # appuie sur « lire » et vérifie que le curseur avance
 npm run audit:accordeur # joue un mi2 détendu dans un faux micro, lit l'écran
 npm run audit:progression # note une technique, recharge, vérifie qu'elle a tenu
 npm run audit:pratique  # compte les clics du métronome, le minuteur, le journal
+npm run audit:mobile    # 8 routes × 320 et 390 px, aucun débordement
+npm run audit:poids     # budget par route + aucun appel hors origine
+npm run audit:finitions # recherche, impression, page introuvable
 npm run audit:layout -- <url> <largeur>   # remonte à l'élément qui déborde
 ```
 
@@ -359,12 +362,17 @@ npm run audit:lecture
 npm run audit:accordeur
 npm run audit:progression
 npm run audit:pratique
+npm run audit:mobile
+npm run audit:finitions
 npm run build && npm run preview                   # puis contre le build
 MUSE_URL=http://localhost:4322 npm run audit:console
 MUSE_URL=http://localhost:4322 npm run audit:lecture
 MUSE_URL=http://localhost:4322 npm run audit:accordeur
 MUSE_URL=http://localhost:4322 npm run audit:progression
 MUSE_URL=http://localhost:4322 npm run audit:pratique
+MUSE_URL=http://localhost:4322 npm run audit:mobile
+MUSE_URL=http://localhost:4322 npm run audit:poids
+MUSE_URL=http://localhost:4322 npm run audit:finitions
 npm run shot                                       # et regarder les images
 ```
 
@@ -500,6 +508,30 @@ L'observation **n'écrase pas l'origine** : la pastille produite au build contin
 2. **Un composant qui prend une valeur en `props` et remonte ses changements écrase la valeur initiale.** Le métronome prenait `bpm` au montage et appelait `surTempo` dans un effet ; le tempo de départ du palier arrivait après et se faisait réécraser à 72. Le tempo est désormais **piloté par le parent** — une seule source de vérité.
 
 ⚠️ **Ajouter une dépendance d'îlot sans la déclarer dans `optimizeDeps.include`** provoque une ré-optimisation Vite en cours de session : les modules déjà chargés répondent `504 Outdated Optimize Dep` et l'îlot ne s'hydrate plus. C'est arrivé avec `dexie`, qui a fait tomber l'accordeur. `pitchy` et `dexie` y sont maintenant.
+
+### Finitions (tranche 7)
+
+**Recherche globale — et pas un îlot React.** La décision 8 réserve React à l'interactif lourd ; la recherche n'y est pas. Une première version en îlot posé dans l'en-tête tirait React sur **toutes** les pages, y compris l'accueil qui n'en avait aucun : **+65 Ko par page, mesuré**. Réécrite en DOM natif dans [Recherche.astro](src/components/Recherche.astro), elle coûte 2 Ko.
+
+`<dialog>` plutôt qu'une div : focus piégé, `Échap` natif, fond stylé par `::backdrop`, sans une ligne de JavaScript pour ça.
+
+⚠️ **`type="text"`, pas `type="search"`.** Chrome réserve `Échap` au vidage d'un champ de recherche : la première pression efface le texte au lieu de fermer la palette. Sur un outil qu'on pilote au clavier, une touche doit faire une chose. Trouvé par `audit:finitions`.
+
+**L'index de recherche est un fichier**, [recherche.json.ts](src/pages/recherche.json.ts), chargé à la première ouverture. Embarqué dans le HTML il coûtait **77 Ko par page**, dupliqués et jamais mis en cache d'une page à l'autre. Il indexe les noms fr/en/es et les alias — on cherche « apoyando » ou « cejilla » —, plus les titres de paliers et les signes d'erreur, parce qu'on se souvient d'un symptôme avant de se souvenir d'une fiche.
+
+**Deux invariants nouveaux, tous deux vérifiés par `npm run audit:poids` :**
+
+1. **Aucun appel réseau hors origine.** Décision 8 : pas de CDN, pas de Google Fonts. Facile à enfreindre sans s'en apercevoir, invisible au build et à l'écran, visible seulement dans la liste des requêtes.
+2. **Un budget de poids par route**, calé sur le mesuré avec ~25 % de marge. Un site qui grossit de 40 Ko par tranche est un site dont personne ne remarque qu'il a doublé. Relevé actuel : 210 à 290 Ko par route, dominé par les 172 Ko de polices.
+
+**`npm run audit:mobile` — 8 routes × 320 et 390 px.** `audit:console` mesurait déjà le débordement, mais à 1500 px, où il n'y en a jamais. Deux causes, toujours les mêmes :
+
+- **un enfant de grille ou de flex garde `min-width: auto`** et refuse de descendre sous la largeur minimale de son contenu. Il suffit d'un élément en `white-space: nowrap` — une pastille de tempo, un `<select>` dont la plus longue option fait quarante caractères ;
+- **`repeat(auto-fit, minmax(21rem, 1fr))` impose un plancher de 336 px**, plus large qu'un iPhone SE. La forme correcte est `minmax(min(21rem, 100%), 1fr)`. Sept grilles du projet étaient concernées.
+
+**Impression** — feuille dédiée en fin de [global.css](src/styles/global.css). Thème forcé en clair, navigation et commandes masquées, paliers et bloc santé conservés, sauts de page interdits au milieu d'un palier. ⚠️ **La source alphaTex se déplie à l'impression** : le lecteur est hydraté à la visibilité, donc une fiche imprimée sans avoir été parcourue peut n'avoir aucune partition composée. La source, elle, est toujours dans le HTML — et elle fait foi.
+
+**Déploiement** — [docs/deploiement.md](docs/deploiement.md). Site statique, `MUSE_SITE` règle le domaine canonique au build. **HTTPS est la seule exigence réelle** : `getUserMedia` n'existe qu'en contexte sécurisé, et une IP de réseau local ne compte pas. L'hébergeur reste à choisir ; sa configuration fait une dizaine de lignes et n'a pas été écrite d'avance pour trois plateformes.
 
 ### Conventions alphaTex établies par la sonde
 

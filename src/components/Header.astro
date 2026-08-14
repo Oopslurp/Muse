@@ -1,5 +1,6 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+import Recherche from './Recherche.astro';
 import { NAV } from '~/lib/nav';
 
 const path = Astro.url.pathname;
@@ -48,7 +49,10 @@ const path = Astro.url.pathname;
       </ul>
     </nav>
 
-    <ThemeToggle />
+    <div class="header__outils">
+      <Recherche />
+      <ThemeToggle />
+    </div>
   </div>
   <div class="header__rule rule-brass"></div>
 </header>
@@ -69,6 +73,15 @@ const path = Astro.url.pathname;
     max-width: 76rem;
     margin: 0 auto;
     padding: 0.85rem var(--spacing-gutter);
+  }
+
+  /* Recherche et bascule de thème restent groupées à droite, y compris quand
+     l'en-tête passe la navigation à la ligne sur un téléphone. */
+  .header__outils {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-left: auto;
   }
 
   .header__rule {

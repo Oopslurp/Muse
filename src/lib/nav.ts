@@ -77,7 +77,13 @@ export const TRANCHES: readonly Tranche[] = [
   {
     n: 7,
     label: 'Finitions',
-    detail: 'Recherche, performance, impression, déploiement.',
+    detail: 'Recherche, budget de poids, responsive, impression, déploiement.',
+    done: true,
+  },
+  {
+    n: 8,
+    label: 'Reprise',
+    detail: 'Dette, défauts connus et décisions en attente — voir docs/dette.md.',
     done: false,
   },
 ] as const;

@@ -1,0 +1,199 @@
+---
+/**
+ * Recherche globale — palette clavier.
+ *
+ * **Pas un îlot React**, et c'est délibéré. CLAUDE.md décision 8 réserve React
+ * à l'interactif lourd : accordeur, alphaTab, filtres, métronome, journal. La
+ * recherche n'y est pas, et pour une bonne raison mesurée — un îlot dans
+ * l'en-tête tire React sur *toutes* les pages, y compris l'accueil qui n'en
+ * avait aucun. Coût relevé : **+65 Ko par page**. Ce qui suit fait le même
+ * travail en DOM natif.
+ *
+ * `<dialog>` plutôt qu'une div : la modale piège le focus, se ferme à `Échap`
+ * et son fond se style par `::backdrop`, le tout sans une ligne de JavaScript.
+ *
+ * L'index est chargé à la première ouverture, jamais avant.
+ *
+ * ⚠️ La feuille est importée globalement, pas déclarée en `<style>` scopé :
+ * les résultats sont créés en JavaScript et ne porteraient pas l'attribut de
+ * portée qu'Astro ajoute au balisage du composant.
+ */
+import '~/styles/recherche.css';
+---
+
+<button type="button" class="re__declencheur" aria-label="Rechercher" title="Rechercher — touche /">
+  <svg viewBox="0 0 16 16" aria-hidden="true">
+    <circle cx="7" cy="7" r="4.6"></circle>
+    <path d="M10.4 10.4 L14 14"></path>
+  </svg>
+  <kbd aria-hidden="true">/</kbd>
+</button>
+
+<dialog class="re__palette" aria-label="Rechercher">
+  {/*
+    ⚠️ `type="text"` et non `type="search"`. Dans un champ de recherche,
+    Chrome réserve `Échap` au vidage du champ : la première pression efface
+    le texte au lieu de fermer la palette, et il en faut une seconde. Sur un
+    outil qu'on pilote au clavier, une touche doit faire une chose.
+  */}
+  <input
+    type="text"
+    class="re__champ"
+    placeholder="Chercher une technique, un symptôme, un outil…"
+    aria-label="Rechercher"
+    autocomplete="off"
+  />
+  <p class="re__rien" hidden></p>
+  <ul class="re__liste"></ul>
+  <p class="re__aide">
+    <kbd>↑</kbd> <kbd>↓</kbd> pour parcourir · <kbd>↵</kbd> pour ouvrir ·
+    <kbd>Échap</kbd> pour fermer
+  </p>
+</dialog>
+
+<script>
+  import { chercher, type Entree } from '~/lib/recherche';
+
+  const ETIQUETTE: Record<Entree['type'], string> = {
+    technique: 'Technique',
+    palier: 'Palier',
+    erreur: 'Erreur typique',
+    outil: 'Outil',
+  };
+
+  const declencheur = document.querySelector<HTMLButtonElement>('.re__declencheur');
+  const palette = document.querySelector<HTMLDialogElement>('.re__palette');
+  const champ = palette?.querySelector<HTMLInputElement>('.re__champ');
+  const liste = palette?.querySelector<HTMLUListElement>('.re__liste');
+  const rien = palette?.querySelector<HTMLParagraphElement>('.re__rien');
+
+  if (declencheur && palette && champ && liste && rien) {
+    let index: Entree[] = [];
+    let resultats: Entree[] = [];
+    let curseur = 0;
+    let demande: Promise<void> | null = null;
+
+    /** L'index arrive à la première ouverture, pas au chargement de la page. */
+    const charger = () => {
+      demande ??= fetch('/recherche.json')
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+        .then((d: Entree[]) => {
+          index = d;
+          rendre();
+        })
+        .catch((e) => {
+          demande = null;
+          rien.hidden = false;
+          rien.textContent = `Index de recherche indisponible : ${String(e)}`;
+        });
+      return demande;
+    };
+
+    const rendre = () => {
+      const requete = champ.value.trim();
+      resultats = requete ? chercher(index, requete) : [];
+      curseur = 0;
+
+      liste.replaceChildren();
+      for (const [i, r] of resultats.entries()) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = r.href;
+        a.className = 're__item' + (i === 0 ? ' re__item--vise' : '');
+        a.addEventListener('mouseenter', () => viser(i));
+
+        const titre = document.createElement('span');
+        titre.className = 're__titre';
+        titre.textContent = r.titre;
+
+        const contexte = document.createElement('span');
+        contexte.className = 're__contexte';
+        contexte.textContent = r.contexte;
+
+        const type = document.createElement('span');
+        type.className = 're__type';
+        type.textContent = ETIQUETTE[r.type];
+
+        a.append(titre, contexte, type);
+        li.append(a);
+        liste.append(li);
+      }
+
+      if (!requete) {
+        rien.hidden = true;
+      } else if (index.length === 0) {
+        rien.hidden = false;
+        rien.textContent = 'Chargement de l’index…';
+      } else if (resultats.length === 0) {
+        rien.hidden = false;
+        rien.textContent =
+          `Rien pour « ${requete} ». Les noms anglais, espagnols et les alias sont ` +
+          'indexés — « apoyando », « cejilla », « rest stroke » fonctionnent.';
+      } else {
+        rien.hidden = true;
+      }
+    };
+
+    const viser = (i: number) => {
+      const items = liste.querySelectorAll<HTMLAnchorElement>('.re__item');
+      if (items.length === 0) return;
+      curseur = Math.max(0, Math.min(i, items.length - 1));
+      items.forEach((el, j) => el.classList.toggle('re__item--vise', j === curseur));
+      items[curseur]?.scrollIntoView({ block: 'nearest' });
+    };
+
+    const ouvrir = () => {
+      champ.value = '';
+      rendre();
+      if (!palette.open) palette.showModal();
+      champ.focus();
+      void charger();
+    };
+
+    declencheur.addEventListener('click', ouvrir);
+    champ.addEventListener('input', rendre);
+
+    champ.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        viser(curseur + 1);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        viser(curseur - 1);
+      } else if (e.key === 'Enter') {
+        const cible = resultats[curseur];
+        if (cible) {
+          e.preventDefault();
+          window.location.href = cible.href;
+        }
+      }
+    });
+
+    // Clic dans le fond : `<dialog>` reçoit l'événement quand on touche son
+    // `::backdrop`, la cible est alors la boîte elle-même.
+    palette.addEventListener('click', (e) => {
+      if (e.target === palette) palette.close();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      const cible = e.target as HTMLElement | null;
+      const dansUnChamp =
+        cible?.tagName === 'INPUT' ||
+        cible?.tagName === 'TEXTAREA' ||
+        cible?.tagName === 'SELECT' ||
+        cible?.isContentEditable === true;
+
+      if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        ouvrir();
+        return;
+      }
+      // `/` n'ouvre pas la palette si on tape déjà ailleurs : sinon on ne peut
+      // plus écrire une note dans le journal.
+      if (e.key === '/' && !dansUnChamp && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        ouvrir();
+      }
+    });
+  }
+</script>

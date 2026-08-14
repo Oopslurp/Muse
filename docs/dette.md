@@ -261,7 +261,32 @@ reprenne pas pour des oublis.
 
 ---
 
-## F. Ce que la tranche 7 doit encore livrer
+## F. Traité en tranche 7
 
-Pour mémoire, et pour ne pas confondre « pas fait » et « pas encore prévu » :
-recherche, performance, responsive, impression PDF d'une fiche, déploiement.
+Pour ne pas rouvrir ce qui est fait :
+
+- **D3 (rien vu sur un téléphone) est partiellement levé.** `npm run audit:mobile`
+  couvre 8 routes × 320 et 390 px, et sept grilles ont été corrigées. Reste ce
+  qu'aucune émulation ne donne : la manipulation au doigt, la taille réelle
+  des cibles tactiles, le comportement du clavier virtuel.
+- **D5 (aucune mesure de performance) est levé.** `npm run audit:poids` tient
+  un budget par route et refuse tout appel hors origine.
+- Recherche globale, impression d'une fiche, page 404 : livrés.
+- **Le déploiement reste à faire** : l'hébergeur n'est pas choisi. Voir
+  [deploiement.md](deploiement.md) — c'est une décision, pas un travail.
+
+**Nouveau depuis la tranche 7**
+
+### G1 🟡 Les cibles tactiles n'ont pas été redimensionnées
+
+La sonde relève des liens de 17 à 23 px de haut. Les liens en pleine ligne de
+texte sont exemptés par WCAG 2.2 (critère « Target Size (Minimum) »), mais
+plusieurs sont des boutons à part entière. À reprendre avec l'audit
+d'accessibilité (D1), pas séparément.
+
+### G2 🟡 `audit:poids` mesure le chargement initial seulement
+
+Le lecteur de tablature et l'accordeur chargent leur machinerie au premier
+clic — c'est précisément pourquoi ils sont paresseux, et les compter punirait
+le bon comportement. Mais du coup, **les 3,3 Mo d'alphaTab ne sont dans aucun
+budget** (voir A5).

@@ -8,6 +8,7 @@
 
 import { getCollection } from 'astro:content';
 import { FAMILIES, type FamilyId } from './taxonomy';
+import { OUTILS, normaliser, type Entree } from './recherche';
 
 export interface Corpus {
   /** Nombre de fiches publiées. */
@@ -65,4 +66,62 @@ export async function corpus(): Promise<Corpus> {
     risqueEleve,
     parFamille,
   };
+}
+
+/* -------------------------------------------------------------- recherche */
+
+/**
+ * Index de recherche, construit au build.
+ *
+ * On indexe plus que les noms français : l'anglais, l'espagnol et les alias,
+ * parce qu'on cherche « apoyando » ou « cejilla » aussi souvent que « butée ».
+ * Et les titres de paliers et d'erreurs, parce qu'on se souvient d'un symptôme
+ * — « corde qui frise » — avant de se souvenir de quelle fiche le traite.
+ */
+export async function indexRecherche(): Promise<Entree[]> {
+  const fiches = (await getCollection('techniques')).filter((f) => !f.data.brouillon);
+  const entrees: Entree[] = [];
+
+  for (const f of fiches) {
+    const d = f.data;
+    const href = `/techniques/${f.id}`;
+    const noms = [d.nom.fr, d.nom.en, d.nom.es, ...(d.nom.alias ?? [])].filter(Boolean);
+
+    entrees.push({
+      titre: d.nom.fr,
+      href,
+      contexte: d.sonCible.replace(/\s+/g, ' ').slice(0, 120),
+      type: 'technique',
+      cles: normaliser([d.code, ...noms, d.sonCible].join(' ')),
+    });
+
+    for (const p of d.paliers) {
+      entrees.push({
+        titre: p.titre,
+        href: `${href}#progression`,
+        contexte: `${d.nom.fr} · ${p.objectif}`,
+        type: 'palier',
+        cles: normaliser([p.titre, p.objectif, d.nom.fr].join(' ')),
+      });
+    }
+
+    for (const e of d.erreurs) {
+      // Le signe observable vaut mieux que la description : c'est par lui
+      // qu'on reconnaît son propre défaut, et donc par lui qu'on cherche.
+      const signe = e.diagnostic.signe;
+      entrees.push({
+        titre: e.titre,
+        href: `${href}#erreurs`,
+        contexte: `${d.nom.fr} · ${signe}`,
+        type: 'erreur',
+        cles: normaliser([e.titre, signe, e.diagnostic.test, d.nom.fr].join(' ')),
+      });
+    }
+  }
+
+  for (const o of OUTILS) {
+    entrees.push({ ...o, cles: normaliser(`${o.titre} ${o.contexte}`) });
+  }
+
+  return entrees;
 }

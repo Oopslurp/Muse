@@ -130,6 +130,13 @@ const { exercices } = Astro.props;
     color: var(--color-ink-2);
     white-space: nowrap;
   }
+  /* Sous 22rem, le libellé complet ne tient plus sur une ligne et un élément
+     en `nowrap` fixe la largeur minimale de tout ce qui le contient. */
+  @media (max-width: 22rem) {
+    .tempo {
+      white-space: normal;
+    }
+  }
   .origine {
     font-size: var(--text-2xs);
     color: var(--color-ink-3);

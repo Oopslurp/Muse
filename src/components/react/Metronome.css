@@ -47,7 +47,9 @@
   display: grid;
   gap: 0.3rem;
   flex: 1 1 18rem;
-  min-width: 14rem;
+  /* Une base minimale en `rem` déborde sur les très petits écrans : le curseur
+     de tempo se resserre plutôt que de pousser la page. */
+  min-width: min(14rem, 100%);
 }
 .me__bpm {
   font-family: var(--font-display);

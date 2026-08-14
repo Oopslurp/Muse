@@ -17,6 +17,14 @@ const {
 } = Astro.props;
 
 const fullTitle = title === 'Muse' ? 'Muse' : `${title} — Muse`;
+
+/**
+ * URL canonique. `Astro.site` vient de `astro.config.mjs`, où il se règle par
+ * la variable d'environnement `MUSE_SITE` — voir docs/deploiement.md. Sans
+ * hébergement défini, elle vaut un domaine local et la balise reste correcte
+ * relativement à lui.
+ */
+const canonique = new URL(Astro.url.pathname, Astro.site ?? 'https://muse.local');
 ---
 
 <!doctype html>
@@ -27,6 +35,7 @@ const fullTitle = title === 'Muse' ? 'Muse' : `${title} — Muse`;
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonique.href} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
     {/* Les deux couleurs de fond, pour que la barre d'adresse mobile suive le thème. */}

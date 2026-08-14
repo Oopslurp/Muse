@@ -471,21 +471,126 @@
    (tranche 7, mais les bases coûtent trois lignes ici)
    ========================================================================== */
 
+/**
+ * Impression — une fiche sur un pupitre.
+ *
+ * On imprime pour poser la feuille à côté de l'instrument, pas pour archiver.
+ * Ce qui compte donc : le geste, les paliers avec leur critère de passage, les
+ * erreurs typiques, et **le bloc santé**. Ce qui ne compte pas : la navigation,
+ * les commandes de lecture, les îlots interactifs, tout ce qui suppose un
+ * écran.
+ *
+ * Le thème est forcé en clair : imprimer le mode sombre vide une cartouche.
+ */
 @media print {
-  :root {
+  :root,
+  :root[data-theme='dark'],
+  :root[data-theme='light'] {
     --c-bg: #fff;
     --c-surface: #fff;
+    --c-surface-2: #fff;
+    --c-surface-3: #f2f2f2;
     --c-ink: #000;
+    --c-ink-2: #222;
+    --c-ink-3: #555;
+    --c-line: #ccc;
+    --c-line-strong: #999;
+    --c-brass: #6a5010;
+    --c-brass-bright: #6a5010;
+    --c-observe: #2a5c36;
+    --c-verifier: #6b3d06;
+    --c-sante: #8f2f22;
+    --c-sante-bg: #fff;
   }
+
   body::after {
     display: none;
   }
   .no-print {
     display: none !important;
   }
+
+  /* Tout ce qui n'a de sens que devant un écran. */
+  .ac,
+  .ar,
+  .pr,
+  .jo,
+  .me,
+  .mi,
+  .sf,
+  .re__declencheur,
+  .filtres,
+  .lt__barre,
+  .lt__reserves,
+  .lt__erreur {
+    display: none !important;
+  }
+
+  /* La partition, elle, s'imprime : c'est l'exercice qu'on emporte au pupitre.
+     Le cadre du lecteur perd son fond et son filet, qui n'ont plus d'objet. */
+  .lt {
+    border: 0;
+    background: none;
+  }
+
+  /**
+   * La source alphaTex s'ouvre à l'impression.
+   *
+   * ⚠️ Le lecteur est hydraté **à la visibilité** : une fiche imprimée sans
+   * avoir été parcourue peut n'avoir aucune partition composée. La source,
+   * elle, est toujours dans le HTML — et CLAUDE.md dit qu'elle fait foi. Cinq
+   * lignes de monospace sont un prix acceptable pour ne jamais imprimer un
+   * exercice vide.
+   */
+  .source[open] > *,
+  .source > *:not(summary) {
+    display: block !important;
+  }
+
+  a {
+    text-decoration: none;
+    color: #000;
+  }
+  /* L'adresse complète d'un lien externe, pour pouvoir la retaper. Les liens
+     internes, non : on a la fiche sous les yeux. */
   a[href^='http']::after {
     content: ' (' attr(href) ')';
     font-size: 0.75em;
     color: #555;
+    word-break: break-all;
+  }
+
+  /* Un palier ou une erreur coupé en deux par un saut de page est illisible.
+     Un titre seul en bas de page l'est presque autant. */
+  .palier,
+  .erreur,
+  .exo,
+  .callout,
+  figure,
+  blockquote {
+    break-inside: avoid;
+  }
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  /* Le corps de fiche est en deux colonnes à l'écran ; sur le papier il
+     s'aligne, et le bloc de séance passe en tête — c'est ce qu'on relit avant
+     de commencer. */
+  .corps {
+    display: block !important;
+  }
+  .corps__cote {
+    margin-top: 1.5rem;
+  }
+
+  @page {
+    margin: 16mm 14mm;
+  }
+  body {
+    font-size: 10.5pt;
+    line-height: 1.5;
   }
 }

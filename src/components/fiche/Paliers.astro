@@ -94,6 +94,11 @@ const { paliers, titresExercices } = Astro.props;
     gap: 1.2rem;
     padding: 1.35rem 0;
     border-top: 1px solid var(--color-line);
+    /* Enfant de grille : sans cette ligne il garde `min-width: auto` et refuse
+       de descendre sous la largeur minimale de son contenu — ici la pastille
+       de tempo, qui est en `nowrap`. La fiche entière débordait de 27 px sur
+       un téléphone. */
+    min-width: 0;
   }
   .palier:last-child {
     border-bottom: 1px solid var(--color-line);
@@ -193,6 +198,12 @@ const { paliers, titresExercices } = Astro.props;
     .palier {
       grid-template-columns: 1fr;
       gap: 0.4rem;
+    }
+    /* Le libellé complet — « ♩ 40 · doubles-croches → ♩ 60 · doubles-croches »
+       — ne tient pas sur un téléphone. Il passe à la ligne plutôt que
+       d'élargir toute la fiche. */
+    .tempo {
+      white-space: normal;
     }
   }
 </style>

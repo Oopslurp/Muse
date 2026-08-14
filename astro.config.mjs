@@ -7,7 +7,15 @@ import { alphaTab } from '@coderline/alphatab-vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://muse.local',
+  /**
+   * Domaine de publication, pour les URL canoniques.
+   *
+   * Réglé par `MUSE_SITE` au moment de la construction plutôt qu'en dur : le
+   * site n'est hébergé nulle part pour l'instant, et le jour où il le sera,
+   * changer d'hébergeur ne doit pas demander de toucher au code.
+   * Voir docs/deploiement.md.
+   */
+  site: process.env.MUSE_SITE ?? 'https://muse.local',
   integrations: [
     // Îlots React réservés à l'interactif : accordeur, alphaTab, filtres,
     // métronome, journal. Tout le reste du site est rendu statiquement.

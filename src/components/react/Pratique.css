@@ -2,6 +2,11 @@
 
 .pr {
   display: grid;
+  /* `minmax(0, 1fr)` et non `1fr` : sans cela les enfants gardent
+     `min-width: auto` et refusent de descendre sous la largeur minimale de
+     leur contenu. Ici le `<select>` de technique poussait la page de 44 px sur
+     un téléphone, et le débordement remontait jusqu'à la barre entière. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.4rem;
 }
 
@@ -13,11 +18,17 @@
   flex-wrap: wrap;
 }
 
+/* La largeur intrinsèque d'un `<select>` vient de sa plus longue option — ici
+   « Percussion — kick, caisse claire, golpe ». Sans ces deux bornes il pousse
+   la page de 44 px sur un téléphone. */
 .pr__pilule {
   position: relative;
   display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
 }
 .pr__pilule select {
+  text-overflow: ellipsis;
   font: inherit;
   font-family: var(--font-display);
   font-size: var(--text-lg);
@@ -75,7 +86,7 @@
 
 .pr__outils {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(21rem, 100%), 1fr));
   gap: 1.2rem;
   align-items: start;
 }
