@@ -74,6 +74,12 @@ export default defineConfig({
         'react-dom/client',
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
+        // Mêmes raisons pour les dépendances des îlots : découvertes à la
+        // volée, elles déclenchent une ré-optimisation en cours de session et
+        // les modules déjà chargés répondent « 504 Outdated Optimize Dep ».
+        // L'îlot concerné ne s'hydrate alors plus du tout.
+        'pitchy',
+        'dexie',
       ],
     },
   },

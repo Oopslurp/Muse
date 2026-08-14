@@ -82,7 +82,13 @@ export default function SuiviFiche({ id }: { id: string }) {
 
   return (
     <section className="sf">
-      <p className="sf__k">Où j’en suis</p>
+      <p className="sf__k">Travailler</p>
+      <a className="sf__atelier" href={`/pratique?technique=${encodeURIComponent(id)}`}>
+        Ouvrir l’atelier →
+        <span>métronome, minuteur et journal, réglés sur cette fiche</span>
+      </a>
+
+      <p className="sf__k sf__k--espace">Où j’en suis</p>
       <div className="sf__etats" role="group" aria-label="Où j’en suis">
         {AVANCEMENTS.map((a) => (
           <button

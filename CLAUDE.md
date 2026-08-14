@@ -248,7 +248,7 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | 3 | **Tablatures** | alphaTab : rendu, lecture, curseur, tempo, boucle par mesure, métronome | ✅ **close** |
 | 4 | **Accordeur** | Page dédiée, chromatique, selon `06-accordeur.md`. Cents, aiguille lissée, choix d'accordage, gestion propre du micro **et de son refus** | ✅ **close** |
 | 5 | **Arbre de compétences** | Graphe de prérequis cliquable + progression | ✅ **close** |
-| 6 | Pratique | Métronome, minuteur de séance, journal IndexedDB, suivi par technique, export/import JSON | ⏳ |
+| 6 | **Pratique** | Métronome, minuteur de séance, journal IndexedDB, suivi par technique, export/import JSON | ✅ **close** |
 | 7 | Finitions | Recherche, perf, responsive, impression PDF d'une fiche, déploiement | ⏳ |
 
 **Reporté, ne pas le rouvrir avant l'échéance indiquée :**
@@ -331,6 +331,7 @@ npm run audit:console # exceptions, erreurs console, îlots vides, débordement
 npm run audit:lecture # appuie sur « lire » et vérifie que le curseur avance
 npm run audit:accordeur # joue un mi2 détendu dans un faux micro, lit l'écran
 npm run audit:progression # note une technique, recharge, vérifie qu'elle a tenu
+npm run audit:pratique  # compte les clics du métronome, le minuteur, le journal
 npm run audit:layout -- <url> <largeur>   # remonte à l'élément qui déborde
 ```
 
@@ -354,11 +355,13 @@ npm run audit:console                              # contre le dev
 npm run audit:lecture
 npm run audit:accordeur
 npm run audit:progression
+npm run audit:pratique
 npm run build && npm run preview                   # puis contre le build
 MUSE_URL=http://localhost:4322 npm run audit:console
 MUSE_URL=http://localhost:4322 npm run audit:lecture
 MUSE_URL=http://localhost:4322 npm run audit:accordeur
 MUSE_URL=http://localhost:4322 npm run audit:progression
+MUSE_URL=http://localhost:4322 npm run audit:pratique
 npm run shot                                       # et regarder les images
 ```
 
@@ -473,6 +476,27 @@ L'observation **n'écrase pas l'origine** : la pastille produite au build contin
 > ⚠️ Le décompte « ouvertes » **ne bouge pas** quand on marque un point d'entrée : il cesse d'être ouvert en devenant tenu, pendant que sa dépendante s'ouvre. L'audit vise donc la dépendante nommément. Deux assertions trop grossières ont dû être corrigées ici — c'était le test qui avait tort, pas le code.
 
 **Reste à faire, et assumé** : la promotion `observé` porte sur la fiche entière, pas sur chaque affirmation qu'elle contient. Le schéma le permettrait (`provenance` existe aussi sur les exercices et les erreurs) ; l'interface, pas encore.
+
+### Atelier de pratique (tranche 6)
+
+**Un métronome de plus, et pour une raison précise.** Celui d'alphaTab ne clique que sur les temps. Or plusieurs autodiagnostics du corpus reposent sur un **clic déplacé** — « sur la 2ᵉ note du cycle » pour le trémolo, « sur les temps 2 et 4 » pour le placement rythmique. Un clic sur l'appui rend ces tests impossibles : on s'appuie dessus au lieu de tenir la pulsation soi-même, ce qu'ils cherchent précisément à mesurer. D'où le motif — chaque position du cycle est **forte, faible ou muette**. Le déplacement se fait en taisant des positions, jamais en décalant une horloge.
+
+⚠️ **Un `setInterval` qui joue un son à chaque tour dérive.** Les clics sont programmés à l'avance sur `ctx.currentTime`, seule horloge exacte ; le minuteur ne sert qu'à réveiller le programmateur. L'horizon passe de 150 ms à 2 s quand l'onglet est caché : les navigateurs y bornent `setTimeout` à une seconde, et un horizon court produirait des trous.
+
+**Le minuteur est adossé aux champs santé**, qui sont obligatoires au schéma (décision 3) : `dureeMax` borne la séance et l'annonce **avant** de la dépasser, `series` pilote l'alternance travail/repos, `signalArret` s'affiche **collé au chronomètre**. Le décompte lit l'horloge système à chaque image — une accumulation d'intervalles prendrait des minutes de retard dans un onglet en arrière-plan.
+
+**Le journal demande six champs, dont quatre facultatifs**, et le tempo comme les minutes sont préremplis par les deux autres outils. Un journal qui demande dix champs ne se remplit pas. Le champ le plus important est `arret` : un signal isolé ne dit rien, trois en deux semaines sur la même technique, si.
+
+**Base unique** — [base.ts](src/lib/base.ts) porte la classe Dexie et les deux magasins. Ouvrir deux instances sur le même nom de base est une source de bugs silencieux. La sauvegarde JSON couvre les deux tables ([sauvegarde.ts](src/lib/sauvegarde.ts)) et relit l'ancien format `muse-progression` de la tranche 5. ⚠️ Les séances sont **ajoutées** à l'import, jamais écrasées : leur clé est auto-incrémentée et rien ne garantit qu'un identifiant désigne la même séance d'une base à l'autre. Réimporter deux fois duplique — moindre mal face à un écrasement silencieux.
+
+**`npm run audit:pratique`** compte les oscillateurs réellement programmés en instrumentant `AudioContext.prototype.createOscillator` avant tout script de la page. Un navigateur sans carte son ne dit rien de ce qu'il « joue » ; un métronome peut passer en marche, allumer son cycle et ne rien produire. Vérifié en échec en commentant l'appel au clic.
+
+**Deux défauts trouvés par cet audit, pas à l'usage :**
+
+1. ⚠️ **`Astro.url.searchParams` est vide au build d'un site statique.** `?technique=<id>` était lu dans le frontmatter : la présélection ne marchait pour personne. Elle se lit dans l'îlot.
+2. **Un composant qui prend une valeur en `props` et remonte ses changements écrase la valeur initiale.** Le métronome prenait `bpm` au montage et appelait `surTempo` dans un effet ; le tempo de départ du palier arrivait après et se faisait réécraser à 72. Le tempo est désormais **piloté par le parent** — une seule source de vérité.
+
+⚠️ **Ajouter une dépendance d'îlot sans la déclarer dans `optimizeDeps.include`** provoque une ré-optimisation Vite en cours de session : les modules déjà chargés répondent `504 Outdated Optimize Dep` et l'îlot ne s'hydrate plus. C'est arrivé avec `dexie`, qui a fait tomber l'accordeur. `pitchy` et `dexie` y sont maintenant.
 
 ### Conventions alphaTex établies par la sonde
 

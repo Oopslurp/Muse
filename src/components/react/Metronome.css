@@ -1,0 +1,217 @@
+/** Métronome — habillage. Préfixe `me`. */
+
+.me {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.1rem 1.2rem 1.2rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.me__tete {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.me__jouer {
+  display: inline-grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-bg);
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.me__jouer:hover {
+  background: var(--color-brass);
+  border-color: var(--color-brass);
+}
+.me__jouer--marche {
+  background: var(--color-brass);
+  border-color: var(--color-brass);
+}
+.me__jouer svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  fill: currentColor;
+}
+
+.me__tempo {
+  display: grid;
+  gap: 0.3rem;
+  flex: 1 1 18rem;
+  min-width: 14rem;
+}
+.me__bpm {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+.me__unite {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--color-ink-3);
+  margin-left: 0.4em;
+}
+.me__tempo input[type='range'] {
+  width: 100%;
+  accent-color: var(--color-brass);
+}
+.me__pas {
+  display: flex;
+  gap: 0.3rem;
+}
+.me__pas-btn {
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--color-ink-2);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  padding: 0.15em 0.55em;
+  cursor: pointer;
+}
+.me__pas-btn:hover {
+  border-color: var(--color-brass);
+  color: var(--color-brass);
+}
+
+.me__volume {
+  display: grid;
+  gap: 0.25rem;
+  width: 8rem;
+}
+.me__volume input {
+  accent-color: var(--color-brass);
+}
+
+.me__k {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+
+/* ---------------------------------------------------------------- cycle */
+/* Chaque position du cycle : appui, clic simple, ou muette. C'est en taisant
+   des positions qu'on déplace le clic — voir metronome.ts. */
+.me__cycle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.me__pos {
+  width: 1.9rem;
+  height: 1.9rem;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-surface-2);
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease, scale 90ms ease;
+}
+.me__pos--fort {
+  background: var(--color-brass);
+  border-color: var(--color-brass);
+}
+.me__pos--faible {
+  background: color-mix(in oklab, var(--c-brass) 30%, transparent);
+  border-color: color-mix(in oklab, var(--c-brass) 55%, transparent);
+}
+/* Une position muette reste visible : le cycle garde sa longueur à l'œil. */
+.me__pos--muet {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--color-line-strong);
+}
+.me__pos--vive {
+  scale: 1.22;
+  border-color: var(--color-ink);
+}
+@media (prefers-reduced-motion: reduce) {
+  .me__pos {
+    transition: background-color 120ms ease, border-color 120ms ease;
+  }
+  .me__pos--vive {
+    scale: 1;
+    outline: 2px solid var(--color-ink);
+    outline-offset: 1px;
+  }
+}
+
+.me__taille {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.5rem;
+}
+.me__taille-n {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-ink-3);
+  min-width: 1.2em;
+  text-align: center;
+}
+
+/* -------------------------------------------------------------- presets */
+.me__presets {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+.me__preset {
+  font: inherit;
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--color-ink-2);
+  background: transparent;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  padding: 0.3em 0.8em;
+  cursor: pointer;
+}
+.me__preset:hover {
+  border-color: var(--color-brass);
+  color: var(--color-brass);
+}
+.me__preset--actif {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-bg);
+}
+
+.me__pourquoi {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  color: var(--color-ink-3);
+  max-width: 62ch;
+}
+
+.me__sub {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.me__sub select {
+  font: inherit;
+  font-size: var(--text-xs);
+  color: var(--color-ink);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  border-radius: 6px;
+  padding: 0.35em 0.5em;
+}

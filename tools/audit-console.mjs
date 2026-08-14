@@ -37,7 +37,7 @@ const PORT = 9466;
 
 const ROUTES = process.argv.slice(2).length
   ? process.argv.slice(2)
-  : ['/', '/techniques', '/techniques/tremolo', '/techniques/ongles', '/accordeur', '/arbre', '/style-guide'];
+  : ['/', '/techniques', '/techniques/tremolo', '/techniques/ongles', '/accordeur', '/arbre', '/pratique', '/style-guide'];
 
 /** Bruit de fond dont on ne veut pas faire échouer l'audit. */
 const IGNORER = [/favicon/i, /DevTools/i, /Autofill\./i];

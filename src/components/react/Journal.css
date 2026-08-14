@@ -1,0 +1,181 @@
+/** Journal — habillage. Préfixe `jo`. */
+
+.jo {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.jo__tete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.jo__titre {
+  margin: 0;
+  font-size: var(--text-xl);
+}
+
+.jo__btn {
+  font: inherit;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-2);
+  background: transparent;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-pill);
+  padding: 0.4em 1em;
+  cursor: pointer;
+}
+.jo__btn:hover {
+  color: var(--color-brass);
+  border-color: var(--color-brass);
+}
+.jo__btn--fort {
+  color: var(--color-bg);
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  justify-self: start;
+}
+.jo__btn--fort:hover {
+  background: var(--color-observe);
+  border-color: var(--color-observe);
+  color: var(--color-bg);
+}
+
+/* --------------------------------------------------------------- saisie */
+.jo__form {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1rem 1.1rem 1.1rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+.jo__ligne {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+.jo__champ {
+  display: grid;
+  gap: 0.25rem;
+  font-size: var(--text-2xs);
+  color: var(--color-ink-3);
+  flex: 1 1 8rem;
+}
+.jo__champ--large {
+  flex: 2 1 14rem;
+}
+.jo__champ--court {
+  flex: 0 0 7rem;
+}
+.jo__champ input,
+.jo__champ select,
+.jo__champ textarea {
+  font: inherit;
+  font-size: var(--text-xs);
+  color: var(--color-ink);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  border-radius: 6px;
+  padding: 0.4em 0.55em;
+  width: 100%;
+}
+.jo__champ textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* ------------------------------------------------------------ historique */
+.jo__vide {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-ink-3);
+  max-width: 62ch;
+}
+
+.jo__liste {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.jo__seance {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr) 4.5rem 4rem 1.6rem;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.55rem 0.6rem;
+  border-bottom: 1px solid var(--color-line);
+  font-size: var(--text-xs);
+  color: var(--color-ink-2);
+}
+/* Une séance qui a produit un signal d'arrêt se repère d'un coup d'œil : la
+   série est ce qui se lit, pas la ligne isolée. */
+.jo__seance--arret {
+  border-left: 2px solid var(--color-sante);
+  padding-left: 0.5rem;
+}
+
+.jo__date {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--color-ink-3);
+}
+.jo__quoi {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.jo__minutes,
+.jo__tempo {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-3);
+}
+
+.jo__supprimer {
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--color-ink-3);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0 0.2em;
+}
+.jo__supprimer:hover {
+  color: var(--color-sante);
+}
+
+.jo__arret,
+.jo__note {
+  grid-column: 2 / -1;
+  margin: 0.3rem 0 0;
+  font-size: var(--text-2xs);
+  line-height: 1.55;
+}
+.jo__arret {
+  color: var(--color-sante);
+  font-weight: 600;
+}
+.jo__note {
+  color: var(--color-ink-3);
+  white-space: pre-wrap;
+}
+
+@media (max-width: 40rem) {
+  .jo__seance {
+    grid-template-columns: minmax(0, 1fr) 4rem 1.6rem;
+  }
+  .jo__date {
+    grid-column: 1 / -1;
+  }
+  .jo__tempo {
+    display: none;
+  }
+}

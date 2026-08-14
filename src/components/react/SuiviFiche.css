@@ -26,6 +26,30 @@
   border-top: 1px solid var(--color-line);
 }
 
+/* Vers l'atelier, avec la technique déjà choisie : le minuteur y prend la
+   durée maximale et le signal d'arrêt de cette fiche. */
+.sf__atelier {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-brass);
+  text-decoration: none;
+}
+.sf__atelier:hover {
+  border-color: var(--color-brass);
+}
+.sf__atelier span {
+  font-weight: 400;
+  font-size: var(--text-2xs);
+  line-height: 1.45;
+  color: var(--color-ink-3);
+}
+
 /* ---------------------------------------------------------- avancement */
 .sf__etats {
   display: grid;

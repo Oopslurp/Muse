@@ -1,0 +1,151 @@
+/** Minuteur de séance — habillage. Préfixe `mi`. */
+
+.mi {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.1rem 1.2rem 1.2rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+/* Durée maximale atteinte : le bloc entier change de ton. On ne peut pas ne
+   pas le voir. */
+.mi--depasse {
+  border-color: var(--color-sante);
+}
+
+.mi__cadran {
+  display: grid;
+  gap: 0.1rem;
+}
+.mi__phase {
+  margin: 0;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+.mi__temps {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 7vw, 3.6rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+.mi--depasse .mi__temps {
+  color: var(--color-sante);
+}
+.mi__sous {
+  margin: 0.15rem 0 0;
+  font-size: var(--text-xs);
+  color: var(--color-ink-3);
+}
+
+.mi__commandes {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.mi__btn {
+  font: inherit;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-2);
+  background: transparent;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-pill);
+  padding: 0.45em 1em;
+  cursor: pointer;
+}
+.mi__btn:hover {
+  color: var(--color-brass);
+  border-color: var(--color-brass);
+}
+.mi__btn--fort {
+  color: var(--color-bg);
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+}
+.mi__btn--fort:hover {
+  background: var(--color-brass);
+  border-color: var(--color-brass);
+  color: var(--color-bg);
+}
+
+.mi__case {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: var(--text-xs);
+  color: var(--color-ink-2);
+  cursor: pointer;
+}
+.mi__case input {
+  accent-color: var(--color-brass);
+}
+
+/* CLAUDE.md décision 3 : près du chronomètre, jamais en bas de page. On le lit
+   au moment où on décide de pousser, pas après. */
+.mi__arret {
+  padding: 0.7rem 0.9rem;
+  border-left: 3px solid var(--color-sante);
+  border-radius: 0 var(--radius-card) var(--radius-card) 0;
+  background: color-mix(in oklab, var(--c-sante) 7%, transparent);
+  transition: background-color 300ms ease;
+}
+.mi__arret--vif {
+  background: var(--color-sante-bg);
+}
+.mi__arret-k {
+  margin: 0 0 0.35rem;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-sante);
+}
+.mi__arret ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  color: var(--color-ink-2);
+}
+.mi__arret li + li {
+  margin-top: 0.2rem;
+}
+/* Le premier de la liste est l'alarme utile : les signaux sont ordonnés du
+   plus précoce au plus tardif. */
+.mi__arret-premier {
+  font-weight: 650;
+  color: var(--color-ink);
+}
+.mi__arret-note {
+  margin: 0.45rem 0 0;
+  font-size: var(--text-2xs);
+  font-style: italic;
+  color: var(--color-ink-3);
+}
+
+.mi__alerte {
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radius-card);
+  background: var(--color-sante-bg);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--color-sante);
+}
+.mi__alerte--douce {
+  background: color-mix(in oklab, var(--c-brass) 10%, transparent);
+  color: var(--color-ink-2);
+}
+
+.mi__repos {
+  margin: 0;
+  font-size: var(--text-2xs);
+  color: var(--color-ink-3);
+}

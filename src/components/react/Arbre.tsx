@@ -26,12 +26,11 @@ import {
   AVANCEMENT_SENS,
   disponible,
   ecrire,
-  exporter,
-  importer,
   lireTout,
   type Avancement,
   type EtatTechnique,
 } from '~/lib/progression';
+import { exporter, importer } from '~/lib/sauvegarde';
 import './Arbre.css';
 
 export interface ArbreProps {
@@ -137,10 +136,12 @@ export default function Arbre({ disposition, familles }: ArbreProps) {
       );
       const a = document.createElement('a');
       a.href = url;
-      a.download = `muse-progression-${donnees.exporteLe.slice(0, 10)}.json`;
+      a.download = `muse-${donnees.exporteLe.slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      setMessage(`${donnees.techniques.length} technique(s) exportée(s).`);
+      setMessage(
+        `${donnees.techniques.length} technique(s) et ${donnees.seances.length} séance(s) exportées.`
+      );
     } catch (e) {
       setMessage(`Export impossible : ${String(e)}`);
     }
@@ -152,8 +153,10 @@ export default function Arbre({ disposition, familles }: ArbreProps) {
         const r = await importer(JSON.parse(await fichier.text()), new Set(parId.keys()));
         setProgression(await lireTout());
         setMessage(
-          `${r.reprises} technique(s) reprise(s).` +
-            (r.ignorees.length ? ` ${r.ignorees.length} inconnue(s) ignorée(s) : ${r.ignorees.join(', ')}.` : '')
+          `${r.techniques} technique(s) et ${r.seances} séance(s) reprises.` +
+            (r.ignorees.length
+              ? ` Inconnues, ignorées : ${r.ignorees.join(', ')}.`
+              : '')
         );
       } catch (e) {
         setMessage(e instanceof Error ? e.message : String(e));

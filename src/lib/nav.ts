@@ -20,7 +20,7 @@ export const NAV: readonly NavItem[] = [
   { href: '/techniques', label: 'Techniques', ready: true, tranche: 2 },
   { href: '/arbre', label: 'Arbre', ready: true, tranche: 5 },
   { href: '/accordeur', label: 'Accordeur', ready: true, tranche: 4 },
-  { href: '/pratique', label: 'Pratique', ready: false, tranche: 6 },
+  { href: '/pratique', label: 'Pratique', ready: true, tranche: 6 },
 ] as const;
 
 export interface Tranche {
@@ -71,8 +71,8 @@ export const TRANCHES: readonly Tranche[] = [
   {
     n: 6,
     label: 'Pratique',
-    detail: 'Métronome, minuteur, journal local exportable.',
-    done: false,
+    detail: 'Métronome à clic déplaçable, minuteur santé, journal local.',
+    done: true,
   },
   {
     n: 7,

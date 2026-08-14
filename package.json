@@ -23,6 +23,7 @@
     "audit:lecture": "node tools/audit-lecture.mjs",
     "audit:accordeur": "node tools/audit-accordeur.mjs",
     "audit:progression": "node tools/audit-progression.mjs",
+    "audit:pratique": "node tools/audit-pratique.mjs",
     "predev": "node tools/copy-alphatab-assets.mjs",
     "prebuild": "node tools/copy-alphatab-assets.mjs"
   },

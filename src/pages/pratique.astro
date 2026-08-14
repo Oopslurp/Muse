@@ -1,0 +1,149 @@
+---
+/**
+ * Atelier de pratique — tranche 6.
+ *
+ * Les champs santé de chaque fiche sont poussés dans l'îlot : ils sont
+ * obligatoires au schéma (CLAUDE.md décision 3) et c'est ici qu'ils servent
+ * vraiment — le minuteur borne la séance à `dureeMax`, alterne selon `series`,
+ * et affiche `signalArret` **près du chronomètre**.
+ *
+ * ⚠️ `?technique=<id>` présélectionne une technique, mais la lecture se fait
+ * **dans l'îlot**, pas ici : le site est construit en statique et
+ * `Astro.url.searchParams` est vide au build. Le faire côté serveur donnait
+ * une présélection qui ne marchait jamais.
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Pratique from '~/components/react/Pratique';
+import type { FichePratique } from '~/components/react/Pratique';
+import Callout from '~/components/ui/Callout.astro';
+
+const fiches = (await getCollection('techniques')).filter((f) => !f.data.brouillon);
+
+/** Premier tempo de départ exprimé en bpm, s'il y en a un dans les paliers. */
+function tempoDepart(d: (typeof fiches)[number]['data']): number | undefined {
+  for (const p of d.paliers ?? []) {
+    if (p.tempoDepart?.unite === 'bpm') return p.tempoDepart.valeur;
+  }
+  return undefined;
+}
+
+const donnees: FichePratique[] = fiches
+  .map((f) => ({
+    id: f.id,
+    nom: f.data.nom.fr,
+    signalArret: f.data.seance.signalArret,
+    dureeMax: f.data.seance.dureeMax,
+    reposMin: f.data.seance.reposMin,
+    risque: f.data.seance.risque,
+    avertissementSante: f.data.seance.avertissementSante,
+    series: f.data.seance.series,
+    tempoDepart: tempoDepart(f.data),
+  }))
+  .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+---
+
+<BaseLayout
+  title="Pratique"
+  description="Métronome à clic déplaçable, minuteur adossé aux durées maximales des fiches, et journal de séances conservé en local."
+>
+  <header class="tete">
+    <p class="eyebrow">L'atelier</p>
+    <h1>Pratique</h1>
+    <p class="lede">
+      Un métronome qui sait se taire là où il faut, un minuteur qui connaît la durée
+      maximale de chaque technique, et un journal qui reprend les deux sans qu'on ait à
+      recopier quoi que ce soit.
+    </p>
+  </header>
+
+  <Pratique client:load fiches={donnees} />
+
+  <section class="notes">
+    <h2>Pourquoi ces outils-là</h2>
+    <dl>
+      <dt>Un métronome qui se tait</dt>
+      <dd>
+        Plusieurs autodiagnostics du corpus reposent sur un <strong>clic déplacé</strong> :
+        sur les temps 2 et 4 pour le placement rythmique, sur la deuxième note d'un cycle
+        de doubles pour le trémolo. Un clic sur l'appui rend ces tests impossibles — on
+        s'appuie dessus au lieu de tenir la pulsation soi-même, ce qu'ils cherchent
+        précisément à mesurer. Chaque position du cycle est donc forte, faible ou muette.
+      </dd>
+
+      <dt>Le signal d'arrêt est collé au chronomètre</dt>
+      <dd>
+        Pas en bas de page. On le lit au moment où on décide de pousser, pas après. Les
+        signaux sont ordonnés du plus précoce au plus tardif&nbsp;: le premier est
+        l'alarme utile.
+      </dd>
+
+      <dt>Le journal ne demande presque rien</dt>
+      <dd>
+        Une date, une technique, des minutes. Le tempo et la durée sont préremplis par le
+        métronome et le minuteur. Un journal qui demande dix champs ne se remplit pas, et
+        un journal vide ne sert à rien.
+      </dd>
+
+      <dt>Noter un signal d'arrêt</dt>
+      <dd>
+        C'est le champ le plus important du journal. Un signal isolé ne dit rien&nbsp;;
+        trois en deux semaines sur la même technique, si. Jusqu'à 89&nbsp;% des musiciens
+        rapportent une blessure professionnelle, et les premiers signes sont typiquement
+        pris pour un défaut de technique — ce qui pousse à travailler plus.
+      </dd>
+    </dl>
+
+    <Callout tone="note" title="Tout reste ici">
+      <p>
+        Séances et progression vivent dans ce navigateur, nulle part ailleurs. La
+        sauvegarde complète s'exporte et se réimporte en JSON depuis
+        <a href="/arbre">l'arbre de compétences</a>. IndexedDB s'efface avec les données
+        de navigation&nbsp;: exporter de temps en temps n'est pas une précaution
+        excessive.
+      </p>
+    </Callout>
+  </section>
+</BaseLayout>
+
+<style>
+  .tete {
+    padding: clamp(2.25rem, 1.5rem + 3vw, 3.75rem) 0 2rem;
+    max-width: 62ch;
+  }
+  .tete h1 {
+    font-size: var(--text-h1);
+    line-height: 1.05;
+    margin: 0.35rem 0 1rem;
+  }
+  .lede {
+    margin: 0;
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--color-ink-2);
+  }
+
+  .notes {
+    margin: 3rem 0 1rem;
+    max-width: 68ch;
+  }
+  .notes h2 {
+    font-size: var(--text-xl);
+    margin: 0 0 1.2rem;
+  }
+  .notes dl {
+    margin: 0 0 1.6rem;
+    display: grid;
+    gap: 1.1rem;
+  }
+  .notes dt {
+    font-weight: 650;
+    color: var(--color-ink);
+    margin-bottom: 0.2rem;
+  }
+  .notes dd {
+    margin: 0;
+    line-height: 1.65;
+    color: var(--color-ink-2);
+  }
+</style>

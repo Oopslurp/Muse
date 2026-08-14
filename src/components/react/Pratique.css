@@ -1,0 +1,130 @@
+/** Atelier de pratique — habillage. Préfixe `pr`. */
+
+.pr {
+  display: grid;
+  gap: 1.4rem;
+}
+
+.pr__barre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pr__pilule {
+  position: relative;
+  display: inline-flex;
+}
+.pr__pilule select {
+  font: inherit;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-pill);
+  padding: 0.35em 2.2em 0.4em 1.1em;
+  cursor: pointer;
+  appearance: none;
+  max-width: 100%;
+}
+.pr__pilule::after {
+  content: '▾';
+  position: absolute;
+  right: 1em;
+  top: 50%;
+  translate: 0 -50%;
+  pointer-events: none;
+  color: var(--color-ink-3);
+}
+.pr__pilule select:hover {
+  border-color: var(--color-brass);
+}
+
+.pr__hors-ecran {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.pr__lien {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-brass);
+}
+
+.pr__avertissement {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border-left: 3px solid var(--color-sante);
+  border-radius: 0 var(--radius-card) var(--radius-card) 0;
+  background: var(--color-sante-bg);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-ink-2);
+}
+.pr__avertissement strong {
+  color: var(--color-sante);
+}
+
+.pr__outils {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
+  gap: 1.2rem;
+  align-items: start;
+}
+
+/* ---------------------------------------------------------------- bilan */
+.pr__bilan {
+  padding: 1rem 1.1rem 1.1rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-2);
+}
+.pr__bilan-titre {
+  margin: 0 0 0.7rem;
+  font-size: var(--text-base);
+}
+.pr__chiffres {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.pr__chiffres p {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-ink-3);
+}
+.pr__chiffres span {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.pr__arrets {
+  margin: 0.9rem 0 0;
+  padding: 0.6rem 0.8rem;
+  border-left: 2px solid var(--color-sante);
+  background: color-mix(in oklab, var(--c-sante) 7%, transparent);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--color-ink-2);
+}
+.pr__arrets strong {
+  color: var(--color-sante);
+}
+
+.pr__message {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-sante);
+}

@@ -64,6 +64,8 @@ const VUES = [
   },
   { nom: 'design-system', route: '/style-guide' },
   { nom: 'liste-mobile', route: '/techniques', largeur: 390, hauteur: 1400 },
+  { nom: 'pratique', route: '/pratique?technique=tremolo', pause: 1500 },
+  { nom: 'pratique-clair', route: '/pratique?technique=tremolo', theme: 'light', pause: 1500 },
   { nom: 'arbre', route: '/arbre' },
   { nom: 'arbre-clair', route: '/arbre', theme: 'light' },
   // Une technique choisie : la chaîne de prérequis se dessine, le panneau
@@ -144,7 +146,9 @@ for (const v of vues) {
     BASE + v.route + (v.theme ? (v.route.includes('?') ? '&' : '?') + `__theme=${v.theme}` : '');
 
   await envoyer('Page.navigate', { url });
-  await attendre(2200);
+  // `pause` s'applique aussi sans ancre ni clic : certains îlots lisent
+  // IndexedDB ou l'URL avant d'afficher quoi que ce soit.
+  await attendre(v.ancre || v.clic ? 2200 : (v.pause ?? 2200));
 
   if (v.clic) {
     // Autorisation accordée d'office : une capture ne peut pas répondre à une
