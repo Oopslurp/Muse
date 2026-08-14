@@ -94,10 +94,138 @@
   opacity: 0.5;
 }
 
-.ac__jauge {
+/* ---------------------------------------------------------- barre haute */
+.ac__barre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* L'accordage se choisit d'un geste : c'est le réglage qu'on change le plus. */
+.ac__pilule {
   position: relative;
+  display: inline-flex;
+}
+.ac__pilule select {
+  font: inherit;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-pill);
+  padding: 0.35em 2.2em 0.4em 1.1em;
+  cursor: pointer;
+  appearance: none;
+}
+.ac__pilule::after {
+  content: '▾';
+  position: absolute;
+  right: 1em;
+  top: 50%;
+  translate: 0 -50%;
+  pointer-events: none;
+  color: var(--color-ink-3);
+}
+.ac__pilule select:hover {
+  border-color: var(--color-brass);
+}
+
+.ac__hors-ecran {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Interrupteur automatique / corde verrouillée. */
+.ac__auto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+.ac__auto-k {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+  transition: color 160ms ease;
+}
+.ac__auto--on .ac__auto-k {
+  color: var(--color-brass);
+}
+.ac__auto input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.ac__auto-piste {
+  position: relative;
+  width: 2.9rem;
+  height: 1.6rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-3);
+  border: 1px solid var(--color-line-strong);
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+.ac__auto-piste::after {
+  content: '';
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  background: var(--color-ink-3);
+  transition: translate 180ms ease, background-color 180ms ease;
+}
+.ac__auto--on .ac__auto-piste {
+  background: color-mix(in oklab, var(--c-brass) 22%, transparent);
+  border-color: var(--color-brass);
+}
+.ac__auto--on .ac__auto-piste::after {
+  translate: 1.25rem 0;
+  background: var(--color-brass);
+}
+.ac__auto input:focus-visible + .ac__auto-piste {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ac__auto-piste,
+  .ac__auto-piste::after {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------- jauge */
+.ac__jauge {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
   width: 100%;
   max-width: 44rem;
+}
+
+/* Trop bas à gauche, trop haut à droite : le sens se lit sans le chiffre. */
+.ac__signe {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--color-ink-3);
+  line-height: 1;
+}
+
+.ac__piste {
+  position: relative;
+  flex: 1;
   height: 4.2rem;
   border-radius: var(--radius-card);
   background: var(--color-surface-2);
@@ -225,25 +353,98 @@
   color: var(--color-verifier);
 }
 
-/* -------------------------------------------------------------- cordes */
-.ac__cordes {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 0.45rem;
+/* --------------------------------------------------------- tête de manche */
+/* Les cordes sont posées là où sont les mécaniques : on tourne la bonne clé
+   sans traduire « corde 5 » en position. Voir Manche.tsx pour la disposition
+   d'une tête 3+3 et le croisement des cordes. */
+.ac__manche {
+  position: relative;
+  width: 100%;
+  max-width: 27rem;
+  margin: 0.4rem auto 0;
 }
 
+.ac__tete {
+  display: block;
+  width: 52%;
+  margin-inline: auto;
+  height: auto;
+}
+
+.ac__bois {
+  fill: color-mix(in oklab, var(--c-wood) 32%, var(--c-surface));
+  stroke: var(--color-line-strong);
+  stroke-width: 1.5;
+}
+.ac__filet {
+  fill: none;
+  stroke: color-mix(in oklab, var(--c-brass) 40%, transparent);
+  stroke-width: 1;
+}
+/* ⚠️ Ne pas mélanger avec `--c-ink` pour assombrir : l'encre est **crème** en
+   thème sombre, et la touche ressortait plus claire que la tête. Le filet,
+   lui, est brun foncé dans les deux thèmes. */
+.ac__touche {
+  fill: color-mix(in oklab, var(--c-wood) 45%, var(--c-line-strong));
+}
+.ac__sillet {
+  fill: color-mix(in oklab, var(--c-surface) 70%, var(--c-line-strong));
+}
+
+.ac__fil {
+  fill: none;
+  stroke: var(--color-ink-3);
+  stroke-width: 1.3;
+  transition: stroke 200ms ease, stroke-width 200ms ease;
+}
+.ac__fil--actif {
+  stroke: var(--color-brass);
+  stroke-width: 2.4;
+}
+
+.ac__tige {
+  stroke: var(--color-line-strong);
+  stroke-width: 3;
+}
+.ac__cle {
+  fill: color-mix(in oklab, var(--c-brass) 45%, var(--c-surface));
+  stroke: var(--color-line-strong);
+  stroke-width: 1;
+}
+.ac__axe {
+  fill: var(--color-brass);
+  transition: fill 200ms ease;
+}
+.ac__axe--actif {
+  fill: var(--color-brass-bright);
+}
+
+/* -------------------------------------------------------------- cordes */
+/* Positionnées en pourcentage sur les chevilles : l'alignement tient à
+   toutes les tailles, sans dépendre d'une grille qui devrait deviner la
+   hauteur du dessin. */
 .ac__corde {
+  position: absolute;
+  translate: 0 -50%;
   display: grid;
-  gap: 0.1rem;
+  gap: 0.05rem;
   justify-items: center;
+  align-content: center;
+  width: 3.6rem;
+  height: 3.6rem;
   font: inherit;
-  padding: 0.5rem 0.2rem 0.6rem;
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-card);
+  border-radius: 50%;
   background: var(--color-surface);
   color: var(--color-ink-2);
   cursor: pointer;
   transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+.ac__corde--gauche {
+  left: 0;
+}
+.ac__corde--droite {
+  right: 0;
 }
 .ac__corde:hover {
   border-color: var(--color-line-strong);
@@ -256,6 +457,7 @@
   font-family: var(--font-mono);
   font-size: var(--text-base);
   font-weight: 600;
+  line-height: 1.1;
 }
 
 /* Corde entendue en ce moment. */
@@ -266,6 +468,7 @@
 /* Corde verrouillée : la fenêtre de plausibilité se referme autour d'elle. */
 .ac__corde--verrou {
   border-color: var(--color-brass);
+  border-width: 2px;
   background: color-mix(in oklab, var(--c-brass) 14%, transparent);
   color: var(--color-ink);
 }

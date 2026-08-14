@@ -436,6 +436,10 @@ Trois fichiers, trois responsabilités : [accordeur.ts](src/lib/accordeur.ts) d�
 
 **Lissage : les deux étages se composent.** Médiane sur 5, puis hystérésis sur 3 images : le nom de note ne bascule qu'après **cinq** images, le temps que la médiane penche d'abord. ~85 ms à 60 Hz, bien en deçà des 250 ms visés.
 
+**L'écran est une tête de manche**, pas une rangée de boutons — [Manche.tsx](src/components/react/Manche.tsx). On tourne la bonne clé sans traduire « corde 5 » en position. Disposition d'une tête 3+3 vue de face, sillet en bas : la corde qui part du bord va à la cheville **la plus proche du sillet**, celle qui part du centre traverse jusqu'à la plus lointaine — d'où le croisement. Côté grave, de haut en bas : **ré4 · la5 · mi6** ; côté aigu : **sol3 · si2 · mi1**. Les boutons sont de vrais `<button>` positionnés en pourcentage sur les chevilles : l'alignement tient à toutes les tailles.
+
+⚠️ **Ne jamais assombrir une couleur en la mélangeant à `--c-ink`** : l'encre est *crème* en thème sombre. La touche du manche en est ressortie plus claire que la tête. Passer par `--c-line-strong`, brun foncé dans les deux thèmes.
+
 **Ordre des cordes** — corde 1 (aiguë) en premier en interne, comme partout dans le projet ; l'affichage inverse, parce qu'on lit un manche grave à gauche. `06-accordeur.md` §7 tabule dans l'autre sens et prévenait lui-même que deux ordres cohabitant produiraient des bugs silencieux : il n'y en a qu'un.
 
 **Reste `déduit` faute d'observation guitare en main** : le comportement de `clarity` pendant l'attaque d'une corde grave d'acoustique, le taux réel d'erreurs d'octave sur la corde 6, et le seuil de bruit dans une vraie pièce. La page le dit, dans son encadré « à vérifier ».

@@ -36,6 +36,7 @@ import {
   type AccordageId,
   type FamilleAccordage,
 } from '~/lib/notes';
+import Manche from './Manche';
 import './Accordeur.css';
 
 const FAMILLES: Record<FamilleAccordage, string> = {
@@ -188,6 +189,48 @@ export default function Accordeur() {
         </section>
       ) : (
         <>
+          {mode === 'accordage' && (
+            <div className="ac__barre">
+              {/* L'accordage se choisit d'abord : il commande le nom des six
+                  cordes et la fenêtre dans laquelle on cherche. */}
+              <label className="ac__pilule">
+                <span className="ac__hors-ecran">Accordage</span>
+                <select
+                  value={accordageId}
+                  onChange={(e) => setAccordageId(e.target.value as AccordageId)}
+                >
+                  {(Object.keys(FAMILLES) as FamilleAccordage[]).map((f) => (
+                    <optgroup key={f} label={FAMILLES[f]}>
+                      {ids
+                        .filter((id) => ACCORDAGE_FAMILLE[id] === f)
+                        .map((id) => (
+                          <option key={id} value={id}>
+                            {ACCORDAGE_LABELS[id]}
+                          </option>
+                        ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </label>
+
+              {/* AUTO = aucune corde verrouillée. L'éteindre fige la corde
+                  entendue, ou la 6ᵉ à défaut : c'est le réglage sûr sur les
+                  graves, celui qui interdit l'erreur d'octave. */}
+              <label className={`ac__auto${verrou === null ? ' ac__auto--on' : ''}`}>
+                <span className="ac__auto-k">Auto</span>
+                <input
+                  type="checkbox"
+                  role="switch"
+                  checked={verrou === null}
+                  onChange={(e) =>
+                    setVerrou(e.target.checked ? null : (vue?.midi ?? accordage[5] ?? null))
+                  }
+                />
+                <span className="ac__auto-piste" aria-hidden="true" />
+              </label>
+            </div>
+          )}
+
           <div className={`ac__cadran${enVeille ? ' ac__cadran--veille' : ''}`}>
             <Aiguille cents={vue?.cents ?? 0} sure={vue?.sure ?? false} muet={enVeille} />
 
@@ -211,39 +254,13 @@ export default function Accordeur() {
           </div>
 
           {mode === 'accordage' && (
-            <div className="ac__cordes">
-              {/* Affichées grave → aiguë, comme on regarde un manche. La table
-                  interne va dans l'autre sens (corde 1 = aiguë, alphaTex). */}
-              {[...accordage].reverse().map((midi, i) => {
-                const numero = 6 - i;
-                const actif = vue?.midi === midi && !enVeille;
-                const classes = [
-                  'ac__corde',
-                  verrou === midi ? 'ac__corde--verrou' : '',
-                  actif ? 'ac__corde--actif' : '',
-                  accordees.has(midi) ? 'ac__corde--faite' : '',
-                ].filter(Boolean);
-                return (
-                  <button
-                    key={`${numero}-${midi}`}
-                    type="button"
-                    className={classes.join(' ')}
-                    aria-pressed={verrou === midi}
-                    onClick={() => setVerrou((v) => (v === midi ? null : midi))}
-                    title={
-                      verrou === midi
-                        ? 'Déverrouiller — l’accordeur reprendra la corde la plus proche'
-                        : 'Verrouiller sur cette corde'
-                    }
-                  >
-                    <span className="ac__corde-n">{numero}</span>
-                    <span className="ac__corde-note">
-                      {nomAvecOctave(noteDeMidi(midi), 'internationale')}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            <Manche
+              accordage={accordage}
+              entendue={enVeille ? null : (vue?.midi ?? null)}
+              verrou={verrou}
+              accordees={accordees}
+              onChoisir={(midi) => setVerrou((v) => (v === midi ? null : midi))}
+            />
           )}
 
           <p className="ac__aide">
@@ -268,28 +285,6 @@ export default function Accordeur() {
                 </button>
               ))}
             </div>
-
-            {mode === 'accordage' && (
-              <label className="ac__champ">
-                <span className="ac__k">Accordage</span>
-                <select
-                  value={accordageId}
-                  onChange={(e) => setAccordageId(e.target.value as AccordageId)}
-                >
-                  {(Object.keys(FAMILLES) as FamilleAccordage[]).map((f) => (
-                    <optgroup key={f} label={FAMILLES[f]}>
-                      {ids
-                        .filter((id) => ACCORDAGE_FAMILLE[id] === f)
-                        .map((id) => (
-                          <option key={id} value={id}>
-                            {ACCORDAGE_LABELS[id]}
-                          </option>
-                        ))}
-                    </optgroup>
-                  ))}
-                </select>
-              </label>
-            )}
 
             <label className="ac__champ">
               <span className="ac__k">La de référence</span>
@@ -352,29 +347,41 @@ function Aiguille({ cents, sure, muet }: { cents: number; sure: boolean; muet: b
       aria-valuetext={`${Math.round(cents)} cents`}
       aria-label="Écart à la note de référence, en cents"
     >
-      <div className="ac__zone" />
-      {[-50, -25, 0, 25, 50].map((g) => (
-        <span
-          key={g}
-          className={`ac__grad${g === 0 ? ' ac__grad--centre' : ''}`}
-          style={{ left: `${((g + borne) / (2 * borne)) * 100}%` }}
+      {/* Trop bas à gauche, trop haut à droite. Les deux signes disent le sens
+          sans qu'on ait à lire le chiffre. */}
+      <span className="ac__signe" aria-hidden="true">
+        ♭
+      </span>
+
+      <div className="ac__piste">
+        <div className="ac__zone" />
+        {[-25, 0, 25].map((g) => (
+          <span
+            key={g}
+            className={`ac__grad${g === 0 ? ' ac__grad--centre' : ''}`}
+            style={{ left: `${((g + borne) / (2 * borne)) * 100}%` }}
+          />
+        ))}
+        <div
+          className={[
+            'ac__aiguille',
+            muet ? 'ac__aiguille--muette' : '',
+            butee ? 'ac__aiguille--butee' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          style={{
+            left: `${((clampe + borne) / (2 * borne)) * 100}%`,
+            // La confiance se lit à l'opacité : on doit pouvoir distinguer
+            // « c'est juste » de « je ne sais pas ».
+            opacity: muet ? 0.25 : sure ? 1 : 0.55,
+          }}
         />
-      ))}
-      <div
-        className={[
-          'ac__aiguille',
-          muet ? 'ac__aiguille--muette' : '',
-          butee ? 'ac__aiguille--butee' : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        style={{
-          left: `${((clampe + borne) / (2 * borne)) * 100}%`,
-          // La confiance se lit à l'opacité : on doit pouvoir distinguer
-          // « c'est juste » de « je ne sais pas ».
-          opacity: muet ? 0.25 : sure ? 1 : 0.55,
-        }}
-      />
+      </div>
+
+      <span className="ac__signe" aria-hidden="true">
+        ♯
+      </span>
     </div>
   );
 }

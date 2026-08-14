@@ -200,14 +200,14 @@ else {
 
   // Verrouiller la corde : c'est le réglage sûr sur les graves, celui qui
   // referme la fenêtre de plausibilité et interdit l'erreur d'octave.
-  if (await cliquer('.ac__corde')) {
+  if (await cliquer('[data-corde="6"]')) {
     await attendre(1200);
     const verrous = await evaluer(`document.querySelectorAll('.ac__corde--verrou').length`);
     if (verrous !== 1) problemes.push(`verrou : ${verrous} corde(s) verrouillée(s) au lieu d’une`);
     const note = await texte('.ac__note');
     if (note !== NOTE.nom) problemes.push(`verrou : la note passe à « ${note} »`);
     console.log(`ok  corde verrouillée       ${note}`);
-  } else problemes.push('verrou : rangée de cordes introuvable');
+  } else problemes.push('verrou : bouton de corde introuvable');
 
   // Mode chromatique : plus de cordes, la référence redevient le demi-ton.
   const onglets = await evaluer(`(() => {
@@ -221,8 +221,8 @@ else {
     for (const type of ['mousePressed', 'mouseReleased'])
       await envoyer('Input.dispatchMouseEvent', { type, ...onglets, button: 'left', clickCount: 1 });
     await attendre(1500);
-    const cordes = await evaluer(`!!document.querySelector('.ac__cordes')`);
-    if (cordes) problemes.push('chromatique : la rangée de cordes est restée affichée');
+    const cordes = await evaluer(`!!document.querySelector('.ac__manche')`);
+    if (cordes) problemes.push('chromatique : la tête de manche est restée affichée');
     const note = await texte('.ac__note');
     if (!note || note === '—') problemes.push('chromatique : plus rien n’est détecté');
     console.log(`ok  chromatique libre       ${note}`);
