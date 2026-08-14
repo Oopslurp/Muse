@@ -73,6 +73,9 @@
   gap: 0.3rem;
 }
 .me__pas-btn {
+  /* 24 px de côté au minimum : c'est un bouton, pas un lien de texte. */
+  min-width: 1.5rem;
+  min-height: 1.5rem;
   font: inherit;
   font-family: var(--font-mono);
   font-size: var(--text-2xs);

@@ -4,17 +4,17 @@
  * Deux choses distinctes, volontairement côte à côte :
  *
  *  · **où j'en suis** — l'avancement, partagé avec l'arbre de compétences ;
- *  · **vérifié guitare en main** — la promotion `observé` de CLAUDE.md
- *    décision 1, avec sa date et son commentaire libre.
+ *  · **ce que j'ai vérifié** — les promotions `observé` de CLAUDE.md
+ *    décision 1, qui portent désormais sur **chaque affirmation** et non sur
+ *    la fiche entière.
  *
- * La promotion **n'écrase pas l'origine**. La pastille de la fiche continue
- * d'afficher `sourcé` ou `déduit`, produite au build ; l'observation s'ajoute
- * à côté. Ce sont deux champs, jamais un enum unique — c'est écrit noir sur
- * blanc dans la décision, et c'est ce qui permet de dire « la source affirme
- * ceci, j'ai constaté cela ».
+ * Ce bloc n'en porte donc plus qu'une : celle de la fiche dans son ensemble.
+ * Les autres vivent là où l'affirmation est écrite — sous chaque doute, chaque
+ * exercice, chaque erreur, et sous le protocole de séance. Il ne reste ici
+ * qu'un décompte, pour savoir où en est la fiche sans la parcourir.
  *
- * L'état vit dans IndexedDB, donc il survit aux mises à jour du contenu : il
- * est indexé par identifiant de fiche, pas recopié dans le MDX.
+ * La promotion **n'écrase pas l'origine** : la pastille produite au build
+ * continue d'afficher `sourcé` ou `déduit`. Deux champs, jamais un enum.
  */
 
 import { useCallback, useEffect, useState } from 'react';
@@ -28,24 +28,27 @@ import {
   type Avancement,
   type EtatTechnique,
 } from '~/lib/progression';
+import { lirePourFiche } from '~/lib/observations';
+import Observer from './Observer';
 import './SuiviFiche.css';
 
-const aujourdhui = () => new Date().toISOString().slice(0, 10);
+export interface SuiviFicheProps {
+  id: string;
+  /** Nombre d'affirmations promouvables sur cette fiche, calculé au build. */
+  promouvables: number;
+}
 
-const enFrancais = (iso: string) => {
-  const d = new Date(`${iso}T12:00:00`);
-  return Number.isNaN(d.getTime())
-    ? iso
-    : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-};
-
-export default function SuiviFiche({ id }: { id: string }) {
+export default function SuiviFiche({ id, promouvables }: SuiviFicheProps) {
   const [etat, setEtat] = useState<EtatTechnique | null>(null);
+  const [observees, setObservees] = useState(0);
   const [pret, setPret] = useState(false);
-  const [saisie, setSaisie] = useState(false);
-  const [date, setDate] = useState(aujourdhui());
-  const [note, setNote] = useState('');
   const [panne, setPanne] = useState<string | null>(null);
+
+  const recharger = useCallback(() => {
+    lirePourFiche(id)
+      .then((m) => setObservees(m.size))
+      .catch(() => {});
+  }, [id]);
 
   useEffect(() => {
     if (!disponible()) {
@@ -57,12 +60,23 @@ export default function SuiviFiche({ id }: { id: string }) {
       .then((m) => setEtat(m.get(id) ?? null))
       .catch((e) => setPanne(String(e)))
       .finally(() => setPret(true));
-  }, [id]);
+    recharger();
+  }, [id, recharger]);
+
+  // Les promotions vivent dans d'autres îlots : on rafraîchit le décompte au
+  // retour sur l'onglet plutôt que d'inventer un canal entre composants.
+  useEffect(() => {
+    const surRetour = () => {
+      if (!document.hidden) recharger();
+    };
+    document.addEventListener('visibilitychange', surRetour);
+    return () => document.removeEventListener('visibilitychange', surRetour);
+  }, [recharger]);
 
   const enregistrer = useCallback(
-    async (modif: Partial<Omit<EtatTechnique, 'id' | 'maj'>>) => {
+    async (a: Avancement) => {
       try {
-        setEtat(await ecrire(id, modif));
+        setEtat(await ecrire(id, { avancement: a }));
         setPanne(null);
       } catch (e) {
         setPanne(`Enregistrement impossible : ${String(e)}`);
@@ -72,13 +86,6 @@ export default function SuiviFiche({ id }: { id: string }) {
   );
 
   const avancement: Avancement = etat?.avancement ?? 'neuf';
-  const obs = etat?.observation;
-
-  const ouvrirSaisie = () => {
-    setDate(obs?.date ?? aujourdhui());
-    setNote(obs?.note ?? '');
-    setSaisie(true);
-  };
 
   return (
     <section className="sf">
@@ -99,7 +106,7 @@ export default function SuiviFiche({ id }: { id: string }) {
             }`}
             aria-pressed={avancement === a}
             disabled={!pret}
-            onClick={() => enregistrer({ avancement: a })}
+            onClick={() => enregistrer(a)}
             title={AVANCEMENT_SENS[a]}
           >
             {AVANCEMENT_LABELS[a]}
@@ -109,72 +116,22 @@ export default function SuiviFiche({ id }: { id: string }) {
 
       <p className="sf__k sf__k--espace">Vérifié guitare en main</p>
 
-      {obs && !saisie && (
-        <div className="sf__obs">
-          <p className="sf__obs-date">Observé le {enFrancais(obs.date)}</p>
-          {obs.note && <p className="sf__obs-note">{obs.note}</p>}
-          <p className="sf__obs-actions">
-            <button type="button" className="sf__lien" onClick={ouvrirSaisie}>
-              Modifier
-            </button>
-            <button
-              type="button"
-              className="sf__lien"
-              onClick={() => enregistrer({ observation: undefined })}
-            >
-              Retirer
-            </button>
-          </p>
-        </div>
-      )}
+      <p className="sf__decompte">
+        <strong>
+          {observees} sur {promouvables}
+        </strong>{' '}
+        affirmation{promouvables > 1 ? 's' : ''} de cette fiche
+        {observees > 1 ? ' ont' : ' a'} été vérifiée{observees > 1 ? 's' : ''}.
+      </p>
+      <p className="sf__aide">
+        Chaque point à vérifier, chaque exercice, chaque erreur et le protocole se
+        promeuvent séparément, là où ils sont écrits. Marquer une affirmation observée
+        n’efface ni son origine ni son doute&nbsp;: on ajoute une ligne, on n’en retire
+        aucune.
+      </p>
 
-      {!obs && !saisie && (
-        <>
-          <p className="sf__invite">
-            Marquer une fiche observée ne remplace pas son origine&nbsp;: elle reste
-            sourcée ou déduite. C’est ce qui permet d’écrire «&nbsp;la source affirme
-            ceci, j’ai constaté cela&nbsp;».
-          </p>
-          <button type="button" className="sf__btn" disabled={!pret} onClick={ouvrirSaisie}>
-            Je l’ai vérifiée
-          </button>
-        </>
-      )}
-
-      {saisie && (
-        <form
-          className="sf__form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            void enregistrer({
-              observation: { date, note: note.trim() || undefined },
-            });
-            setSaisie(false);
-          }}
-        >
-          <label className="sf__champ">
-            <span>Date</span>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
-          </label>
-          <label className="sf__champ">
-            <span>Ce que j’ai constaté</span>
-            <textarea
-              rows={3}
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Y compris un désaccord avec la fiche."
-            />
-          </label>
-          <p className="sf__form-actions">
-            <button type="submit" className="sf__btn">
-              Enregistrer
-            </button>
-            <button type="button" className="sf__lien" onClick={() => setSaisie(false)}>
-              Annuler
-            </button>
-          </p>
-        </form>
-      )}
+      {/* La fiche dans son ensemble : « j'ai lu, j'ai essayé, ça tient ». */}
+      <Observer fiche={id} element="fiche" />
 
       {panne && <p className="sf__panne">{panne}</p>}
     </section>

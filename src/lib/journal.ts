@@ -12,7 +12,7 @@
  * semaines sur la même technique, si.
  */
 
-import { db, disponible, type Seance, type TempoNote } from './base';
+import { db, disponible, identifiant, type Seance, type TempoNote } from './base';
 
 export type { Seance, TempoNote } from './base';
 
@@ -31,8 +31,10 @@ export async function lireSeances(limite = 200): Promise<Seance[]> {
   return lignes.sort((a, b) => b.date.localeCompare(a.date) || (b.id ?? 0) - (a.id ?? 0));
 }
 
-export async function ajouterSeance(s: Omit<Seance, 'id'>): Promise<number> {
-  return db().seances.add(s as Seance);
+export async function ajouterSeance(s: Omit<Seance, 'id' | 'uid'>): Promise<number> {
+  // L'identifiant stable est attribué ici, à la création : c'est lui qui rend
+  // le réimport idempotent, et il doit exister avant tout export.
+  return db().seances.add({ ...s, uid: identifiant() } as Seance);
 }
 
 export async function supprimerSeance(id: number): Promise<void> {

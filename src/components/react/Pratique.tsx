@@ -79,7 +79,7 @@ export default function Pratique({ fiches }: PratiqueProps) {
     if (fiche?.tempoDepart) setTempo(fiche.tempoDepart);
   }, [fiche]);
 
-  const ajouter = useCallback(async (s: Omit<Seance, 'id'>) => {
+  const ajouter = useCallback(async (s: Omit<Seance, 'id' | 'uid'>) => {
     try {
       await ajouterSeance(s);
       setSeances(await lireSeances());

@@ -28,9 +28,9 @@ const c = await corpus();
       </h1>
       <p class="hero__lede">
         Une bibliothèque de technique construite à l'envers des autres&nbsp;: chaque
-        geste y est un objet durable, avec ses prérequis, ses paliers, ses erreurs
-        typiques et la façon de les repérer seul. Et chaque affirmation dit d'où
-        elle vient.
+        geste y est un objet durable, avec ses prérequis, ses erreurs typiques et la
+        façon de les repérer seul — et, pour les plus structurantes, une progression
+        par paliers. Chaque affirmation dit d'où elle vient.
       </p>
 
       <div class="hero__actions">
@@ -95,8 +95,8 @@ const c = await corpus();
           <div class="row row--sante">
             <span class="row__k">Arrêt</span>
             <span class="row__v">
-              Réapparition du galop <span class="row__sep">·</span> tension au dos
-              de la main <span class="row__sep">·</span> 10 min maximum
+              Réapparition du galop <span class="row__sep" aria-hidden="true">·</span> tension au dos
+              de la main <span class="row__sep" aria-hidden="true">·</span> 10 min maximum
             </span>
           </div>
         </div>
@@ -399,7 +399,7 @@ const c = await corpus();
     font-style: italic;
   }
   .row__sep {
-    color: var(--color-line-strong);
+    color: var(--color-ink-3);
     padding: 0 0.15em;
   }
   /* Le signal d'arrêt vit à côté du tempo, jamais en bas de page. */

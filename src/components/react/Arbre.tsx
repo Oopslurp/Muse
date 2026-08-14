@@ -30,7 +30,14 @@ import {
   type Avancement,
   type EtatTechnique,
 } from '~/lib/progression';
-import { exporter, importer } from '~/lib/sauvegarde';
+import {
+  compter,
+  exporter,
+  importer,
+  marquerExport,
+  rappelExport,
+  toutEffacer,
+} from '~/lib/sauvegarde';
 import './Arbre.css';
 
 export interface ArbreProps {
@@ -47,6 +54,8 @@ export default function Arbre({ disposition, familles }: ArbreProps) {
   const [choisi, setChoisi] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [pret, setPret] = useState(false);
+  /** Séances accumulées depuis le dernier export. Zéro = rien à rappeler. */
+  const [rappel, setRappel] = useState(0);
 
   const parId = useMemo(
     () => new Map<string, NoeudGraphe>(disposition.noeuds.map((n) => [n.id, n])),
@@ -67,6 +76,10 @@ export default function Arbre({ disposition, familles }: ArbreProps) {
       .then((m) => setProgression(m))
       .catch((e) => setMessage(`Progression illisible : ${String(e)}`))
       .finally(() => setPret(true));
+    // IndexedDB s'efface avec les données de navigation, sans prévenir.
+    compter()
+      .then((n) => setRappel(rappelExport(n.seances)))
+      .catch(() => {});
   }, []);
 
   const avancementDe = useCallback(
@@ -139,11 +152,46 @@ export default function Arbre({ disposition, familles }: ArbreProps) {
       a.download = `muse-${donnees.exporteLe.slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
+      marquerExport(donnees.seances.length);
+      setRappel(0);
       setMessage(
-        `${donnees.techniques.length} technique(s) et ${donnees.seances.length} séance(s) exportées.`
+        `${donnees.techniques.length} technique(s), ${donnees.observations.length} observation(s) et ${donnees.seances.length} séance(s) exportées.`
       );
     } catch (e) {
       setMessage(`Export impossible : ${String(e)}`);
+    }
+  }, []);
+
+  /**
+   * Remise à zéro complète.
+   *
+   * Deux confirmations, dont une qui exige de taper le mot : c'est le seul
+   * geste du site qui détruit tout, sans corbeille ni annulation.
+   */
+  const effacer = useCallback(async () => {
+    try {
+      const n = await compter();
+      const total = n.techniques + n.seances + n.observations;
+      if (total === 0) {
+        setMessage('Il n’y a rien à effacer.');
+        return;
+      }
+      const ok = window.confirm(
+        `Effacer définitivement ${n.techniques} technique(s) suivie(s), ` +
+          `${n.observations} observation(s) et ${n.seances} séance(s) ?\n\n` +
+          'Cette action est irréversible. Exportez d’abord si vous hésitez.'
+      );
+      if (!ok) return;
+      if (window.prompt('Taper EFFACER pour confirmer.') !== 'EFFACER') {
+        setMessage('Remise à zéro annulée.');
+        return;
+      }
+      await toutEffacer();
+      setProgression(new Map());
+      setChoisi(null);
+      setMessage(`${total} ligne(s) effacée(s). La base est vide.`);
+    } catch (e) {
+      setMessage(`Effacement impossible : ${String(e)}`);
     }
   }, []);
 
@@ -153,10 +201,9 @@ export default function Arbre({ disposition, familles }: ArbreProps) {
         const r = await importer(JSON.parse(await fichier.text()), new Set(parId.keys()));
         setProgression(await lireTout());
         setMessage(
-          `${r.techniques} technique(s) et ${r.seances} séance(s) reprises.` +
-            (r.ignorees.length
-              ? ` Inconnues, ignorées : ${r.ignorees.join(', ')}.`
-              : '')
+          `${r.techniques} technique(s), ${r.observations} observation(s) et ${r.seances} séance(s) reprises.` +
+            (r.seancesDejaLa ? ` ${r.seancesDejaLa} séance(s) déjà présentes, non dupliquées.` : '') +
+            (r.ignorees.length ? ` Inconnues, ignorées : ${r.ignorees.join(', ')}.` : '')
         );
       } catch (e) {
         setMessage(e instanceof Error ? e.message : String(e));
@@ -267,6 +314,9 @@ export default function Arbre({ disposition, familles }: ArbreProps) {
           <button type="button" className="ar__btn" onClick={telecharger}>
             Exporter
           </button>
+          <button type="button" className="ar__btn ar__btn--danger" onClick={effacer}>
+            Tout effacer
+          </button>
           <label className="ar__btn ar__btn--fichier">
             Importer
             <input
@@ -281,6 +331,14 @@ export default function Arbre({ disposition, familles }: ArbreProps) {
           </label>
         </div>
       </div>
+
+      {rappel > 0 && (
+        <p className="ar__rappel" role="status">
+          <strong>{rappel} séances</strong> notées depuis le dernier export. Les données
+          vivent dans ce navigateur et disparaissent avec ses données de navigation —
+          exporter prend deux secondes.
+        </p>
+      )}
 
       {message && (
         <p className="ar__message" role="status">

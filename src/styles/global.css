@@ -50,27 +50,27 @@
   /* — encre — */
   --c-ink: #1c1815;         /* texte courant, brun très foncé */
   --c-ink-2: #4e453b;       /* texte secondaire */
-  --c-ink-3: #7c7062;       /* mentions, métadonnées */
+  --c-ink-3: #72675a;       /* mentions, métadonnées — 4,53:1 mini, mesuré */
 
   /* — filets — */
   --c-line: #ded4c2;
   --c-line-strong: #c2b49c;
 
   /* — accents — */
-  --c-brass: #8a6a1b;       /* accent lisible sur papier */
+  --c-brass: #826419;       /* accent lisible sur papier — 4,55:1 mini */
   --c-brass-bright: #b8912f;/* filets, ornements */
   --c-wood: #8c5a30;
 
   /* — familles de techniques (00-taxonomie.md) — */
   --c-md: #2e5a78;          /* main droite   · bleu ardoise */
   --c-mg: #3f6b45;          /* main gauche   · vert forêt */
-  --c-pm: #a85a24;          /* percussif     · rouille */
+  --c-pm: #9c5321;          /* percussif     · rouille — 4,52:1 mini */
   --c-tr: #5a5248;          /* transversal   · gris-encre */
 
   /* — statut épistémique (CLAUDE.md, décision 1) — */
   --c-source: #4e453b;      /* sourcé   · neutre, assuré */
-  --c-deduit: #7c7062;      /* déduit   · muted */
-  --c-observe: #3f7a4e;     /* observé  · vérifié à la guitare */
+  --c-deduit: #72675a;      /* déduit   · muted — aligné sur ink-3 */
+  --c-observe: #3c744a;     /* observé  · vérifié à la guitare — 4,55:1 mini */
   --c-verifier: #96550a;    /* à vérifier · ambre */
 
   /* — alerte santé — */
@@ -97,7 +97,7 @@
 
     --c-ink: #efe7d9;
     --c-ink-2: #c3b7a5;
-    --c-ink-3: #8d8172;
+    --c-ink-3: #928576;
 
     --c-line: #2e2721;
     --c-line-strong: #493e32;
@@ -137,7 +137,7 @@
 
   --c-ink: #efe7d9;
   --c-ink-2: #c3b7a5;
-  --c-ink-3: #8d8172;
+  --c-ink-3: #928576;
 
   --c-line: #2e2721;
   --c-line-strong: #493e32;
@@ -163,6 +163,34 @@
   --grain-blend: overlay;
   --shadow-card: 0 1px 2px rgb(0 0 0 / 30%), 0 6px 18px -8px rgb(0 0 0 / 45%);
   --shadow-lift: 0 2px 4px rgb(0 0 0 / 35%), 0 14px 34px -12px rgb(0 0 0 / 55%);
+}
+
+/* Cibles tactiles : 24 × 24 px au minimum (WCAG 2.2 « Target Size »).
+   Les cases à cocher et les curseurs natifs sont dessinés à 13 et 16 px par
+   le navigateur ; on les agrandit une fois pour toutes plutôt que composant
+   par composant. */
+input[type='checkbox'],
+input[type='radio'] {
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+}
+input[type='range'] {
+  height: 1.5rem;
+}
+
+/* Texte réservé aux technologies d'assistance. Sert partout où une information
+   n'existait qu'en infobulle `title` : sur un élément non focalisable, une
+   infobulle n'existe ni au clavier ni au lecteur d'écran. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ==========================================================================

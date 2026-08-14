@@ -39,12 +39,17 @@ import '~/styles/recherche.css';
   <input
     type="text"
     class="re__champ"
+    id="re-champ"
     placeholder="Chercher une technique, un symptôme, un outil…"
     aria-label="Rechercher"
     autocomplete="off"
+    role="combobox"
+    aria-expanded="false"
+    aria-controls="re-liste"
+    aria-autocomplete="list"
   />
-  <p class="re__rien" hidden></p>
-  <ul class="re__liste"></ul>
+  <p class="re__rien" role="status" hidden></p>
+  <ul class="re__liste" id="re-liste" role="listbox" aria-label="Résultats"></ul>
   <p class="re__aide">
     <kbd>↑</kbd> <kbd>↓</kbd> pour parcourir · <kbd>↵</kbd> pour ouvrir ·
     <kbd>Échap</kbd> pour fermer
@@ -100,6 +105,12 @@ import '~/styles/recherche.css';
         const a = document.createElement('a');
         a.href = r.href;
         a.className = 're__item' + (i === 0 ? ' re__item--vise' : '');
+        // Modèle combobox : le focus reste dans le champ, et c'est
+        // `aria-activedescendant` qui annonce le résultat visé. Sans lui, les
+        // flèches déplaçaient une surbrillance que rien n'énonçait.
+        a.id = 're-opt-' + i;
+        a.setAttribute('role', 'option');
+        a.setAttribute('aria-selected', String(i === 0));
         a.addEventListener('mouseenter', () => viser(i));
 
         const titre = document.createElement('span');
@@ -132,14 +143,21 @@ import '~/styles/recherche.css';
       } else {
         rien.hidden = true;
       }
+
+      champ.setAttribute('aria-expanded', String(resultats.length > 0));
+      champ.setAttribute('aria-activedescendant', resultats.length ? 're-opt-0' : '');
     };
 
     const viser = (i: number) => {
       const items = liste.querySelectorAll<HTMLAnchorElement>('.re__item');
       if (items.length === 0) return;
       curseur = Math.max(0, Math.min(i, items.length - 1));
-      items.forEach((el, j) => el.classList.toggle('re__item--vise', j === curseur));
+      items.forEach((el, j) => {
+        el.classList.toggle('re__item--vise', j === curseur);
+        el.setAttribute('aria-selected', String(j === curseur));
+      });
       items[curseur]?.scrollIntoView({ block: 'nearest' });
+      champ.setAttribute('aria-activedescendant', items[curseur]?.id ?? '');
     };
 
     const ouvrir = () => {

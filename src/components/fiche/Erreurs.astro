@@ -7,6 +7,7 @@
  * observe si elle est présente.
  */
 import { nomCanal } from '~/lib/format';
+import Observer from '~/components/react/Observer';
 
 interface Erreur {
   titre: string;
@@ -20,14 +21,16 @@ interface Props {
   erreurs: Erreur[];
   /** id → nom lisible, pour les renvois vers d'autres fiches. */
   nomsTechniques: Record<string, string>;
+  /** Identifiant de la fiche, pour promouvoir chaque erreur séparément. */
+  fiche: string;
 }
 
-const { erreurs, nomsTechniques } = Astro.props;
+const { erreurs, nomsTechniques, fiche } = Astro.props;
 ---
 
 <ul class="erreurs">
   {
-    erreurs.map((e) => (
+    erreurs.map((e, i) => (
       <li class:list={['erreur', e.sante && 'erreur--sante']}>
         <div class="erreur__tete">
           <h3 class="erreur__titre">{e.titre}</h3>
@@ -58,6 +61,11 @@ const { erreurs, nomsTechniques } = Astro.props;
             ))}
           </p>
         )}
+
+        {/* Une erreur n'a pas de provenance dans le schéma — mais l'avoir
+            constatée sur soi est exactement le genre d'observation que la
+            décision 1 veut pouvoir enregistrer. */}
+        <Observer client:visible fiche={fiche} element={`erreur:${i}`} compact />
       </li>
     ))
   }

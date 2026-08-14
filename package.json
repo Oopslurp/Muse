@@ -27,6 +27,7 @@
     "audit:poids": "node tools/audit-poids.mjs",
     "audit:mobile": "node tools/audit-mobile.mjs",
     "audit:finitions": "node tools/audit-finitions.mjs",
+    "audit:a11y": "node tools/audit-a11y.mjs",
     "predev": "node tools/copy-alphatab-assets.mjs",
     "prebuild": "node tools/copy-alphatab-assets.mjs"
   },

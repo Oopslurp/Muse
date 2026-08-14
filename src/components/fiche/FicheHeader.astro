@@ -60,7 +60,7 @@ const MAIN: Record<string, string> = {
 
   <p class="fh__noms">
     <span lang="en">{nom.en}</span>
-    <span class="fh__sep">·</span>
+    <span class="fh__sep" aria-hidden="true">·</span>
     <span lang="es">{nom.es}</span>
     {nom.alias.length > 0 && <span class="fh__alias"> — aussi&nbsp;: {nom.alias.join(', ')}</span>}
   </p>
@@ -129,6 +129,11 @@ const MAIN: Record<string, string> = {
     margin-bottom: 1rem;
   }
   .fh__fil a {
+    /* Fil d'Ariane : ce sont des liens de navigation, pas des liens en pleine
+       ligne de texte. Ils tombent donc sous la règle des 24 px de cible. */
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
     color: inherit;
     text-decoration: none;
   }
@@ -158,7 +163,7 @@ const MAIN: Record<string, string> = {
   }
   .fh__sep {
     padding: 0 0.35em;
-    color: var(--color-line-strong);
+    color: var(--color-ink-3);
   }
   .fh__alias {
     font-style: normal;

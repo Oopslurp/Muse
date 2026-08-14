@@ -389,3 +389,27 @@
     transition: none;
   }
 }
+
+/* Effacement total : le seul geste du site qui détruit sans corbeille. Il se
+   distingue des autres commandes, sans crier. */
+.ar__btn--danger:hover {
+  color: var(--color-sante);
+  border-color: var(--color-sante);
+}
+
+/* Rappel d'export. IndexedDB s'efface avec les données de navigation, sans
+   prévenir : un texte lu une fois ne remplace pas un rappel au moment où il y
+   a quelque chose à perdre. */
+.ar__rappel {
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border-left: 3px solid var(--color-brass);
+  border-radius: 0 var(--radius-card) var(--radius-card) 0;
+  background: color-mix(in oklab, var(--c-brass) 9%, transparent);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--color-ink-2);
+}
+.ar__rappel strong {
+  color: var(--color-brass);
+}

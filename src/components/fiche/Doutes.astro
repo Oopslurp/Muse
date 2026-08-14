@@ -6,14 +6,18 @@
  * chercher n'est pas un doute affiché. CLAUDE.md, règle de contenu non
  * négociable — « `[À VÉRIFIER]` conservé et rendu visible dans l'UI ».
  */
+import Observer from '~/components/react/Observer';
+
 interface Props {
   doutes: string[];
+  /** Identifiant de la fiche, pour promouvoir chaque doute séparément. */
+  fiche: string;
   /** Titre adapté au volume : une fiche à neuf doutes ne se présente pas
    *  comme une fiche à un seul. */
   compact?: boolean;
 }
 
-const { doutes, compact = false } = Astro.props;
+const { doutes, fiche, compact = false } = Astro.props;
 ---
 
 {
@@ -30,9 +34,17 @@ const { doutes, compact = false } = Astro.props;
             : 'à confirmer guitare en main'}
         </span>
       </summary>
+      {/*
+        Chaque doute se lève séparément. Le texte reste écrit en toutes lettres
+        une fois levé : on ajoute l'observation, on ne retire pas le doute.
+        CLAUDE.md décision 1 — la promotion n'écrase pas l'origine.
+      */}
       <ol class="doutes__liste">
-        {doutes.map((d) => (
-          <li>{d}</li>
+        {doutes.map((d, i) => (
+          <li>
+            <span class="doutes__texte">{d}</span>
+            <Observer client:visible fiche={fiche} element={`doute:${i}`} compact />
+          </li>
         ))}
       </ol>
     </details>
@@ -82,10 +94,13 @@ const { doutes, compact = false } = Astro.props;
     margin: 0.85rem 0 0;
     padding-left: 1.4rem;
     display: grid;
-    gap: 0.45rem;
+    gap: 0.9rem;
     font-size: var(--text-sm);
     line-height: 1.55;
     color: var(--color-ink-2);
+  }
+  .doutes__texte {
+    display: block;
   }
 
   /* Le chevron indique l'état sans dépendre du marqueur natif. */

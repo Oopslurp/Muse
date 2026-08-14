@@ -28,7 +28,7 @@ export interface JournalProps {
   techniqueParDefaut: string | null;
   minutesParDefaut: number;
   tempoParDefaut: number;
-  onAjouter: (s: Omit<Seance, 'id'>) => void | Promise<void>;
+  onAjouter: (s: Omit<Seance, 'id' | 'uid'>) => void | Promise<void>;
   onSupprimer: (id: number) => void | Promise<void>;
 }
 
@@ -188,7 +188,17 @@ export default function Journal({
               <button
                 type="button"
                 className="jo__supprimer"
-                onClick={() => s.id !== undefined && void onSupprimer(s.id)}
+                onClick={() => {
+                  if (s.id === undefined) return;
+                  // Un clic détruisait une séance sans retour possible et sans
+                  // corbeille. On nomme ce qu'on efface plutôt que de demander
+                  // « êtes-vous sûr ? », qui ne dit rien.
+                  const quoi = s.technique ? (nomDe.get(s.technique) ?? s.technique) : 'séance libre';
+                  const ok = window.confirm(
+                    `Supprimer la séance du ${enFrancais(s.date)} — ${quoi}, ${s.minutes} min ?`
+                  );
+                  if (ok) void onSupprimer(s.id);
+                }}
                 aria-label="Supprimer cette séance"
               >
                 ×

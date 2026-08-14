@@ -6,7 +6,7 @@
  * pas devient faux à la première fiche ajoutée, et personne ne s'en aperçoit.
  */
 
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { FAMILIES, type FamilyId } from './taxonomy';
 import { OUTILS, normaliser, type Entree } from './recherche';
 
@@ -37,6 +37,26 @@ const TECHNIQUES_FUSIONNEES: Record<string, number> = {
   'apoyando-tirando': 2, // MD-01 butée + MD-02 pincé
 };
 
+/**
+ * Tous les doutes d'une fiche, y compris ceux qui ne sont pas au premier
+ * niveau.
+ *
+ * Le décompte ne portait que sur `doutes[]` et ratait ceux logés dans la
+ * provenance d'un exercice ou du protocole de séance : **30 annoncés pour 41
+ * réels**. Sous-déclarer le doute est l'inverse exact de ce que le projet
+ * promet — et c'est d'autant plus gênant que ces doutes-là sont bien affichés
+ * sur les fiches, juste pas comptés.
+ */
+function comptDoutes(d: TechniqueData): number {
+  let n = d.doutes.length;
+  if (d.provenance.doute) n += 1;
+  if (d.seance.provenance.doute) n += 1;
+  for (const e of d.exercices) if (e.provenance?.doute) n += 1;
+  return n;
+}
+
+type TechniqueData = CollectionEntry<'techniques'>['data'];
+
 export async function corpus(): Promise<Corpus> {
   const fiches = (await getCollection('techniques')).filter((f) => !f.data.brouillon);
 
@@ -53,7 +73,7 @@ export async function corpus(): Promise<Corpus> {
     parFamille[f.data.famille] += 1;
     techniques += TECHNIQUES_FUSIONNEES[f.id] ?? 1;
     if (f.data.profondeur === 'complete') completes += 1;
-    doutes += f.data.doutes.length;
+    doutes += comptDoutes(f.data);
     if (f.data.seance.risque === 'eleve') risqueEleve += 1;
   }
 

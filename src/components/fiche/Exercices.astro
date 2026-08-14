@@ -18,6 +18,7 @@ import StatusBadge from '~/components/ui/StatusBadge.astro';
 import LecteurTab from '~/components/react/LecteurTab';
 import { statutAffiche, type Provenance } from '~/lib/provenance';
 import { plageTempo, nomOrigineExercice, type Tempo } from '~/lib/format';
+import Observer from '~/components/react/Observer';
 
 /** Le lecteur raisonne en pulsations par minute ; les tempos en notes par
  *  minute ne s'y traduisent pas et sont donc ignorés. */
@@ -39,9 +40,11 @@ interface Exercice {
 
 interface Props {
   exercices: Exercice[];
+  /** Identifiant de la fiche, pour promouvoir chaque exercice séparément. */
+  fiche: string;
 }
 
-const { exercices } = Astro.props;
+const { exercices, fiche } = Astro.props;
 ---
 
 <div class="exos">
@@ -86,6 +89,8 @@ const { exercices } = Astro.props;
               </details>
             </div>
           )}
+
+          <Observer client:visible fiche={fiche} element={`exercice:${e.id}`} compact />
         </article>
       );
     })

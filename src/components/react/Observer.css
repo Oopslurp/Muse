@@ -1,0 +1,142 @@
+/**
+ * Promotion « observé » — habillage. Préfixe `ob`.
+ *
+ * Discret au repos : une fiche à neuf doutes afficherait sinon neuf blocs de
+ * formulaire, et le contenu disparaîtrait sous l'outillage.
+ */
+
+.ob {
+  margin-top: 0.4rem;
+}
+.ob--compact {
+  margin-top: 0.25rem;
+}
+
+.ob__declencheur {
+  font: inherit;
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--color-ink-2);
+  background: transparent;
+  border: 1px dashed var(--color-line-strong);
+  border-radius: var(--radius-pill);
+  padding: 0.28em 0.8em;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+.ob__declencheur:hover:not(:disabled) {
+  color: var(--color-observe);
+  border-color: var(--color-observe);
+  border-style: solid;
+}
+.ob__declencheur:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* --------------------------------------------------------------- observé */
+.ob--fait {
+  border-left: 2px solid var(--color-observe);
+  padding-left: 0.65rem;
+}
+
+.ob__date {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--text-2xs);
+  font-weight: 650;
+  color: var(--color-observe);
+}
+.ob__marque {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.ob__note {
+  margin: 0.25rem 0 0;
+  font-size: var(--text-2xs);
+  line-height: 1.55;
+  color: var(--color-ink-2);
+  white-space: pre-wrap;
+}
+
+.ob__actions {
+  margin: 0.35rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.ob__lien {
+  font: inherit;
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--color-ink-3);
+  background: transparent;
+  border: 0;
+  /* Cible tactile : 24 px de haut au minimum, sans grossir le texte. */
+  padding: 0.35em 0.15em;
+  min-height: 1.5rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.ob__lien:hover {
+  color: var(--color-brass);
+}
+
+/* ---------------------------------------------------------------- saisie */
+.ob--saisie {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.7rem 0.8rem 0.8rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-2);
+  max-width: 34rem;
+}
+
+.ob__champ {
+  display: grid;
+  gap: 0.2rem;
+  font-size: var(--text-2xs);
+  color: var(--color-ink-3);
+}
+.ob__champ input,
+.ob__champ textarea {
+  font: inherit;
+  font-size: var(--text-xs);
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 6px;
+  padding: 0.4em 0.55em;
+  width: 100%;
+}
+.ob__champ textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.ob__btn {
+  font: inherit;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-bg);
+  background: var(--color-observe);
+  border: 1px solid var(--color-observe);
+  border-radius: var(--radius-pill);
+  padding: 0.4em 1em;
+  cursor: pointer;
+}
+
+.ob__panne {
+  margin: 0.4rem 0 0;
+  font-size: var(--text-2xs);
+  color: var(--color-sante);
+}

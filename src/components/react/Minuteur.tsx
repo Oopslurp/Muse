@@ -18,6 +18,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { fermerSignaux, jouerSignal } from '~/lib/signal';
 import './Minuteur.css';
 
 export interface Series {
@@ -57,6 +58,14 @@ export default function Minuteur({
   const [ecoule, setEcoule] = useState(0);
   const [serie, setSerie] = useState(1);
   const [modeSeries, setModeSeries] = useState(false);
+  /**
+   * Le son est actif par défaut : c'est une alarme de santé, pas un ornement.
+   * On peut le couper — même courtoisie que `prefers-reduced-motion`, qui
+   * laisse toujours le choix — mais on ne le coupe pas à sa place.
+   */
+  const [sonActif, setSonActif] = useState(true);
+  /** Le dépassement ne sonne qu'une fois, pas à chaque image. */
+  const limiteAnnoncee = useRef(false);
 
   /** Horodatage du début de la phase courante, sur l'horloge système. */
   const depart = useRef(0);
@@ -88,6 +97,7 @@ export default function Minuteur({
       depart.current = Date.now();
       setEcoule(0);
       setPhase('repos');
+      void jouerSignal('repos', sonActif);
     } else if (phase === 'repos' && ecoule >= dureeRepos) {
       if (serie >= nbSeries) {
         setPhase('arret');
@@ -97,9 +107,28 @@ export default function Minuteur({
         depart.current = Date.now();
         setEcoule(0);
         setPhase('travail');
+        void jouerSignal('travail', sonActif);
       }
     }
-  }, [modeSeries, phase, ecoule, dureeTravail, dureeRepos, serie, nbSeries]);
+  }, [modeSeries, phase, ecoule, dureeTravail, dureeRepos, serie, nbSeries, sonActif]);
+
+  /**
+   * Dépassement de la durée maximale — le signal qui compte.
+   *
+   * On travaille en regardant ses mains : un bloc qui change de couleur ne
+   * prévient personne. Le signal ne sonne qu'**une fois** par franchissement,
+   * pas à chaque image, et se réarme à la remise à zéro.
+   */
+  useEffect(() => {
+    const secondes = (dureeMax ?? 0) * 60;
+    const total = cumul.current + (phase === 'travail' ? ecoule : 0);
+    if (secondes > 0 && total >= secondes && !limiteAnnoncee.current) {
+      limiteAnnoncee.current = true;
+      void jouerSignal('limite', sonActif);
+    }
+  }, [dureeMax, phase, ecoule, sonActif]);
+
+  useEffect(() => fermerSignaux, []);
 
   useEffect(() => surMinutes?.(minutesTotal), [minutesTotal, surMinutes]);
 
@@ -117,6 +146,7 @@ export default function Minuteur({
 
   const remettre = useCallback(() => {
     cumul.current = 0;
+    limiteAnnoncee.current = false;
     setSerie(1);
     setEcoule(0);
     setPhase('arret');
@@ -171,6 +201,15 @@ export default function Minuteur({
         <button type="button" className="mi__btn" onClick={remettre}>
           Remettre à zéro
         </button>
+
+        <label className="mi__case">
+          <input
+            type="checkbox"
+            checked={sonActif}
+            onChange={(e) => setSonActif(e.target.checked)}
+          />
+          Signaux sonores
+        </label>
 
         {series && (
           <label className="mi__case">

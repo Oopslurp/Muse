@@ -20,79 +20,56 @@
 
 ---
 
-## A. Décisions qui m'attendent
+## A. Décisions — toutes tranchées le 14 août 2026
 
-### A1 🔵 Écriture des percussions : A (silences) ou B (notes mortes)
+### A1 ✅ Écriture des percussions — TRANCHÉ le 14 août 2026
 
-`CLAUDE.md`, table des conventions : *« Défaut "A — silences". **À confirmer
-avant la tranche 3.** »* — **la tranche 3 est passée sans cette réponse**, et
-les tranches 4, 5 et 6 aussi. J'ai continué sur le défaut A parce que la sonde
-de la tranche 0 avait montré qu'un `ds` posé sur une note morte disparaît
-silencieusement du modèle alphaTab.
+**A — silences.** Confirmé définitivement. Un `ds` posé sur une note morte
+disparaît silencieusement du modèle alphaTab : la sonde de la tranche 0 l'a
+établi, et l'option B n'est donc pas viable techniquement.
 
-C'est une dette que j'ai contractée sans le dire assez fort à l'époque.
+Inscrit dans CLAUDE.md, table des conventions. **Point clos, ne plus le
+rouvrir.**
 
-- **Ce que ça touche** : la fiche `percussion-kick-snare-golpe` et toute
-  tablature percussive future.
-- **Coût si on change** : réécriture des blocs alphaTex percussifs, plus une
-  passe de `npm run validate`. Une heure environ.
+### A2 → v2 Promotion des trois fiches courtes
 
-### A2 🔵 Promotion des trois fiches courtes en fiches approfondies
+Hors périmètre de la tranche 8 : c'est du contenu, et il faut des sources.
+Une tranche de nettoyage n'ajoute rien. Voir la section V.
 
-Reporté *« après la tranche 3 »* par `CLAUDE.md`. Débloqué depuis, jamais fait.
-Candidates identifiées pendant la recherche : `MD-05 appui préparé`,
-`TR-04 équilibre des voix`, `MG-09 étouffements MG`.
+### A3 ✅ Promotion « observé » — TRANCHÉ : par affirmation
 
-- **Pourquoi ça compte** : une fiche approfondie exige ≥ 4 paliers avec critère
-  de passage. Ces trois-là sont référencées comme prérequis par d'autres et
-  n'offrent pas de progression.
-- **Coût** : c'est du contenu, pas du code. Compter une fiche par séance de
-  travail, et il faut des sources.
+Clé composée `fiche#element`, migration Dexie, interface de promotion sur
+chaque exercice, chaque erreur et le protocole de séance. C'était l'intention
+de la décision 1.
 
-### A3 🔵 Promotion « observé » : fiche entière ou affirmation par affirmation ?
+Raison donnée : la fiche percussion porte **neuf** points douteux — sept au
+niveau fiche, deux imbriqués — qui seront levés un par un, sur des semaines.
+Une promotion qui porte sur la fiche entière ne permet pas cela.
 
-Aujourd'hui la promotion de la décision 1 porte sur **la fiche entière**. Le
-schéma permettrait mieux : `provenance` existe aussi sur chaque exercice,
-chaque erreur, et sur le protocole de séance.
+Traité en **tranche 8a, en premier**.
 
-La décision 1 dit « faire passer **un item** ». Une fiche est un item, mais ce
-n'était probablement pas l'intention.
+### A4 → v2 Bourdon dans l'accordeur
 
-- **Coût** : le magasin est indexé par identifiant de fiche ; il faudrait une
-  clé composite `fiche#element`. Deux à trois heures, plus l'interface.
+Hors périmètre : fonctionnalité neuve. Voir la section V.
 
-### A4 🔵 Bourdon dans l'accordeur
+### A5 ✅ Poids d'alphaTab — TRANCHÉ : accepté
 
-`06-accordeur.md` §9 écarte un générateur de note de référence — accorder à
-l'oreille dessus est moins précis que l'accordeur — mais suggère qu'un
-**bourdon tenu** serait utile pour vérifier l'intonation en jouant.
+Pas de rendu statique. **Le curseur est le cœur de l'outil** et un SVG figé le
+perdrait.
 
-Je ne l'ai pas fait : ce n'était pas dans la tranche 4. À décider.
+Conséquence à traiter en 8b : inscrire les 3,3 Mo dans `audit:poids` comme
+**budget de chargement différé**, distinct du budget initial, avec sa
+justification. Cela résout **G2**.
 
-### A5 🔵 Poids d'alphaTab : on accepte ou on attaque ?
+### A6 → v2 Métronome persistant entre les pages
 
-Trois chunks de ~1,1 Mo non compressé — le lecteur, le worker de synthèse, le
-worklet audio. Chacun embarque le cœur d'alphaTab. Les deux derniers ne sont
-chargés qu'au premier appui sur « lire ».
-
-En local, invisible. Sur un déploiement, c'est 3,3 Mo pour lire une tablature
-de deux mesures.
-
-- **Pistes** : rendu SVG statique au build pour l'affichage, alphaTab chargé
-  seulement si on veut *entendre* ; ou accepter et documenter.
-- **Coût** : élevé, et le rendu statique perdrait le curseur.
-
-### A6 🔵 Le métronome doit-il survivre au changement de page ?
-
-C'est un îlot : quitter `/pratique` l'arrête. Pour travailler une fiche en
-gardant le clic, il faudrait un métronome persistant — donc une architecture
-de vue partagée (transitions Astro, ou un métronome flottant).
+Hors périmètre : fonctionnalité neuve. Voir la section V.
 
 ---
 
 ## B. Défauts connus
 
-### B1 🟠 Réimporter deux fois duplique les séances
+### B1 ✅ Réimporter deux fois duplique les séances — CORRIGÉ en 8a
 
 `sauvegarde.ts` **ajoute** les séances au lieu de les fusionner : leur clé est
 auto-incrémentée et rien ne garantit qu'un identifiant désigne la même séance
@@ -103,12 +80,12 @@ mais ce n'est pas satisfaisant.
   identifiant stable généré à la création (`crypto.randomUUID()`).
 - **Coût** : faible, mais migration Dexie à écrire.
 
-### B2 🟠 Aucune remise à zéro de la base
+### B2 ✅ Aucune remise à zéro de la base — CORRIGÉ en 8a
 
 On peut supprimer une séance à la fois. On ne peut pas repartir de zéro sans
 passer par les outils de développement du navigateur.
 
-### B3 🟠 Rien ne rappelle d'exporter
+### B3 ✅ Rien ne rappelle d’exporter — CORRIGÉ en 8a
 
 IndexedDB s'efface avec les données de navigation, sans prévenir. La page le
 dit en toutes lettres, mais un texte ne remplace pas un rappel — par exemple
@@ -126,12 +103,12 @@ de clics. Contournable en coupant le décompte à la volée avant la reprise.
 tient à l'écran. Sur une fiche longue ouverte en petit, le curseur peut sortir
 du champ.
 
-### B6 🟠 Le minuteur ne prévient qu'à l'œil
+### B6 ✅ Le minuteur ne prévient qu’à l’œil — CORRIGÉ en 8a
 
 Dépassement de `dureeMax` : le bloc change de ton, aucun son. Or on travaille
 en regardant ses mains.
 
-### B7 🟡 Les séries n'ont pas de transition sonore
+### B7 ✅ Les séries n’ont pas de transition sonore — CORRIGÉ en 8a
 
 Le passage travail → repos est visuel. Un signal court à chaque bascule
 rendrait le mode utilisable sans regarder.
@@ -190,7 +167,7 @@ régression visuelle entre deux tranches.
 passant par PowerShell ou en mettant les routes dans la liste par défaut. À
 documenter dans `CLAUDE.md` plutôt que de le redécouvrir.
 
-### C5 🟡 Un seul jeu de couleurs de famille pour deux usages
+### C5 ✅ Contraste des filets de famille — MESURÉ en 8a
 
 `taxonomy.ts` fournit `colorVar` pour les familles ; l'arbre et la liste s'en
 servent différemment (bordure gauche / pastille). Rien ne casse, mais le
@@ -200,7 +177,7 @@ contraste du filet de famille n'a jamais été mesuré.
 
 ## D. Trous de vérification
 
-### D1 🔴 Accessibilité jamais auditée
+### D1 ◐ Accessibilité — MESURÉE en 8a, reste le lecteur d’écran
 
 La direction artistique la déclare **non négociable** : navigation clavier,
 focus visibles, `prefers-reduced-motion`. J'ai suivi ces règles en écrivant,
@@ -277,7 +254,7 @@ Pour ne pas rouvrir ce qui est fait :
 
 **Nouveau depuis la tranche 7**
 
-### G1 🟡 Les cibles tactiles n'ont pas été redimensionnées
+### G1 ✅ Cibles tactiles — CORRIGÉ en 8a
 
 La sonde relève des liens de 17 à 23 px de haut. Les liens en pleine ligne de
 texte sont exemptés par WCAG 2.2 (critère « Target Size (Minimum) »), mais
@@ -290,3 +267,29 @@ Le lecteur de tablature et l'accordeur chargent leur machinerie au premier
 clic — c'est précisément pourquoi ils sont paresseux, et les compter punirait
 le bon comportement. Mais du coup, **les 3,3 Mo d'alphaTab ne sont dans aucun
 budget** (voir A5).
+
+---
+
+## V. Reporté en v2
+
+Décidé le 14 août 2026 : ces points ne rentrent proprement ni en 8a ni en 8b.
+Ce sont des fonctionnalités neuves ou du travail de contenu, et une tranche de
+nettoyage n'ajoute rien.
+
+| Point | Ce que c'est | Pourquoi pas maintenant |
+|---|---|---|
+| **A2** | Promotion des trois fiches courtes structurantes — `MD-05 appui préparé`, `TR-04 équilibre des voix`, `MG-09 étouffements MG` | Du contenu, et il faut des sources |
+| **A4** | Bourdon tenu dans l'accordeur | Fonctionnalité neuve |
+| **A6** | Métronome persistant d'une page à l'autre | Fonctionnalité neuve, et une architecture de vue partagée |
+| **K12** | Nuancer les autres formulations absolues (glissando « jamais », plateau à 8 notes/s, doigt-guide « jamais ») | Du contenu. L'affirmation *médicale* absolue, elle, est traitée en 8a |
+| **K13** | Relier chaque affirmation sensible à une source précise, page ou chapitre | Du contenu, et le plus long du lot |
+| **K14** | Intégration continue GitHub | Pas de dépôt distant, projet mono-utilisateur |
+| **K15** | Sitemap et `robots.txt` | Après le déploiement, s'il y a lieu |
+| **Graphe d'assiduité** | Le `parJour()` supprimé en 8b, à réécrire un jour | Mieux vaut le réécrire que le garder en réserve |
+
+---
+
+## Abandonné
+
+- **C3** — comparaison automatique de captures. Projet mono-utilisateur : je
+  regarde les images, cela suffit.

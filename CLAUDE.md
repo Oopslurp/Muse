@@ -218,7 +218,7 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | **Notation du barré** | Donnée `{ type, fret }`, rendu `CV` / `½CV`. Voir décision 9. | Arrêté |
 | **Noms de notes** | Dérivés de `note.realValue`, jamais en dur. Voir décisions 2 et 9. | Arrêté |
 | **Tempo** | Toujours avec son unité (`bpm` + subdivision, ou `notes-min`). « 120 » seul ne veut rien dire. | Arrêté |
-| **Écriture des percussions** (silences vs notes mortes) | Défaut « A — silences ». **À confirmer avant la tranche 3.** | Ouvert |
+| **Écriture des percussions** | **A — silences.** Un `ds` posé sur une note morte disparaît silencieusement du modèle alphaTab (sonde de la tranche 0) : l'option B n'est pas viable techniquement. **Point clos, ne plus le rouvrir.** | Arrêté |
 
 ---
 
@@ -250,7 +250,8 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | 5 | **Arbre de compétences** | Graphe de prérequis cliquable + progression | ✅ **close** |
 | 6 | **Pratique** | Métronome, minuteur de séance, journal IndexedDB, suivi par technique, export/import JSON | ✅ **close** |
 | 7 | **Finitions** | Recherche, perf, responsive, impression PDF d'une fiche, déploiement | ✅ **close** |
-| 8 | Reprise | Dette, défauts connus, décisions en attente — voir [docs/dette.md](docs/dette.md), plus l'audit Codex | ⏳ |
+| 8a | **Reprise — correction** | Provenance par affirmation, accessibilité mesurée, signaux santé, intégrité des données | ✅ **close** |
+| 8b | Reprise — confort et dette | Le reste de [docs/dette.md](docs/dette.md), tests, déploiement Cloudflare Pages | ⏳ |
 
 > **[docs/dette.md](docs/dette.md) recense ce qui est imparfait, incomplet ou non vérifié**, avec les décisions qui attendent une réponse. Le tenir à jour à chaque tranche : un défaut connu qui n'est écrit nulle part est un défaut oublié.
 
@@ -302,7 +303,7 @@ Le transversal est volontairement **neutre** : il s'applique partout, il ne reve
 ## Points de vigilance permanents
 
 - **Ne jamais affirmer avoir écouté un enregistrement ou visionné une vidéo.** Aucun n'a été consulté pendant la recherche ; le corpus le dit explicitement à chaque référence.
-- **Le rendu audio d'alphaTab ne sera pas fidèle** sur les fiches à étouffements percussifs, ni sur butée/pincé, ni sur le timbre. Le champ `audioFaithful` existe pour ça ; le comportement à adopter (avertissement, désactivation, acceptation) reste **ouvert**.
+- **Le rendu audio d'alphaTab ne sera pas fidèle** sur les fiches à étouffements percussifs, ni sur butée/pincé, ni sur le timbre. Le champ `audioFidele` existe pour ça ; le comportement est tranché par la **décision 10** : on lit quand même, et on nomme les réserves.
 - **Se méfier de toute source donnant un angle de main en degrés.** Aucune des méthodes de référence n'en donne : elles décrivent qualitativement.
 - **Ne faire confiance qu'aux numéros de case dans les tablatures existantes**, jamais aux noms de notes qui les commentent (d'où la décision 2).
 
@@ -338,6 +339,9 @@ npm run audit:pratique  # compte les clics du métronome, le minuteur, le journa
 npm run audit:mobile    # 8 routes × 320 et 390 px, aucun débordement
 npm run audit:poids     # budget par route + aucun appel hors origine
 npm run audit:finitions # recherche, impression, page introuvable
+npm run audit:a11y      # contrastes, cibles tactiles, noms accessibles, titres
+                        # 8 routes × 2 thèmes, sur les couleurs rendues
+npm run audit:a11y -- --rapport   # relevé complet dans .captures/a11y.json
 npm run audit:layout -- <url> <largeur>   # remonte à l'élément qui déborde
 ```
 
@@ -364,6 +368,7 @@ npm run audit:progression
 npm run audit:pratique
 npm run audit:mobile
 npm run audit:finitions
+npm run audit:a11y
 npm run build && npm run preview                   # puis contre le build
 MUSE_URL=http://localhost:4322 npm run audit:console
 MUSE_URL=http://localhost:4322 npm run audit:lecture
@@ -373,6 +378,7 @@ MUSE_URL=http://localhost:4322 npm run audit:pratique
 MUSE_URL=http://localhost:4322 npm run audit:mobile
 MUSE_URL=http://localhost:4322 npm run audit:poids
 MUSE_URL=http://localhost:4322 npm run audit:finitions
+MUSE_URL=http://localhost:4322 npm run audit:a11y
 npm run shot                                       # et regarder les images
 ```
 
@@ -531,7 +537,35 @@ L'observation **n'écrase pas l'origine** : la pastille produite au build contin
 
 **Impression** — feuille dédiée en fin de [global.css](src/styles/global.css). Thème forcé en clair, navigation et commandes masquées, paliers et bloc santé conservés, sauts de page interdits au milieu d'un palier. ⚠️ **La source alphaTex se déplie à l'impression** : le lecteur est hydraté à la visibilité, donc une fiche imprimée sans avoir été parcourue peut n'avoir aucune partition composée. La source, elle, est toujours dans le HTML — et elle fait foi.
 
-**Déploiement** — [docs/deploiement.md](docs/deploiement.md). Site statique, `MUSE_SITE` règle le domaine canonique au build. **HTTPS est la seule exigence réelle** : `getUserMedia` n'existe qu'en contexte sécurisé, et une IP de réseau local ne compte pas. L'hébergeur reste à choisir ; sa configuration fait une dizaine de lignes et n'a pas été écrite d'avance pour trois plateformes.
+**Déploiement** — [docs/deploiement.md](docs/deploiement.md). Site statique, `MUSE_SITE` règle le domaine canonique au build. **HTTPS est la seule exigence réelle** : `getUserMedia` n'existe qu'en contexte sécurisé, et une IP de réseau local ne compte pas. **Hébergeur : Cloudflare Pages**, arrêté à la tranche 8. La configuration se fait à la toute fin de la tranche 8b.
+
+### Reprise — correction (tranche 8a)
+
+Tranche de correction, ouverte par [docs/dette.md](docs/dette.md) et par un audit externe. Le tri des points de cet audit vit dans [docs/tranche-8.md](docs/tranche-8.md) — il distingue ce qui est confirmé, ce qui était déjà connu, ce qui n'est pas reproductible, et **ce qui contredit une décision déjà prise** : ces derniers ne se corrigent pas, ils se signalent.
+
+**La promotion `observé` porte désormais sur chaque affirmation, plus sur la fiche entière** (décision 1, enfin appliquée jusqu'au bout). Clé composite `fiche#element` — [observations.ts](src/lib/observations.ts) —, où `element` vaut `fiche`, `seance`, `doute:<n>`, `exercice:<id>` ou `erreur:<n>`. L'ancien état par fiche est repris en `fiche#fiche` par la migration Dexie v3, sans perte. Le widget [Observer](src/components/react/Observer.tsx) se pose partout où il y a quelque chose à vérifier, et la fiche affiche « N sur M affirmations vérifiées ».
+
+⚠️ **Le texte du doute reste écrit en entier une fois levé.** La promotion ajoute une ligne, elle n'en retire jamais : « la source affirme ceci, j'ai constaté cela » est l'information utile, pas le seul verdict final.
+
+**Accessibilité — mesurée, pas affirmée.** [docs/accessibilite.md](docs/accessibilite.md), reproductible par `npm run audit:a11y` : **656 points → 0**, sur 8 routes × 2 thèmes. Les mesures portent sur les couleurs **réellement rendues**, pas sur les jetons : un `color-mix` ne se lit pas dans la feuille de style, et c'est la composition qui décide.
+
+- Quatre jetons ont bougé, aux valeurs **calculées** pour 4,5:1 sur le pire fond, pas choisies à l'œil : `--c-ink-3`, `--c-brass`, `--c-observe`, `--c-pm`.
+- Les cibles sous 24 px sont réglées **une fois pour toutes** dans `global.css` — le navigateur dessine les cases à cocher à 13 px et les curseurs à 16 px, chaque nouveau formulaire aurait reproduit le défaut.
+- La palette de recherche suit le motif **combobox** : `aria-activedescendant` fait annoncer le déplacement sans jamais bouger le focus. Les flèches déplaçaient une surbrillance que rien n'énonçait.
+- ⚠️ `.sr-only` était **utilisée par `StatusBadge` sans avoir jamais été définie** : le texte réservé aux lecteurs d'écran s'affichait à l'écran.
+
+**Les alertes santé sonnent.** [signal.ts](src/lib/signal.ts) : dépassement de `dureeMax`, et chaque bascule travail/repos. On travaille **en regardant ses mains** — un bloc qui change de couleur ne prévient personne, et faire des champs santé une contrainte de build pour ne les rendre visibles qu'à l'œil était incohérent. Trois formes distinctes (deux notes montantes, deux descendantes, trois graves insistantes), attaque douce pour ne pas faire sursauter en pleine prise, coupables mais **actives par défaut** : c'est une alarme, pas un ornement.
+
+**Intégrité de la sauvegarde.** Chaque séance porte un `uid` stable posé à la création (`crypto.randomUUID`, avec repli hors contexte sécurisé) : **réimporter deux fois ne duplique plus**. Import en une seule transaction, validation champ par champ, enveloppe v3 qui relit encore v1 et v2. S'y ajoutent une remise à zéro complète sous confirmation nommée, et un rappel d'export au bout de 10 séances non exportées.
+
+**Quatre corrections de justesse**, toutes issues de l'audit externe :
+
+1. **Un accord posait deux notes sur la même corde** dans `extensions` (cases 5 et 9 en un seul temps). Corrigé en notes tenues, et **`npm run validate` refuse désormais ce cas** — vérifié en échec.
+2. **Le compteur de doutes n'en voyait que 30 sur 41** : il ne lisait que le niveau fiche, pas ceux des exercices ni de la séance.
+3. Une promesse éditoriale trop large sur l'accueil et l'index.
+4. Une affirmation médicale énoncée à l'absolu, ramenée à ce que la source dit.
+
+**Ce qui ne se simule pas** — [docs/verifications-manuelles.md](docs/verifications-manuelles.md) : l'accordeur sur Firefox et Safari guitare en main, un vrai téléphone au doigt, un lecteur d'écran, la faisabilité musicale des exercices. **Ne rien affirmer sur ces points.**
 
 ### Conventions alphaTex établies par la sonde
 

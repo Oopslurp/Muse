@@ -214,24 +214,24 @@ if (surFiche !== 'Tenue') {
 console.log(`ok  la fiche suit            ${surFiche}`);
 
 /* ------------------------------------------------ 5. observation persistante */
-if (!(await cliquer('.sf__btn'))) problemes.push('fiche : bouton d’observation introuvable');
+if (!(await cliquer('.sf .ob__declencheur'))) problemes.push('fiche : bouton d’observation introuvable');
 else {
   await evaluer(`(() => {
-    const t = document.querySelector('.sf__form textarea');
+    const t = document.querySelector('.sf .ob--saisie textarea');
     const set = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
     set.call(t, 'Vérifié par la sonde.');
     t.dispatchEvent(new Event('input', { bubbles: true }));
   })()`);
   await attendre(300);
-  if (!(await cliquer('.sf__form .sf__btn'))) problemes.push('fiche : bouton d’enregistrement introuvable');
+  if (!(await cliquer('.sf .ob__btn'))) problemes.push('fiche : bouton d’enregistrement introuvable');
   await attendre(600);
 
   await envoyer('Page.reload', { ignoreCache: true });
   await attendre(2500);
   await evaluer(`document.querySelector('.sf')?.scrollIntoView({ block: 'center', behavior: 'instant' })`);
   await attendre(800);
-  const date = await texte('.sf__obs-date');
-  const note = await texte('.sf__obs-note');
+  const date = await texte('.sf .ob__date');
+  const note = await texte('.sf .ob__note');
   if (!date || !/Observé le/.test(date)) problemes.push(`observation perdue au rechargement (« ${date} »)`);
   if (note !== 'Vérifié par la sonde.') problemes.push(`note perdue : « ${note} »`);
   console.log(`ok  observation conservée    ${date}`);
@@ -239,13 +239,73 @@ else {
 
 for (const e of exceptions) problemes.push(`exception — ${e}`);
 
-ws.close();
-chrome.kill();
+/* ------------- 6. promotion d'UN doute, séparément de la fiche (A3) */
+/**
+ * Le cœur de la décision 1 : la promotion porte sur une affirmation, pas sur
+ * une fiche. La fiche percussion porte neuf points douteux qui se lèvent un
+ * par un — si un seul bouton les levait tous, on aurait retrouvé le défaut
+ * qu'on venait de corriger.
+ */
+await envoyer('Page.navigate', { url: `${BASE}/techniques/percussion-kick-snare-golpe` });
+await attendre(2800);
+await evaluer(`document.querySelector('.doutes')?.setAttribute('open','')`);
+await evaluer(`document.querySelector('.doutes')?.scrollIntoView({ block: 'center', behavior: 'instant' })`);
+await attendre(1200);
+
+const nbDoutes = await evaluer(`document.querySelectorAll('.doutes__liste > li').length`);
+const nbBoutons = await evaluer(
+  `document.querySelectorAll('.doutes__liste .ob__declencheur').length`
+);
+if (nbDoutes < 7) problemes.push(`doutes : ${nbDoutes} affiché(s), 7 attendus`);
+if (nbBoutons !== nbDoutes) {
+  problemes.push(`doutes : ${nbBoutons} bouton(s) de promotion pour ${nbDoutes} doute(s)`);
+}
+
+if (!(await cliquer('.doutes__liste li:nth-child(2) .ob__declencheur'))) {
+  problemes.push('doutes : impossible de promouvoir le deuxième point');
+} else {
+  await evaluer(`(() => {
+    const t = document.querySelector('.doutes__liste li:nth-child(2) .ob--saisie textarea');
+    if (!t) return false;
+    const set = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
+    set.call(t, 'Levé par la sonde.');
+    t.dispatchEvent(new Event('input', { bubbles: true }));
+    return true;
+  })()`);
+  await attendre(300);
+  await cliquer('.doutes__liste li:nth-child(2) .ob__btn');
+  await attendre(700);
+
+  await envoyer('Page.reload', { ignoreCache: true });
+  await attendre(2800);
+  await evaluer(`document.querySelector('.doutes')?.setAttribute('open','')`);
+  await attendre(1000);
+
+  const etat = await evaluer(`(() => {
+    const lis = [...document.querySelectorAll('.doutes__liste > li')];
+    return JSON.stringify({
+      faits: document.querySelectorAll('.doutes__liste .ob--fait').length,
+      deuxieme: lis[1]?.querySelector('.ob__note')?.textContent?.trim() ?? null,
+      // Le texte du doute doit rester écrit : on ajoute, on ne retire pas.
+      texte: (lis[1]?.querySelector('.doutes__texte')?.textContent ?? '').length,
+    });
+  })()`);
+  const { faits, deuxieme, texte: longueur } = JSON.parse(etat ?? '{}');
+
+  if (faits !== 1) problemes.push(`doutes : ${faits} point(s) levé(s) au lieu d’un seul`);
+  if (deuxieme !== 'Levé par la sonde.') problemes.push(`doutes : note perdue (« ${deuxieme} »)`);
+  if (!longueur) problemes.push('doutes : le texte du doute a disparu une fois levé');
+  console.log(`ok  un doute levé, un seul   ${faits} sur ${nbDoutes} · « ${deuxieme} »`);
+}
 
 if (problemes.length) {
   console.log('\n✗ progression');
   for (const p of problemes) console.log(`    ${p.slice(0, 400)}`);
   console.log(`\n${problemes.length} problème(s).`);
+  ws.close();
+  chrome.kill();
   process.exit(1);
 }
-console.log('\nProgression : écrite, relue, partagée entre l’arbre et la fiche.');
+ws.close();
+chrome.kill();
+console.log('\nProgression : écrite, relue, et chaque affirmation se promeut seule.');

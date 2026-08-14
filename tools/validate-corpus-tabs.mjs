@@ -59,20 +59,62 @@ const diagnostics = (bag) =>
     (d) => `[${d.code}] ligne ${d.start.line}, col ${d.start.col} : ${d.message}`
   );
 
+/**
+ * Invariant musical : **une corde ne sonne qu'une hauteur à la fois.**
+ *
+ * alphaTab accepte sans broncher un accord qui pose deux cases sur la même
+ * corde — la plus haute neutralise l'autre, et la tablature affichée notate
+ * alors quelque chose qui ne peut pas se produire. C'est exactement la classe
+ * d'erreur que la décision 2 existe pour empêcher, et le contrôle syntaxique
+ * ne la voit pas : le corpus en portait une, trouvée par l'audit Codex.
+ *
+ * ⚠️ Le modèle alphaTab **inverse** la numérotation des cordes par rapport au
+ * texte source (voir 08-alphatab-verifie.md, R4). On n'a pas besoin de la
+ * convertir ici : on compare des numéros entre eux, pas à une écriture.
+ */
+function cordesDoublees(score) {
+  const fautes = [];
+  for (const track of score.tracks ?? []) {
+    for (const staff of track.staves ?? []) {
+      for (const bar of staff.bars ?? []) {
+        for (const voice of bar.voices ?? []) {
+          for (const beat of voice.beats ?? []) {
+            const vues = new Map();
+            for (const note of beat.notes ?? []) {
+              const dejaLa = vues.get(note.string);
+              if (dejaLa !== undefined) {
+                fautes.push(
+                  `mesure ${bar.index + 1} : deux notes sur la même corde ` +
+                    `(cases ${dejaLa} et ${note.fret}) dans un même temps`
+                );
+              } else {
+                vues.set(note.string, note.fret);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return fautes;
+}
+
 function verifier(tex) {
   const importer = new at.importer.AlphaTexImporter();
   importer.initFromString(tex, new at.Settings());
   let echoue = false;
+  let musique = [];
   try {
-    importer.readScore();
+    musique = cordesDoublees(importer.readScore());
   } catch {
     echoue = true;
   }
   return {
-    echoue,
+    echoue: echoue || musique.length > 0,
     messages: [
       ...diagnostics(importer.lexerDiagnostics),
       ...diagnostics(importer.parserDiagnostics),
+      ...musique,
     ],
   };
 }

@@ -44,6 +44,16 @@ const debloque = resoudre(noeud?.debloque ?? []);
 const nomsTechniques = Object.fromEntries(toutes.map((f) => [f.id, f.data.nom.fr]));
 const titresExercices = Object.fromEntries(d.exercices.map((e) => [e.id, e.titre]));
 
+/**
+ * Nombre d'affirmations promouvables sur cette fiche.
+ *
+ * Doit rester aligné sur les `Observer` réellement posés dans la page : un
+ * par point à vérifier, un par exercice, un par erreur, plus le protocole de
+ * séance et la fiche elle-même.
+ */
+const promouvables =
+  d.doutes.length + d.exercices.length + d.erreurs.length + 2;
+
 /** Sommaire : seulement les sections réellement présentes. */
 const sections = [
   d.paliers.length > 0 && { href: '#progression', label: 'Progression' },
@@ -71,7 +81,7 @@ const sections = [
       debloque={debloque}
     />
 
-    {d.doutes.length > 0 && <Doutes doutes={d.doutes} />}
+    {d.doutes.length > 0 && <Doutes doutes={d.doutes} fiche={fiche.id} />}
 
     {
       d.permanent && (
@@ -120,7 +130,7 @@ const sections = [
                 Cette section remplace le professeur. Chaque erreur porte un test
                 praticable seul et le signe qu'on observe si elle est présente.
               </p>
-              <Erreurs erreurs={d.erreurs} nomsTechniques={nomsTechniques} />
+              <Erreurs erreurs={d.erreurs} nomsTechniques={nomsTechniques} fiche={fiche.id} />
             </section>
           )
         }
@@ -129,7 +139,7 @@ const sections = [
           d.exercices.length > 0 && (
             <section id="exercices" class="bloc">
               <h2>Exercices</h2>
-              <Exercices exercices={d.exercices} />
+              <Exercices exercices={d.exercices} fiche={fiche.id} />
             </section>
           )
         }
@@ -141,12 +151,12 @@ const sections = [
 
       <aside class="corps__cote">
         <div class="colle">
-          <Seance seance={d.seance} />
+          <Seance seance={d.seance} fiche={fiche.id} />
 
           {/* Avancement partagé avec l'arbre, et promotion « observé » —
               CLAUDE.md décision 1. Hydraté à la visibilité : il n'est utile
               qu'une fois la fiche lue, et il n'y a rien à afficher avant. */}
-          <SuiviFiche client:visible id={fiche.id} />
+          <SuiviFiche client:visible id={fiche.id} promouvables={promouvables} />
 
           {
             sections.length > 1 && (
@@ -266,6 +276,10 @@ const sections = [
     gap: 0.35rem;
   }
   .sommaire a {
+    /* Cible tactile : 24 px de haut, sans changer la typographie. */
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
     font-size: var(--text-sm);
     color: var(--color-ink-2);
     text-decoration: none;

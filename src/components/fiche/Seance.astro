@@ -11,6 +11,7 @@
 import StatusBadge from '~/components/ui/StatusBadge.astro';
 import { statutAffiche, type Provenance } from '~/lib/provenance';
 import { dureeSeance, duree, nomMoment } from '~/lib/format';
+import Observer from '~/components/react/Observer';
 
 interface Seance {
   moment: string[];
@@ -27,9 +28,11 @@ interface Seance {
 
 interface Props {
   seance: Seance;
+  /** Identifiant de la fiche, pour promouvoir le protocole séparément. */
+  fiche: string;
 }
 
-const { seance: s } = Astro.props;
+const { seance: s, fiche } = Astro.props;
 
 const RISQUE: Record<string, string> = {
   faible: 'Risque faible',
@@ -112,6 +115,11 @@ const RISQUE: Record<string, string> = {
   </div>
 
   {s.avertissementSante && <p class="avert">{s.avertissementSante}</p>}
+
+  {/* Les durées et les signaux d'arrêt des fiches percussives sont marqués
+      déduits, faute de littérature. Les confirmer à l'usage est exactement
+      ce que la promotion sert à enregistrer. */}
+  <Observer client:visible fiche={fiche} element="seance" compact />
 </section>
 
 <style>
