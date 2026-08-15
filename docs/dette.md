@@ -1,5 +1,15 @@
 # Dette, défauts connus et décisions en attente
 
+> **Document de chantier, pas une documentation utilisateur.** Il liste ce qui
+> est imparfait, non vérifié ou reporté — donc il donne une image volontairement
+> défavorable du projet. Ce n'est pas la liste des bugs ouverts d'un site cassé :
+> c'est le registre de ce que l'auteur sait ne pas savoir. Il est public pour la
+> même raison que les doutes du corpus le sont. Pour ce que le site fait et ce
+> qu'il vaut, voir le [README](../README.md).
+>
+> Les entrées marquées ✅ ont été traitées ; le texte d'origine est conservé,
+> parce que le défaut et sa correction se lisent ensemble.
+>
 > **À traiter en tranche 8**, avec ce que remontera l'audit Codex.
 >
 > Ce document recense ce que je sais être imparfait, incomplet ou non vérifié
@@ -302,8 +312,8 @@ nettoyage n'ajoute rien.
 | **A6** | Métronome persistant d'une page à l'autre | Fonctionnalité neuve, et une architecture de vue partagée |
 | **K12** | Nuancer les autres formulations absolues (glissando « jamais », plateau à 8 notes/s, doigt-guide « jamais ») | Du contenu. L'affirmation *médicale* absolue, elle, est traitée en 8a |
 | **K13** | Relier chaque affirmation sensible à une source précise, page ou chapitre | Du contenu, et le plus long du lot |
-| **K14** | Intégration continue GitHub | Pas de dépôt distant, projet mono-utilisateur |
-| **K15** | Sitemap et `robots.txt` | Après le déploiement, s'il y a lieu |
+| **Observations de l'auteur dans le contenu** | Un champ `observeAuteur`, distinct de la promotion locale du lecteur. Sans lui, un visiteur public ne voit **aucune** observation et ignore ce que l'auteur a vérifié | Ouvert par la publication en tranche 9, et le corpus n'a pas encore d'observation à porter |
+| **Version anglaise** | Le site restera en français ; l'abrégé du README suffit pour l'instant | 33 fiches à traduire, et la terminologie existe déjà en `nom.en` / `nom.es` |
 | **Graphe d'assiduité** | Le `parJour()` supprimé en 8b, à réécrire un jour | Mieux vaut le réécrire que le garder en réserve |
 
 ---

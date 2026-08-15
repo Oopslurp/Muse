@@ -53,12 +53,50 @@ MUSE_URL=https://exemple.net npm run audit:poids
 | Réécrire les erreurs 404 vers `/404.html` | Sinon la page introuvable ne s'affiche pas |
 
 Rien d'autre. Ni fonctions, ni rendu serveur, ni variables d'environnement à
-l'exécution.
+l'exécution. GitHub Pages sert `404.html` automatiquement, et Astro le produit.
 
-**Le choix de l'hébergeur reste à faire.** La configuration exacte — fichier
-`_redirects`, `netlify.toml`, `vercel.json`, action GitHub Pages — dépend de
-lui, et l'écrire à l'avance pour trois plateformes différentes serait écrire
-deux fichiers morts. Une fois l'hébergeur choisi, c'est une dizaine de lignes.
+---
+
+## Hébergeur : GitHub Pages
+
+Arrêté à la tranche 9, en même temps que l'ouverture au public.
+[`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) construit et
+publie à chaque poussée sur la branche principale.
+
+### Le dépôt s'appelle `<pseudo>.github.io`, et ce n'est pas cosmétique
+
+C'est ce qui fait servir le site **à la racine**, donc ce qui permet de n'avoir
+**aucun `base`** dans `astro.config.mjs`.
+
+⚠️ Un dépôt projet — servi sous `https://<pseudo>.github.io/muse/` — casserait
+tout : une vingtaine de chemins absolus vivent dans le code (`/techniques`,
+`/recherche.json`, `/alphatab/…`), et autant dans le contenu. Il faudrait poser
+`base`, réauditer chaque lien, et le premier oublié ne se verrait qu'en
+production. Si l'adresse doit changer un jour, c'est ce travail-là qu'il faut
+prévoir.
+
+### `MUSE_SITE` n'est écrit nulle part
+
+Le workflow le dérive de `github.repository_owner`. Renommer le compte suffit,
+il n'y a pas de pseudo en dur à retrouver.
+
+### Le piège des actifs alphaTab
+
+`public/alphatab/` est **ignoré par git** : la police Bravura et la banque de
+sons sont recopiées depuis `node_modules` par le script `prebuild`, déclenché
+par `npm run build`.
+
+Si cette copie échoue, **la construction réussit quand même** — et le site sort
+avec une partition sans glyphes et un lecteur muet. Le workflow refuse donc de
+publier si `dist/alphatab/soundfont/sonivox.sf3` ou la police manquent. C'est
+exactement la classe de panne silencieuse que ce projet collectionne.
+
+### Ce qu'il reste à faire une seule fois, à la main
+
+1. Créer le dépôt **`<pseudo>.github.io`** et y pousser.
+2. Dans *Settings → Pages*, régler la source sur **GitHub Actions**.
+3. Ajouter le badge d'intégration continue dans le README (une ligne, laissée
+   en commentaire faute de connaître le pseudo).
 
 ---
 

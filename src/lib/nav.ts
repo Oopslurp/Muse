@@ -21,6 +21,11 @@ export const NAV: readonly NavItem[] = [
   { href: '/arbre', label: 'Arbre', ready: true, tranche: 5 },
   { href: '/accordeur', label: 'Accordeur', ready: true, tranche: 4 },
   { href: '/pratique', label: 'Pratique', ready: true, tranche: 6 },
+  // Publier le site rend cette page nécessaire : un lecteur qui n'est pas
+  // l'auteur arrive sans le contexte, et deux promesses du site — le statut
+  // « observé », les consignes de santé — ne veulent pas dire pour lui ce
+  // qu'elles veulent dire pour l'auteur.
+  { href: '/a-propos', label: 'À propos', ready: true, tranche: 9 },
 ] as const;
 
 export interface Tranche {

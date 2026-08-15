@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import tailwindcss from '@tailwindcss/vite';
+import sitemap from '@astrojs/sitemap';
 import { alphaTab } from '@coderline/alphatab-vite';
 
 // https://astro.build/config
@@ -21,6 +22,17 @@ export default defineConfig({
     // métronome, journal. Tout le reste du site est rendu statiquement.
     react(),
     mdx(),
+    /**
+     * Plan du site. Il ne servait à rien tant que le site n'était publié nulle
+     * part ; il devient utile en même temps que l'ouverture au public.
+     *
+     * `/style-guide` en est exclue : c'est une vitrine de composants, pas une
+     * page de contenu, et l'indexer amènerait des visiteurs sur une page qui
+     * ne répond à aucune question.
+     */
+    sitemap({
+      filter: (page) => !page.includes('/style-guide'),
+    }),
   ],
   vite: {
     plugins: [

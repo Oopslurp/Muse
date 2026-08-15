@@ -1,6 +1,18 @@
 # CLAUDE.md — Muse
 
-Site personnel d'apprentissage de la guitare : bibliothèque de référence des grandes techniques (fingerstyle classique + fingerstyle moderne percussif) et accordeur chromatique.
+> **Document de travail, adressé à l'assistant qui écrit le code.** Ce n'est ni
+> une documentation utilisateur ni une présentation du projet — pour ça, voir le
+> [README](README.md) et la page « À propos » du site. Il fixe les décisions
+> arrêtées, les pièges rencontrés et les règles non négociables ; il est
+> délibérément direct et suppose le contexte connu.
+>
+> Il est public parce qu'il porte le **pourquoi** de chaque choix, y compris les
+> erreurs qui les ont provoqués. C'est la même logique que les doutes affichés du
+> corpus.
+>
+> **En cas de contradiction avec n'importe quel autre document, ce fichier gagne.**
+
+Site d'apprentissage de la guitare, écrit pour un praticien : bibliothèque de référence des grandes techniques (fingerstyle classique + fingerstyle moderne percussif) et accordeur chromatique.
 
 **Utilisateur unique.** Guitariste intermédiaire visant expert. Lit la tablature, connaît la position de base des mains. Pratique : fingerstyle, classique, percussif (Kotaro Oshio, Mike Dawes, Andy McKee).
 
@@ -252,7 +264,8 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | 7 | **Finitions** | Recherche, perf, responsive, impression PDF d'une fiche, déploiement | ✅ **close** |
 | 8a | **Reprise — correction** | Provenance par affirmation, accessibilité mesurée, signaux santé, intégrité des données | ✅ **close** |
 | 8b | **Reprise — confort et dette** | Le reste de [docs/dette.md](docs/dette.md), tests, métadonnées du dépôt | ✅ **close** |
-| 9 | Déploiement | Cloudflare Pages | ⏳ |
+| 9 | **Publication** | Licences, page « À propos », réserve santé, GitHub Pages, intégration continue | ✅ **close** |
+| 10 | Diagrammes dérivés | Manche, doigté main droite, grilles de motifs — depuis les données seules | ⏳ |
 
 > **[docs/dette.md](docs/dette.md) recense ce qui est imparfait, incomplet ou non vérifié**, avec les décisions qui attendent une réponse. Le tenir à jour à chaque tranche : un défaut connu qui n'est écrit nulle part est un défaut oublié.
 
@@ -603,6 +616,26 @@ Tranche de correction, ouverte par [docs/dette.md](docs/dette.md) et par un audi
 **Métadonnées du dépôt** — [README.md](README.md), [LICENCE.md](LICENCE.md) (tous droits réservés, plus ce que le dépôt ne possède pas : citations, répertoire, dépendances servies), description et mots-clés du paquet, Open Graph sans image. Et la carte d'accueil ne dit plus « mise en page provisoire », ce qui était faux depuis la tranche 1.
 
 **Quatre exports morts supprimés** : `parJour()`, `oublier()`, `motifSimple`, `NoeudPlace.rang`. `audit:layout` ne sort plus en échec sur un débordement légitime — il sépare les éléments larges vivant dans un conteneur à défilement de ceux qui débordent vraiment, et seul le second cas échoue.
+
+### Publication (tranche 9)
+
+Le site passe d'« écrit pour un praticien » à « publié tel quel ». Rien ne casse techniquement — il est statique, sans compte ni serveur. **Ce qui change est éditorial** : un lecteur arrive sans le contexte, et deux promesses cessent d'être vraies pour lui.
+
+**1. `observé` est invisible pour tout le monde sauf l'auteur.** L'observation vit dans l'IndexedDB **du visiteur** : il arrive donc sur un corpus où rien n'est marqué observé, et rien ne lui dit que le troisième statut du triptyque annoncé en accueil ne lui sera jamais montré. C'est dit sur `/a-propos` plutôt que masqué. La réponse complète — un champ `observeAuteur` dans le contenu, distinct de la promotion locale du lecteur — est **reportée en v2**.
+
+**2. Les consignes de santé s'adressaient à soi-même.** Publiées, ce sont des prescriptions à des inconnus, dont une part est explicitement `déduit` (décision 3 : aucune littérature sur les impacts répétés en percussif). Une réserve courte est posée **au plus près des chiffres** sur l'accueil, et développée sur `/a-propos` : les statistiques décrivent des populations, plusieurs valeurs sont des déductions prudentes, une douleur se porte à un professionnel. C'est le principe d'honnêteté du projet appliqué vers l'extérieur.
+
+**Licences séparées, parce que code et contenu n'ont pas le même risque** : [MIT](LICENSE) pour le code, [CC BY-NC-SA 4.0](LICENSE-CONTENU.md) pour le corpus. La consigne qui compte est écrite dans les deux : **une réutilisation conserve les statuts et les doutes** — une version qui les efface est plus fausse que l'original, tout en ayant l'air plus sûre.
+
+**Hébergeur : GitHub Pages, sur un dépôt `<pseudo>.github.io`.** Ce n'est pas cosmétique : c'est ce qui fait servir le site **à la racine**, donc ce qui permet de n'avoir **aucun `base`**. ⚠️ Un dépôt projet servi sous `/muse/` casserait la vingtaine de chemins absolus du code plus ceux du contenu et des actifs alphaTab, et le premier oublié ne se verrait qu'en production. `MUSE_SITE` se dérive de `github.repository_owner` — aucun pseudo en dur.
+
+⚠️ **Le workflow refuse de publier si les actifs alphaTab manquent.** `public/alphatab/` est ignoré par git et reproduit par `prebuild` ; si la copie échoue, **la construction réussit quand même** et le site sort avec une partition sans glyphes et un lecteur muet. Exactement la classe de panne silencieuse que ce projet collectionne.
+
+**L'intégration continue est remontée de la v2** (K14). Un dépôt public qui affirme « chaque garde-fou a été vérifié en échec » doit les faire tourner devant témoin. Les runners Ubuntu ont Chrome ; `audit-layout.mjs`, seul outil à chemin Windows en dur, a reçu la même liste de replis que les autres.
+
+**Sitemap et robots.txt** (K15, remontés aussi : ils ne servaient à rien tant que le site n'était publié nulle part). ⚠️ `robots.txt` est un **endpoint**, pas un fichier statique : la directive `Sitemap:` exige une URL absolue et le domaine n'est connu qu'au build.
+
+**Défaut trouvé en regardant l'image, pas le HTML** : Astro supprime l'espace quand un saut de ligne sépare du texte d'un élément (`… porte\n<strong>44</strong>` rend « porte44 »). Trois occurrences sur la page neuve, corrigées par `{' '}`. Un balayage automatique du reste du site n'a rien donné de concluant — trop de faux positifs entre éléments voisins.
 
 ### Conventions alphaTex établies par la sonde
 

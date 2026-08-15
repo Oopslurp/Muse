@@ -1,16 +1,26 @@
 # Muse
 
-Site personnel d'apprentissage de la guitare : une **bibliothèque de référence
-des grandes techniques** de fingerstyle — classique et percussif moderne — et
-un **accordeur chromatique**.
+Bibliothèque de référence des grandes techniques de guitare **fingerstyle** —
+classique et percussif moderne — avec **accordeur chromatique**, arbre de
+compétences et atelier de pratique.
 
-Un seul utilisateur, aucun compte, aucun backend. Tout ce qui est enregistré
-vit dans le navigateur et ressort en JSON.
+Écrite pour un praticien, publiée telle quelle. Aucun compte, aucun serveur :
+tout ce qui est enregistré vit dans votre navigateur et ressort en JSON.
+
+<!--
+  Badge d'intégration continue : à ajouter une fois le dépôt créé, en
+  remplaçant PSEUDO par le compte GitHub. Laissé de côté plutôt qu'écrit avec
+  un nom fictif — un badge cassé en tête de README est pire que pas de badge.
+
+  [![Contrôles](https://github.com/PSEUDO/PSEUDO.github.io/actions/workflows/ci.yml/badge.svg)](https://github.com/PSEUDO/PSEUDO.github.io/actions/workflows/ci.yml)
+-->
 
 ```bash
 npm install
 npm run dev        # http://localhost:4321
 ```
+
+![L'accueil](docs/images/accueil.png)
 
 ---
 
@@ -27,15 +37,23 @@ filtrables, jamais en note de bas de page :
 
 `observé` est une **promotion manuelle**, par affirmation, qui n'écrase pas
 l'origine : « la source affirme ceci, j'ai constaté cela » est l'information
-utile. Et les doutes restent écrits — 44 points portent un `[À VÉRIFIER]` avec
-sa raison, y compris une fiche entière qui en compte neuf à elle seule. Ils
-sont affichés, pas rangés.
+utile. Et les doutes restent écrits — **44 points** portent un `[À VÉRIFIER]`
+avec sa raison, dont neuf sur une seule fiche. Ils sont affichés, pas rangés.
+
+> ⚠️ `observé` est enregistré dans **votre** navigateur : vous arrivez donc sur
+> un corpus où rien n'est marqué observé, et les vérifications de l'auteur sont
+> encore à faire. C'est une limite réelle, expliquée sur la page
+> [À propos](src/pages/a-propos.astro).
 
 **Les champs santé sont une contrainte de construction.** Une fiche sans durée
 maximale, sans signaux d'arrêt ordonnés du plus précoce au plus tardif et sans
-repos minimal ne compile pas. Le signal d'arrêt s'affiche près du tempo, là où
-on décide de pousser — et le minuteur le **sonne**, parce qu'on travaille en
-regardant ses mains.
+repos minimal ne compile pas. Le signal s'affiche près du tempo, là où on décide
+de pousser — et le minuteur le **sonne**, parce qu'on travaille en regardant ses
+mains.
+
+> Ce site n'est pas un avis médical. Les chiffres cités décrivent des
+> populations, plusieurs valeurs santé sont des déductions prudentes faute de
+> littérature, et une douleur se porte à un professionnel.
 
 **Aucun nom de note n'est écrit en dur.** Ils sont dérivés en TypeScript depuis
 `(accordage, corde, case)`. Deux erreurs sont entrées dans le corpus par cette
@@ -53,7 +71,11 @@ faux.
 | `/arbre` | graphe de prérequis et progression locale |
 | `/accordeur` | chromatique, 13 accordages, affiché sur une tête de manche |
 | `/pratique` | métronome à motifs, minuteur adossé aux champs santé, journal |
-| `/style-guide` | le design system |
+| `/a-propos` | ce que le site est, et ce qu'il n'est pas |
+
+| Une fiche | L'accordeur |
+|---|---|
+| ![Fiche de technique](docs/images/fiche.png) | ![Accordeur](docs/images/accordeur.png) |
 
 ---
 
@@ -93,7 +115,8 @@ npm run shot               # captures de contrôle dans .captures/
 ```
 
 Chacun de ces garde-fous a été **vérifié en échec** avant qu'on lui fasse
-confiance : un contrôle qui n'a jamais échoué ne prouve rien.
+confiance : un contrôle qui n'a jamais échoué ne prouve rien. L'intégration
+continue les fait tourner à chaque poussée.
 
 ---
 
@@ -108,5 +131,42 @@ confiance : un contrôle qui n'a jamais échoué ne prouve rien.
 | [docs/verifications-manuelles.md](docs/verifications-manuelles.md) | ce qu'aucun script ne peut vérifier à ma place |
 | [docs/deploiement.md](docs/deploiement.md) | site statique, HTTPS obligatoire |
 
-[LICENCE.md](LICENCE.md) — tous droits réservés, et ce que le dépôt ne possède
-pas.
+Ces documents recensent aussi les erreurs trouvées en cours de route. Ils sont
+publics pour la même raison que les doutes du corpus le sont.
+
+---
+
+## Contribuer
+
+[CONTRIBUTING.md](CONTRIBUTING.md). Le plus utile : **lever un doute avec une
+source**, corriger un doigté, contredire une affirmation `déduit`. Le corpus
+affiche ses lacunes précisément pour appeler l'expertise qui lui manque.
+
+## Licences
+
+Code sous [MIT](LICENSE), contenu pédagogique sous
+[CC BY-NC-SA 4.0](LICENSE-CONTENU.md). Si vous réutilisez une fiche,
+**conservez ses statuts et ses doutes** : une version qui les efface est plus
+fausse que l'original, tout en ayant l'air plus sûre.
+
+Voir [LICENCE.md](LICENCE.md) pour ce que le dépôt ne possède pas — citations,
+répertoire cité, dépendances servies.
+
+---
+
+## In English
+
+**Muse** is a French-language reference library for fingerstyle guitar
+technique — classical and modern percussive — with a chromatic tuner, a
+prerequisite skill tree, and a practice workshop. Static site, no account, no
+backend; everything you record stays in your browser and exports to JSON.
+
+Its distinguishing idea is **epistemic status on every claim**: each statement
+is marked `sourced`, `derived` (a coherent mechanical inference that no consulted
+source actually states), or `observed` (verified with a guitar in hand). Doubts
+are displayed with their reasons — 44 of them — rather than smoothed away.
+Health fields are a **build constraint**: a technique sheet without a maximum
+duration, ordered warning signs and a minimum rest simply does not compile.
+
+Content is in French, with Spanish and English equivalents for technical terms.
+This site is not medical advice.

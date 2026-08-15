@@ -11,9 +11,9 @@ const c = await corpus();
     <div class="footer__col">
       <p class="footer__word">Muse</p>
       <p class="footer__note">
-        Bibliothèque personnelle de technique — guitare fingerstyle, classique et
-        percussive. {c.techniques} techniques en {c.fiches} fiches, dont {c.completes}{' '}
-        approfondies.
+        Bibliothèque de technique — guitare fingerstyle, classique et percussive.
+        {' '}{c.techniques} techniques en {c.fiches} fiches, dont {c.completes}{' '}
+        approfondies. Écrite pour un praticien, publiée telle quelle.
       </p>
     </div>
 
@@ -31,14 +31,18 @@ const c = await corpus();
       <ul>
         <li>Tout est local. Aucun compte, aucun serveur, aucun appel externe.</li>
         <li>Les données de pratique s'exportent en JSON.</li>
+        <li><a href="/a-propos">À propos et limites</a></li>
         <li><a href="/style-guide">Design system</a></li>
       </ul>
     </div>
   </div>
 
   <p class="footer__legal">
-    © {year} — usage personnel. Répertoire limité au domaine public&nbsp;;
-    aucune tablature sous droits n'est reproduite.
+    © {year} — code sous licence MIT, contenu sous CC BY-NC-SA 4.0. Répertoire
+    limité au domaine public&nbsp;; aucune tablature sous droits n'est reproduite.
+    <br />
+    Ce site n'est pas un avis médical&nbsp;: <a href="/a-propos">ce qu'il est et
+    ce qu'il n'est pas</a>.
   </p>
 </footer>
 

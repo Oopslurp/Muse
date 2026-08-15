@@ -111,3 +111,28 @@ Le plus utile est **ce qui vous a surpris**, pas la case cochée. « L'aiguille
 saute à l'octave une fois sur trois sur la corde 6 » vaut mieux que « ne
 marche pas ». Ce qui est vérifié se marque `observé` sur la fiche concernée,
 là où l'affirmation est écrite.
+
+---
+
+## E. Le premier déploiement, page par page
+
+**Ajoutée en tranche 9.** Le site est publié sur GitHub Pages, et deux choses
+n'y ressemblent pas à ce qu'on voit en local.
+
+- [ ] **Les partitions ont-elles leurs glyphes ?** `public/alphatab/` n'est pas
+      versionné : la police Bravura et la banque de sons sont recopiées par le
+      script `prebuild`. Si la copie échoue, **la construction réussit quand
+      même** et le site sort avec une portée vide et un lecteur muet. Le workflow
+      refuse de publier dans ce cas, mais c'est un garde-fou jamais éprouvé en
+      conditions réelles.
+- [ ] **HTTPS** : `getUserMedia` n'existe qu'en contexte sécurisé. GitHub Pages
+      le fournit — à confirmer sur l'accordeur, qui est le seul à en dépendre.
+- [ ] Les audits tournent contre n'importe quelle URL :
+
+```bash
+export MUSE_URL=https://<pseudo>.github.io
+npm run audit:console && npm run audit:lecture && npm run audit:poids
+```
+
+`audit:poids` est le plus utile ici : il vérifie qu'**aucune requête ne quitte
+l'origine**, ce qui ne peut se constater que sur le site réellement servi.

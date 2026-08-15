@@ -1,0 +1,281 @@
+---
+/**
+ * À propos — la porte d'entrée d'un lecteur qui n'est pas l'auteur.
+ *
+ * Le site a été écrit pour un seul praticien. Publié, il s'adresse à des gens
+ * qui arrivent sans ce contexte, et deux de ses promesses cessent d'être vraies
+ * pour eux si personne ne les explique :
+ *
+ *  1. `observé` vit dans l'IndexedDB **du visiteur**. Un lecteur public ne voit
+ *     donc aucune observation, et rien ne lui dit que le troisième statut du
+ *     triptyque annoncé en accueil ne lui est jamais montré.
+ *  2. Les champs santé sont des consignes. Pour l'auteur, des notes à soi-même ;
+ *     pour un inconnu, des prescriptions — dont une part est explicitement
+ *     `déduit`, faute de littérature.
+ *
+ * Cette page dit les deux. C'est le principe d'honnêteté du projet appliqué
+ * vers l'extérieur : on montre l'incertitude, on ne la range pas.
+ */
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Callout from '~/components/ui/Callout.astro';
+import StatusBadge from '~/components/ui/StatusBadge.astro';
+import { corpus } from '~/lib/corpus';
+
+const c = await corpus();
+---
+
+<BaseLayout
+  title="À propos"
+  description="Ce qu'est Muse, ce qu'il n'est pas, ce que veulent dire ses trois statuts, et pourquoi ses consignes de santé ne remplacent pas un professionnel."
+>
+  <header class="tete">
+    <p class="eyebrow">Lire ce site</p>
+    <h1>À propos</h1>
+    <p class="lede">
+      Muse est une bibliothèque de technique de guitare fingerstyle, écrite pour
+      un seul praticien et publiée telle quelle. Rien n'y a été relu par un
+      professeur.
+    </p>
+  </header>
+
+  <div class="corps">
+    <section>
+      <h2>Ce que c'est</h2>
+      <p>
+        {c.techniques} techniques en {c.fiches} fiches, dont {c.completes} approfondies,
+        plus un accordeur chromatique et un atelier de pratique. Le tout est
+        statique&nbsp;: aucun compte, aucun serveur, aucun appel réseau à l'exécution.
+      </p>
+      <p>
+        Le projet est né d'une contrainte simple. La plupart des ressources de
+        technique affirment sans dire d'où elles tiennent ce qu'elles affirment,
+        et il devient impossible de distinguer ce qui vient d'une méthode
+        établie de ce que quelqu'un a déduit un soir. Ici, <strong>chaque
+        affirmation porte son statut</strong>, et il est affiché, pas mis en note
+        de bas de page.
+      </p>
+    </section>
+
+    <section>
+      <h2>Les trois statuts</h2>
+      <dl class="statuts">
+        <div>
+          <dt><StatusBadge status="source" /></dt>
+          <dd>
+            Attribué à une source identifiée et citée. Le catalogue nomme l'auteur,
+            l'ouvrage et l'année&nbsp;; la fiche dit ce que la source apporte
+            précisément à cet endroit.
+          </dd>
+        </div>
+        <div>
+          <dt><StatusBadge status="deduit" /></dt>
+          <dd>
+            Raisonnement mécanique cohérent, qu'<strong>aucune source consultée ne
+            formule ainsi</strong>. C'est une part importante du corpus, et c'est
+            dit plutôt que déguisé en fait établi.
+          </dd>
+        </div>
+        <div>
+          <dt><StatusBadge status="verifier" /></dt>
+          <dd>
+            Un doute, avec sa raison écrite en entier. Le corpus en porte{' '}
+            <strong>{c.doutes}</strong>, dont neuf sur une seule fiche — celle des
+            percussions, la plus fragile du lot, publiée sans être lissée parce
+            qu'elle documente aussi l'état du domaine.
+          </dd>
+        </div>
+        <div>
+          <dt><StatusBadge status="observe" /></dt>
+          <dd>
+            Vérifié guitare en main. <strong>C'est le vôtre, pas le mien</strong> —
+            voir juste en dessous.
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <section>
+      <h2>« Observé » est à vous, et il commence vide</h2>
+      <p>
+        La promotion en <em>observé</em> est enregistrée <strong>dans votre
+        navigateur</strong>, comme tout le reste de votre progression. Conséquence
+        directe&nbsp;: vous arrivez sur un corpus où <strong>rien n'est marqué
+        observé</strong>, et vous n'avez aucun moyen de savoir ce que l'auteur a
+        vérifié de son côté.
+      </p>
+      <p>
+        C'est une limite réelle du site dans son état actuel, pas un oubli. Les
+        vérifications de l'auteur — l'accordeur sur Firefox et Safari une guitare
+        à la main, un vrai téléphone au doigt, la faisabilité de plusieurs
+        exercices — <strong>sont encore à faire</strong>, et la liste en est
+        publique dans le dépôt. Le jour où elles seront faites, elles
+        apparaîtront comme telles, distinctes des vôtres&nbsp;: une observation
+        n'écrase jamais l'origine d'une affirmation, et celle de quelqu'un d'autre
+        n'écrasera pas la vôtre.
+      </p>
+      <p class="aparte">
+        En attendant, ce que vous marquez observé n'engage que vous, et ne quitte
+        jamais votre machine.
+      </p>
+    </section>
+
+    <section>
+      <h2>Santé</h2>
+
+      <Callout tone="sante" title="Ce site n'est pas un avis médical">
+        <p>
+          Chaque fiche porte une durée maximale, des signaux d'arrêt et un repos
+          minimal, et le minuteur les sonne. Ce sont des garde-fous de conception,
+          pas un diagnostic.
+        </p>
+        <ul>
+          <li>
+            Les chiffres cités décrivent des <strong>populations</strong>, pas
+            votre main.
+          </li>
+          <li>
+            Plusieurs valeurs santé sont marquées <em>déduit</em>, et
+            volontairement conservatrices. Sur le fingerstyle percussif en
+            particulier, <strong>aucune littérature n'existe</strong> sur les
+            impacts répétés&nbsp;: les durées proposées sont un pari prudent, pas
+            un seuil mesuré.
+          </li>
+          <li>
+            <strong>Une douleur, un engourdissement ou une perte de contrôle se
+            portent à un professionnel de santé</strong> — pas à un site web.
+            L'argument central du corpus est que les premiers signes sont
+            typiquement pris pour un défaut de technique, ce qui pousse à
+            travailler davantage. Son corollaire est qu'ils ne se diagnostiquent
+            pas ici.
+          </li>
+        </ul>
+      </Callout>
+    </section>
+
+    <section>
+      <h2>Droits d'auteur</h2>
+      <p>
+        <strong>Aucune tablature d'œuvre sous droits ne figure sur ce site.</strong>{' '}
+        C'est une règle de fond, pas une précaution&nbsp;: les exercices sont
+        originaux ou construits sur des formules communes non protégeables, et le
+        répertoire cité est en domaine public, avec sa date de mort d'auteur
+        inscrite dans le contenu.
+      </p>
+      <p>
+        Les œuvres encore protégées sont mentionnées <strong>en référence d'écoute
+        uniquement</strong> et marquées comme telles. Villa-Lobos (†1959) a été
+        retiré du répertoire utilisable pour cette raison — domaine public en
+        Union européenne en 2030, pas avant.
+      </p>
+      <p>
+        Les vidéos citées portent toutes la mention <em>non visionnée</em>&nbsp;:
+        elles ont été qualifiées d'après leur description, jamais regardées. Le
+        site le dit à chaque référence plutôt que de laisser croire le contraire.
+      </p>
+    </section>
+
+    <section>
+      <h2>Ce qui reste sur votre machine</h2>
+      <p>
+        Progression, observations et journal de séances vivent dans le stockage
+        local de votre navigateur. Rien n'est envoyé nulle part, il n'y a ni
+        compte ni serveur applicatif, et le site ne fait aucune requête vers un
+        autre domaine — un audit automatique échoue s'il en apparaît une.
+      </p>
+      <p>
+        Corollaire&nbsp;: <strong>vider les données de navigation efface tout,
+        sans prévenir.</strong> Un export JSON complet est disponible depuis la
+        page Pratique, et le site vous le rappelle au bout de dix séances non
+        exportées.
+      </p>
+    </section>
+
+    <section>
+      <h2>Licences et code source</h2>
+      <p>
+        Le code est sous licence <strong>MIT</strong>, le contenu pédagogique sous{' '}
+        <strong>CC BY-NC-SA 4.0</strong> — attribution, pas d'usage commercial,
+        partage aux mêmes conditions.
+      </p>
+      <p>
+        Si vous réutilisez une fiche, <strong>conservez ses statuts et ses
+        doutes</strong>. Une version qui les efface est plus fausse que
+        l'original, tout en ayant l'air plus sûre.
+      </p>
+      <p>
+        Le dépôt contient aussi les documents de chantier&nbsp;: ce qui reste
+        imparfait, ce qui n'a pas été vérifié, et les erreurs trouvées en cours de
+        route. Ils sont publics pour la même raison que les doutes le sont.
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .tete {
+    padding: clamp(2.25rem, 1.5rem + 3vw, 3.75rem) 0 2rem;
+    max-width: 62ch;
+  }
+  .tete h1 {
+    font-size: var(--text-h1);
+    line-height: 1.05;
+    margin: 0.35rem 0 1rem;
+  }
+  .lede {
+    margin: 0;
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--color-ink-2);
+  }
+
+  .corps {
+    max-width: 68ch;
+    padding-bottom: 2rem;
+  }
+  .corps section {
+    margin: 0 0 2.75rem;
+  }
+  .corps h2 {
+    font-size: var(--text-xl);
+    margin: 0 0 1rem;
+  }
+  .corps p {
+    margin: 0 0 1rem;
+    line-height: 1.68;
+    color: var(--color-ink-2);
+  }
+  .corps strong {
+    color: var(--color-ink);
+    font-weight: 650;
+  }
+  .corps :global(ul) {
+    margin: 0.5rem 0 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 0.6rem;
+    line-height: 1.6;
+  }
+
+  .aparte {
+    font-size: var(--text-sm);
+    color: var(--color-ink-3);
+    border-left: 2px solid var(--color-line);
+    padding-left: 0.9rem;
+  }
+
+  .statuts {
+    margin: 0;
+    display: grid;
+    gap: 1.3rem;
+  }
+  /* La pastille au-dessus de son explication : côte à côte, la colonne de
+     gauche est dimensionnée par le plus long libellé et laisse un vide. */
+  .statuts dt {
+    margin: 0 0 0.4rem;
+  }
+  .statuts dd {
+    margin: 0;
+    line-height: 1.65;
+    color: var(--color-ink-2);
+  }
+</style>

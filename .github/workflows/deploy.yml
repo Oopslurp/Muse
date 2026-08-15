@@ -1,0 +1,73 @@
+# Construction et publication sur GitHub Pages.
+#
+# Le dépôt s'appelle `<pseudo>.github.io` : le site est donc servi **à la
+# racine**. C'est ce qui permet de n'avoir aucun `base` à poser dans
+# `astro.config.mjs` — une vingtaine de chemins absolus vivent dans le code, et
+# autant dans le contenu et les actifs alphaTab. Un dépôt projet servi sous
+# `/muse/` les casserait tous.
+#
+# `MUSE_SITE` se dérive de `github.repository_owner` : aucun pseudo en dur,
+# rien à modifier si le compte change de nom.
+#
+# ⚠️ `public/alphatab/` est ignoré par git et reproduit par le script
+# `prebuild`. `npm run build` le déclenche via le cycle de vie npm. Une police
+# Bravura ou une banque de sons manquante ne fait échouer aucune construction :
+# elle donne une partition sans glyphes et un lecteur muet. C'est pourquoi
+# l'étape de contrôle ci-dessous vérifie que les actifs sont bien dans `dist/`.
+
+name: Déploiement
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+# Un seul déploiement à la fois ; on ne coupe pas celui qui est en cours.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Construire
+        env:
+          MUSE_SITE: https://${{ github.repository_owner }}.github.io
+        run: npm run build
+
+      # Les actifs d'alphaTab ne sont pas versionnés : s'ils manquent, le site
+      # se construit sans erreur et se casse à l'écran. On refuse de publier ça.
+      - name: Vérifier les actifs alphaTab
+        run: |
+          test -f dist/alphatab/soundfont/sonivox.sf3 || { echo "banque de sons absente"; exit 1; }
+          ls dist/alphatab/font/*.woff2 >/dev/null || { echo "police Bravura absente"; exit 1; }
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

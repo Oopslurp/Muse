@@ -1,0 +1,83 @@
+# Tests et audits.
+#
+# Ce dépôt affirme dans son README que chaque garde-fou a été vérifié en échec
+# avant qu'on lui fasse confiance. Un dépôt public qui dit ça doit les faire
+# tourner devant témoin — sinon c'est une affirmation de plus, non sourcée.
+#
+# Deux temps, parce qu'ils échouent pour des raisons différentes :
+#
+#  1. les tests purs et la validation du corpus, qui ne demandent rien ;
+#  2. les audits navigateur, qui pilotent Chrome par le protocole DevTools et
+#     vérifient ce qu'un HTML correct ne prouve pas — qu'un bouton pressé
+#     produit un son, qu'un curseur avance, qu'une progression survit à un
+#     rechargement.
+#
+# Les runners Ubuntu de GitHub embarquent Chrome ; les outils portent tous le
+# repli `/usr/bin/google-chrome`.
+
+name: Contrôles
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: Tests et corpus
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Types
+        run: npx astro check
+      - name: Tests unitaires et validation des tablatures
+        run: npm test
+
+  audits:
+    name: Audits navigateur
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+
+      - name: Construire
+        run: npm run build
+
+      # `astro preview` sert le build. Le port est celui que les audits visent
+      # par défaut quand on leur passe MUSE_URL.
+      - name: Servir le build
+        run: npm run preview -- --port 4322 &
+
+      # Boucle plutôt qu'un paquet dédié : une dépendance de plus pour attendre
+      # un port serait une dépendance de plus à tenir à jour.
+      - name: Attendre le serveur
+        run: |
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:4322/ >/dev/null && exit 0
+            sleep 1
+          done
+          echo "le serveur de prévisualisation n'a pas répondu en 60 s"; exit 1
+
+      - name: Audits
+        env:
+          MUSE_URL: http://localhost:4322
+        run: |
+          npm run audit:console
+          npm run audit:lecture
+          npm run audit:accordeur
+          npm run audit:progression
+          npm run audit:pratique
+          npm run audit:mobile
+          npm run audit:finitions
+          npm run audit:a11y
+          npm run audit:poids

@@ -200,6 +200,15 @@ const c = await corpus();
         maximale et des signaux d'arrêt nommés, affichés à côté du tempo et non
         en bas de page.
       </p>
+      {/* Le corollaire dû au lecteur, au plus près des chiffres. Ces
+          statistiques décrivent des populations ; plusieurs durées maximales
+          sont des déductions prudentes faute de littérature. */}
+      <p class="sante__reserve">
+        Ces chiffres décrivent des populations, pas votre main, et une partie des
+        valeurs proposées ici sont des déductions prudentes plutôt que des seuils
+        mesurés. <strong>Ce site n'est pas un avis médical</strong> —
+        <a href="/a-propos">ce qu'il est et ce qu'il n'est pas</a>.
+      </p>
     </Callout>
   </section>
 
@@ -493,6 +502,20 @@ const c = await corpus();
     margin: 0;
     font-size: var(--text-sm);
     line-height: 1.55;
+    color: var(--color-ink-2);
+  }
+
+  /* La réserve se lit avec les chiffres, sans leur voler la vedette : c'est
+     une mise au point, pas le message. */
+  .sante__reserve {
+    margin: 1.1rem 0 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--color-line);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    color: var(--color-ink-3);
+  }
+  .sante__reserve strong {
     color: var(--color-ink-2);
   }
 

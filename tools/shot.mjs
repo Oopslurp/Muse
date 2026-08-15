@@ -62,6 +62,9 @@ const VUES = [
     ancre: '#ex-b',
     pause: 4000,
   },
+  // La porte d'entrée d'un lecteur public : statuts, réserve santé, droits.
+  { nom: 'a-propos', route: '/a-propos' },
+  { nom: 'a-propos-clair', route: '/a-propos', theme: 'light' },
   { nom: 'design-system', route: '/style-guide' },
   { nom: 'liste-mobile', route: '/techniques', largeur: 390, hauteur: 1400 },
   { nom: 'pratique', route: '/pratique?technique=tremolo', pause: 1500 },

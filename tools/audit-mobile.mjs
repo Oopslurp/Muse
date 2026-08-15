@@ -53,6 +53,7 @@ const ROUTES = [
   '/accordeur',
   '/arbre',
   '/pratique',
+  '/a-propos',
   '/style-guide',
 ];
 

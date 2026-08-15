@@ -8,7 +8,7 @@
  * n'avait jamais été mesurée : aucun contraste calculé, aucun parcours clavier
  * fait de bout en bout. C'était le trou le plus sérieux de `docs/dette.md`.
  *
- * Ce que cet outil vérifie, sur les 8 routes et **dans les deux thèmes** :
+ * Ce que cet outil vérifie, sur chaque route et **dans les deux thèmes** :
  *
  * 1. **Contraste du texte.** Ratio calculé sur les couleurs réellement
  *    rendues, pas sur les jetons : c'est la composition qui compte, et un
@@ -50,6 +50,7 @@ const ROUTES = [
   '/accordeur',
   '/arbre',
   '/pratique',
+  '/a-propos',
   '/style-guide',
 ];
 

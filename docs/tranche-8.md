@@ -1,5 +1,11 @@
 # Tranche 8 — tri de l'audit Codex et backlog fusionné
 
+> **Document de chantier.** Il montre comment un rapport d'audit externe a été
+> trié plutôt qu'appliqué en bloc : ce qui était confirmé, ce qui était déjà
+> connu, ce qui n'était pas reproductible, et ce qui contredisait une décision
+> prise — cette dernière catégorie ne se corrige pas, elle se signale. La
+> méthode compte autant que le résultat, d'où sa conservation.
+>
 > Établi le 14 août 2026, après lecture de [audit.md](audit.md) et vérification
 > de chaque affirmation dans le dépôt. **Aucune correction n'a été appliquée.**
 >
@@ -51,8 +57,8 @@ plutôt que de faire confiance — d'où le tableau ci-dessus.
 | K11 | La carte d'accueil dit « mise en page provisoire » — ce n'est plus vrai | **8b** |
 | K12 | Autres formulations absolues (glissando « jamais », plateau à 8 notes/s, doigt-guide « jamais ») | **v2** |
 | K13 | Relier chaque affirmation sensible à une source précise | **v2** |
-| K14 | Intégration continue GitHub | **v2** |
-| K15 | Sitemap et `robots.txt` | **v2** |
+| K14 | Intégration continue GitHub | **tranche 9** — remontée : un dépôt public doit faire tourner ses garde-fous |
+| K15 | Sitemap et `robots.txt` | **tranche 9** — remontée : sans publication ils ne servaient à rien |
 
 ### Catégorie 2 — confirmé, déjà listé (je ne duplique pas)
 
@@ -68,9 +74,13 @@ plutôt que de faire confiance — d'où le tableau ci-dessus.
 
 ### Catégorie 3 — non reproductible, caduc ou faux positif
 
-- **Le blocage GitHub Pages (`base`) est caduc.** Tu as choisi **Cloudflare Pages**,
-  qui sert à la racine. Les chemins absolus (`/techniques`, `/recherche.json`,
-  `/alphatab/…`) sont corrects tels quels. Rien à changer.
+- **Le blocage GitHub Pages (`base`) est caduc** — mais pas pour la raison
+  écrite ici à l'origine. *(Mise à jour, tranche 9 : l'hébergeur retenu est
+  finalement **GitHub Pages**, sur un dépôt `<pseudo>.github.io`. Servi à la
+  racine comme l'aurait été Cloudflare, donc la conclusion tient : les chemins
+  absolus — `/techniques`, `/recherche.json`, `/alphatab/…` — sont corrects tels
+  quels et aucun `base` n'est nécessaire. Le constat de Codex n'aurait valu que
+  pour un dépôt **projet**, servi sous une sous-adresse.)*
 - **« L'instruction est musicalement incohérente » : à moitié.** Tenir l'index
   case 5 et l'auriculaire case 9 sur la même corde est un exercice d'écartement
   classique et parfaitement faisable. C'est **la tablature** qui est fausse, pas
@@ -178,7 +188,6 @@ Si tu préfères ton ordre, dis-le : les deux blocs sont indépendants.
 - **A2** promotion des fiches courtes · **A4** bourdon · **A6** métronome persistant
 - **K12** nuancer les autres formulations absolues
 - **K13** relier chaque affirmation sensible à une source précise
-- **K14** intégration continue · **K15** sitemap et `robots.txt`
 - Graphe d'assiduité (le `parJour()` supprimé en 8b, à réécrire un jour)
 
 ## 7. Abandonné

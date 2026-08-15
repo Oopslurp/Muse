@@ -1,22 +1,26 @@
-# Licence
+# Licences
 
-**Tous droits réservés.** © Olivier, 2026.
+Deux licences, parce que le code et le contenu n'ont ni la même valeur ni le
+même risque.
 
-Ce dépôt est un site personnel d'apprentissage, à un seul utilisateur. Il n'est
-pas publié comme un projet réutilisable et ne porte donc pas de licence libre.
-Aucune autorisation de reproduction, de modification ou de redistribution n'est
-accordée par le seul fait que le code soit lisible.
+| | Licence | Couvre |
+|---|---|---|
+| **Code** | [MIT](LICENSE) | `src/` hors contenu, `tools/`, la configuration |
+| **Contenu** | [CC BY-NC-SA 4.0](LICENSE-CONTENU.md) | `src/content/`, `src/data/sources.ts`, `docs/` |
 
-> Si ce choix doit changer, il tient en deux fichiers : celui-ci et le champ
-> `license` de `package.json`. Le reste du dépôt n'en dépend pas.
+© 2026 Olivier.
+
+Le code se réutilise sans condition. Le corpus s'attribue, ne se vend pas, et se
+repartage aux mêmes conditions — **en conservant ses statuts et ses doutes**,
+qui en sont la partie utile.
 
 ---
 
 ## Ce qui n'appartient pas à ce dépôt
 
-Trois choses cohabitent ici et ne relèvent pas de la même règle.
+Trois choses cohabitent ici et ne relèvent d'aucune des deux licences ci-dessus.
 
-### Le contenu pédagogique
+### Le contenu cité
 
 Les fiches de `src/content/techniques/` sont des textes originaux. Ce qu'elles
 **citent** appartient à ses auteurs : le catalogue de
@@ -39,7 +43,7 @@ domaine public en UE en 2030, pas avant.
 ### Les dépendances
 
 `node_modules/` n'est pas dans ce dépôt et chaque paquet garde sa propre
-licence. Trois méritent d'être nommées parce qu'elles sont servies au visiteur :
+licence. Quatre méritent d'être nommées parce qu'elles sont servies au visiteur :
 
 | | Licence | Servi depuis le bundle |
 |---|---|---|

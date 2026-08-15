@@ -1,5 +1,14 @@
 # Audit du projet Muse
 
+> **Rapport externe, conservé tel qu'il a été rendu — donc non corrigé.**
+> Il décrit l'état du projet au 14 août 2026, avant la tranche 8. Plusieurs de
+> ses constats ont été traités depuis, d'autres se sont révélés non
+> reproductibles, et quelques-uns contredisent des décisions prises exprès.
+>
+> **Ne pas le lire comme l'état actuel du dépôt.** Le tri point par point, avec
+> ce qui a été retenu et pourquoi, est dans [tranche-8.md](tranche-8.md).
+
+
 **Date de l’audit :** 14 août 2026  
 **Périmètre :** contenu musical et pédagogique, qualité du code, accessibilité, performances et préparation au déploiement sur GitHub Pages.  
 **Méthode :** audit en lecture seule du dépôt, compilation, validations et tests existants. Aucun fichier source n’a été modifié pendant l’audit.

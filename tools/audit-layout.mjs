@@ -19,8 +19,22 @@
  * garde-fou qui crie sur du normal finit ignoré.
  */
 import { execFile } from 'node:child_process';
+import { existsSync } from 'node:fs';
 
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+/** Même liste que les autres audits : un outil qui ne tourne que sur une
+ *  machine est un outil perdu. */
+const CHROME = [
+  'C:/Program Files/Google/Chrome/Application/chrome.exe',
+  'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
+  '/usr/bin/google-chrome',
+  '/usr/bin/chromium',
+].find((p) => existsSync(p));
+
+if (!CHROME) {
+  console.error('Aucun navigateur Chromium trouvé.');
+  process.exit(1);
+}
+
 const URL_PAGE = process.argv[2] ?? 'http://localhost:4321/techniques';
 const LARGEUR = Number(process.argv[3] ?? 420);
 const PORT = 9444;
