@@ -50,15 +50,30 @@ export default defineConfig({
        */
       ...alphaTab({ assetOutputDir: false }),
     ],
-    /**
-     * Minification des bundles de worker.
-     *
-     * Le plugin alphaTab construit worker et worklet par un appel direct à
-     * rolldown, hors du chemin de minification de Vite : sans cette ligne ils
-     * sortent bruts, 2,3 Mo pièce au lieu de 1,1. Ils embarquent chacun le
-     * cœur d'alphaTab, d'où le poids.
-     */
     worker: {
+      /**
+       * Workers en modules ES, pas en IIFE.
+       *
+       * Le format par défaut de Vite est `iife`, où `import.meta` n'existe pas
+       * et se voit remplacé par `{}`. alphaTab s'en sert à deux endroits pour
+       * détecter son propre fichier et la plateforme
+       * (`Environment._detectScriptFile`, `_detectWebPlatform`), sous `try` :
+       * l'échec est silencieux, les replis fonctionnent, et le build crachait
+       * quatre avertissements `EMPTY_IMPORT_META` à chaque construction.
+       *
+       * Un avertissement qu'on apprend à ignorer masque le suivant. En module
+       * ES, `import.meta.url` est réellement disponible et la détection fait
+       * ce pour quoi elle est écrite.
+       */
+      format: 'es',
+      /**
+       * Minification des bundles de worker.
+       *
+       * Le plugin alphaTab construit worker et worklet par un appel direct à
+       * rolldown, hors du chemin de minification de Vite : sans cette ligne ils
+       * sortent bruts, 2,3 Mo pièce au lieu de 1,1. Ils embarquent chacun le
+       * cœur d'alphaTab, d'où le poids.
+       */
       rolldownOptions: { output: { minify: true } },
     },
     optimizeDeps: {

@@ -12,7 +12,8 @@
  */
 
 import { useMemo, useState, type SubmitEvent } from 'react';
-import { aujourdhui, type Seance } from '~/lib/journal';
+import { aujourdhui, type Seance, type TempoNote } from '~/lib/journal';
+import { tempoCourt } from '~/lib/format';
 import './Journal.css';
 
 export interface FicheBreve {
@@ -52,6 +53,12 @@ export default function Journal({
   const [technique, setTechnique] = useState<string>(techniqueParDefaut ?? '');
   const [minutes, setMinutes] = useState<string>('');
   const [tempo, setTempo] = useState<string>('');
+  /**
+   * Deux unités, parce que le corpus en emploie deux : le trémolo se mesure en
+   * **notes par minute** (on compte les notes jouées, pas les pulsations),
+   * l'essentiel du reste en pulsations. « 120 » seul ne veut rien dire.
+   */
+  const [unite, setUnite] = useState<TempoNote['unite']>('bpm');
   const [arret, setArret] = useState('');
   const [note, setNote] = useState('');
   const [ouvert, setOuvert] = useState(false);
@@ -63,7 +70,9 @@ export default function Journal({
   const signaux = fiches.find((f) => f.id === (technique || techniqueParDefaut))?.signalArret ?? [];
 
   const minutesEffectives = Number(minutes || minutesParDefaut || 0);
-  const tempoEffectif = Number(tempo || tempoParDefaut || 0);
+  // Le préremplissage vient du métronome, donc en bpm : il ne s'applique que
+  // si l'unité choisie est encore celle-là.
+  const tempoEffectif = Number(tempo || (unite === 'bpm' ? tempoParDefaut : 0) || 0);
 
   const soumettre = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -72,12 +81,14 @@ export default function Journal({
       date,
       technique: technique || null,
       minutes: Math.round(minutesEffectives),
-      tempo: tempoEffectif > 0 ? { valeur: Math.round(tempoEffectif), unite: 'bpm' } : undefined,
+      tempo: tempoEffectif > 0 ? { valeur: Math.round(tempoEffectif), unite } : undefined,
       arret: arret || undefined,
       note: note.trim() || undefined,
     });
     setMinutes('');
     setTempo('');
+    // L'unité, elle, reste : on ne change pas de manière de compter d'une
+    // séance à l'autre sur la même technique.
     setArret('');
     setNote('');
     setOuvert(false);
@@ -125,17 +136,32 @@ export default function Journal({
               />
             </label>
 
-            <label className="jo__champ jo__champ--court">
-              <span>Tempo atteint</span>
-              <input
-                type="number"
-                min={20}
-                max={300}
-                value={tempo}
-                placeholder={tempoParDefaut ? String(tempoParDefaut) : 'bpm'}
-                onChange={(e) => setTempo(e.target.value)}
-              />
-            </label>
+            <div className="jo__champ jo__champ--tempo">
+              <label className="jo__cle" htmlFor="jo-tempo">
+                Tempo atteint
+              </label>
+              <div className="jo__duo">
+                <input
+                  id="jo-tempo"
+                  type="number"
+                  min={unite === 'bpm' ? 20 : 60}
+                  max={unite === 'bpm' ? 300 : 1200}
+                  value={tempo}
+                  placeholder={
+                    unite === 'bpm' && tempoParDefaut ? String(tempoParDefaut) : ''
+                  }
+                  onChange={(e) => setTempo(e.target.value)}
+                />
+                <select
+                  value={unite}
+                  onChange={(e) => setUnite(e.target.value as TempoNote['unite'])}
+                  aria-label="Unité du tempo"
+                >
+                  <option value="bpm">pulsations/min</option>
+                  <option value="notes-min">notes/min</option>
+                </select>
+              </div>
+            </div>
           </div>
 
           {signaux.length > 0 && (
@@ -182,9 +208,7 @@ export default function Journal({
                 {s.technique ? (nomDe.get(s.technique) ?? s.technique) : 'Séance libre'}
               </span>
               <span className="jo__minutes">{s.minutes} min</span>
-              <span className="jo__tempo">
-                {s.tempo ? `♩ ${s.tempo.valeur}` : ''}
-              </span>
+              <span className="jo__tempo">{s.tempo ? tempoCourt(s.tempo) : ''}</span>
               <button
                 type="button"
                 className="jo__supprimer"

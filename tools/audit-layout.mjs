@@ -8,9 +8,15 @@
  * descendre la fenêtre sous ~485 px, ce qui donne des captures étroites
  * trompeuses. Ici la largeur demandée est celle du viewport.
  *
- * Un débordement à l intérieur d un conteneur à défilement (la navigation
- * en vue mobile) est normal : ce qui compte est que documentElement.scrollWidth
- * reste égal au viewport.
+ * Un débordement à l intérieur d un conteneur à défilement (le graphe de
+ * l arbre, une tablature) est normal et voulu : ce qui compte est que
+ * documentElement.scrollWidth reste égal au viewport.
+ *
+ * D où le code de sortie : **seul le débordement du document échoue**. Les
+ * éléments larges vivant dans un conteneur à défilement sont listés à part,
+ * pour le diagnostic, sans faire échouer l outil. Une version antérieure
+ * comptait les deux ensemble et ressortait rouge sur une page saine — un
+ * garde-fou qui crie sur du normal finit ignoré.
  */
 import { execFile } from 'node:child_process';
 
@@ -60,7 +66,28 @@ await attendre(4000);
 
 const script = `(() => {
   const vw = document.documentElement.clientWidth;
+
+  /** Le plus proche ancêtre qui défile horizontalement, s'il y en a un. */
+  const cadreDefilant = (el) => {
+    for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+      const ox = getComputedStyle(p).overflowX;
+      if (ox === 'auto' || ox === 'scroll') return p;
+    }
+    return null;
+  };
+
+  const decrire = (el, r) => ({
+    tag: el.tagName.toLowerCase(),
+    cls: (el.className && el.className.toString().slice(0, 60)) || '',
+    left: Math.round(r.left),
+    right: Math.round(r.right),
+    width: Math.round(r.width),
+    scrollW: el.scrollWidth,
+    texte: (el.textContent || '').trim().slice(0, 40),
+  });
+
   const coupables = [];
+  const legitimes = [];
   for (const el of document.querySelectorAll('*')) {
     const r = el.getBoundingClientRect();
     if (r.width === 0) continue;
@@ -70,28 +97,40 @@ const script = `(() => {
       const p = el.parentElement;
       const pr = p ? p.getBoundingClientRect() : null;
       if (pr && pr.right > vw + 1 && Math.abs(pr.right - r.right) < 2) continue;
-      coupables.push({
-        tag: el.tagName.toLowerCase(),
-        cls: (el.className && el.className.toString().slice(0, 60)) || '',
-        left: Math.round(r.left),
-        right: Math.round(r.right),
-        width: Math.round(r.width),
-        scrollW: el.scrollWidth,
-        texte: (el.textContent || '').trim().slice(0, 40),
-      });
+
+      const cadre = cadreDefilant(el);
+      if (cadre) {
+        legitimes.push({ ...decrire(el, r), dans: cadre.className.toString().slice(0, 40) });
+      } else {
+        coupables.push(decrire(el, r));
+      }
     }
   }
+
   return JSON.stringify({
     viewport: vw,
     bodyScroll: document.body.scrollWidth,
     docScroll: document.documentElement.scrollWidth,
-    cartes: document.querySelectorAll('.fiche').length,
+    // Le seul critère d'échec : la page elle-même déborde.
+    echec: document.documentElement.scrollWidth > vw + 1,
     coupables: coupables.slice(0, 12),
+    // Larges, mais dans un conteneur qui défile : c'est voulu.
+    legitimes: legitimes.slice(0, 12),
   }, null, 2);
 })()`;
 
 const res = await envoyer('Runtime.evaluate', { expression: script, returnByValue: true });
-console.log(res.result?.result?.value ?? JSON.stringify(res, null, 2));
+const brut = res.result?.result?.value;
+console.log(brut ?? JSON.stringify(res, null, 2));
 
 ws.close();
 chrome.kill();
+
+let echec = false;
+try {
+  echec = JSON.parse(brut).echec;
+} catch {
+  echec = true; // pas de relevé lisible : c'est un échec, pas un succès
+}
+if (echec) console.error(`\nLe document déborde à ${LARGEUR} px.`);
+process.exit(echec ? 1 : 0);

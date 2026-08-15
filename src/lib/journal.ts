@@ -46,8 +46,15 @@ export interface BilanTechnique {
   minutes: number;
   /** Date de la dernière séance, ISO court. */
   derniere: string | null;
-  /** Meilleur tempo atteint, unité comprise. */
-  meilleurTempo: TempoNote | null;
+  /**
+   * Meilleur tempo atteint, **une entrée par unité**, bpm d'abord.
+   *
+   * Pas un tempo unique : des pulsations par minute et des notes par minute
+   * ne se rangent pas sur la même échelle, et l'une ne se convertit pas dans
+   * l'autre sans connaître la subdivision, qui n'est pas enregistrée. Les
+   * garder côte à côte est la seule réponse honnête.
+   */
+  meilleursTempos: TempoNote[];
   /** Signaux d'arrêt rencontrés, du plus récent au plus ancien. */
   arrets: Array<{ date: string; signal: string }>;
 }
@@ -56,47 +63,40 @@ const BILAN_VIDE: BilanTechnique = {
   seances: 0,
   minutes: 0,
   derniere: null,
-  meilleurTempo: null,
+  meilleursTempos: [],
   arrets: [],
 };
+
+/** bpm avant notes/min : l'unité ordinaire d'abord, quel que soit l'ordre de saisie. */
+const ORDRE_UNITE: ReadonlyArray<TempoNote['unite']> = ['bpm', 'notes-min'];
 
 /** Agrégé à la lecture plutôt que tenu à jour : impossible à désynchroniser. */
 export function bilan(seances: readonly Seance[], technique: string): BilanTechnique {
   const miennes = seances.filter((s) => s.technique === technique);
   if (miennes.length === 0) return BILAN_VIDE;
 
-  let meilleur: TempoNote | null = null;
+  // Un maximum **par unité**. Une version antérieure gardait un seul tempo et
+  // se verrouillait sur l'unité du premier rencontré : tous les autres étaient
+  // jetés en silence, et le meilleur tempo dépendait de l'ordre de saisie.
+  const parUnite = new Map<TempoNote['unite'], TempoNote>();
   for (const s of miennes) {
     if (!s.tempo) continue;
-    // On ne compare que des tempos de même unité : un bpm et des notes par
-    // minute ne se rangent pas sur la même échelle.
-    if (!meilleur || (s.tempo.unite === meilleur.unite && s.tempo.valeur > meilleur.valeur)) {
-      meilleur = s.tempo;
-    }
+    const vu = parUnite.get(s.tempo.unite);
+    if (!vu || s.tempo.valeur > vu.valeur) parUnite.set(s.tempo.unite, s.tempo);
   }
+  const meilleurs = ORDRE_UNITE.flatMap((u) => {
+    const t = parUnite.get(u);
+    return t ? [t] : [];
+  });
 
   return {
     seances: miennes.length,
     minutes: miennes.reduce((a, s) => a + s.minutes, 0),
     derniere: miennes.reduce((a, s) => (s.date > a ? s.date : a), miennes[0]!.date),
-    meilleurTempo: meilleur,
+    meilleursTempos: meilleurs,
     arrets: miennes
       .filter((s) => s.arret)
       .map((s) => ({ date: s.date, signal: s.arret! }))
       .sort((a, b) => b.date.localeCompare(a.date)),
   };
-}
-
-/** Minutes par jour sur les `jours` derniers jours, du plus ancien au plus récent. */
-export function parJour(seances: readonly Seance[], jours = 28): Array<{ date: string; minutes: number }> {
-  const total = new Map<string, number>();
-  for (const s of seances) total.set(s.date, (total.get(s.date) ?? 0) + s.minutes);
-
-  const sortie: Array<{ date: string; minutes: number }> = [];
-  const d = new Date(`${aujourdhui()}T12:00:00`);
-  for (let i = jours - 1; i >= 0; i--) {
-    const j = new Date(d.getTime() - i * 86400000).toISOString().slice(0, 10);
-    sortie.push({ date: j, minutes: total.get(j) ?? 0 });
-  }
-  return sortie;
 }

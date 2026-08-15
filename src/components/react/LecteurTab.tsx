@@ -42,6 +42,13 @@ const CHEMIN = {
 
 /** Durée d'une mesure 4/4 en tics alphaTab, repli quand on ne peut pas mieux. */
 const TICS_MESURE_4_4 = 3840;
+/** Un trente-deuxième de mesure : en deçà, on est encore au départ. */
+const TOLERANCE_DEPART = TICS_MESURE_4_4 / 32;
+
+/** Le lecteur est rendu en HTML au build, sous Node : `matchMedia` n'y existe pas. */
+const mouvementReduit = (): boolean =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /** Lit un jeton du design system : alphaTab rend en SVG, il lui faut des couleurs. */
 function jeton(nom: string, repli: string): string {
@@ -253,7 +260,37 @@ export default function LecteurTab({
           // Deuxième chemin vers la boucle : sélectionner une plage à la souris
           // directement sur la partition.
           enableUserInteraction: true,
-          scrollMode: alphaTab.ScrollMode.Off,
+          /**
+           * La partition suit le curseur — **dans son cadre**, pas en faisant
+           * défiler la page.
+           *
+           * Une fiche compte jusqu'à quatre exercices : sur une fiche longue
+           * ouverte en petit, le curseur sortait du champ et on suivait une
+           * lecture qu'on ne voyait plus.
+           *
+           * ⚠️ Faire défiler `html` a été essayé et abandonné. alphaTab amène
+           * la mesure courante en haut du conteneur ; la page remontait alors
+           * de toute la hauteur du bloc de commandes, qui passait **sous
+           * l'en-tête collant** — on ne pouvait plus mettre en pause sans
+           * remonter à la main. `scrollOffsetY` ne suffit pas à corriger ça :
+           * la hauteur du bloc varie avec la largeur de l'écran. Attrapé par
+           * `npm run audit:lecture`, dont le clic aux coordonnées tombait sur
+           * l'en-tête au lieu du bouton.
+           *
+           * Le cadre ne défile que s'il est trop court pour la partition
+           * (`max-height` dans la feuille) : un exercice de deux mesures ne
+           * bouge pas d'un pixel.
+           */
+          scrollMode: alphaTab.ScrollMode.Continuous,
+          // `hote.current` est posé : l'effet ne s'exécute qu'après le montage,
+          // et il retourne plus haut si l'élément manque.
+          scrollElement: hote.current ?? undefined,
+          // Une portée de marge : voir arriver la mesure suivante vaut mieux
+          // que la voir tout juste.
+          scrollOffsetY: -40,
+          // `prefers-reduced-motion` est non négociable (direction artistique).
+          // Le saut reste net, il n'est simplement plus animé.
+          nativeBrowserSmoothScroll: !mouvementReduit(),
         },
       });
     } catch (e) {
@@ -291,8 +328,10 @@ export default function LecteurTab({
       if (!vivant) return;
       const enLecture = e.state === alphaTab.synth.PlayerState.Playing;
       setJoue(enLecture);
-      // alphaTab rejoue le décompte à **chaque** appui, y compris à la reprise
-      // après pause. On le suit donc à partir de l'état, pas d'un premier clic.
+      // `countInVolume` est fixé juste avant chaque `playPause` par
+      // `reglerDecompte` : le lire ici dit exactement si un décompte va sonner
+      // pour cet appui-là. Le suivre depuis l'état plutôt que d'attendre un
+      // premier clic évite un affichage en retard d'une pulsation.
       if (enLecture && instance.countInVolume > 0) {
         decompteEnCours.current = true;
         setEnDecompte(true);
@@ -380,8 +419,26 @@ export default function LecteurTab({
     if (apiRef.current) apiRef.current.metronomeVolume = metronome ? 1 : 0;
   }, [metronome]);
 
-  useEffect(() => {
-    if (apiRef.current) apiRef.current.countInVolume = decompte ? 1 : 0;
+  /**
+   * Le décompte se joue au départ, pas à la reprise.
+   *
+   * alphaTab le rejoue à **chaque** `play()` dès que `countInVolume > 0` :
+   * reprendre au milieu d'un exercice imposait une mesure de clics avant de
+   * réentendre la note où on s'était arrêté. C'est le contraire de ce à quoi
+   * sert un décompte — il prépare un départ, il ne ponctue pas une pause.
+   *
+   * Le réglage est donc décidé **au moment de l'appui**, pas tenu à jour dans
+   * un effet : c'est la seule façon d'avoir une source de vérité unique quand
+   * la valeur dépend à la fois d'une préférence et de la position courante.
+   */
+  const reglerDecompte = useCallback(() => {
+    const api = apiRef.current;
+    if (!api) return;
+    const debut = api.playbackRange?.startTick ?? 0;
+    // `stop()` ramène exactement au début de la plage ; la tolérance absorbe
+    // l'arrondi d'un positionnement à la souris sur la première note.
+    const auDepart = api.tickPosition <= debut + TOLERANCE_DEPART;
+    api.countInVolume = decompte && auDepart ? 1 : 0;
   }, [decompte]);
 
   /**
@@ -447,8 +504,9 @@ export default function LecteurTab({
       setChargement(false);
     }
     setADemarre(true);
+    reglerDecompte();
     api.playPause();
-  }, [appliquerBoucle]);
+  }, [appliquerBoucle, reglerDecompte]);
 
   const arreter = useCallback(() => apiRef.current?.stop(), []);
 
@@ -554,14 +612,14 @@ export default function LecteurTab({
           />
           Métronome
         </label>
-        <label className="lt__case">
+        <label className="lt__case" title="Une mesure de clics au départ. Une reprise après pause n’en rejoue pas.">
           <input
             type="checkbox"
             checked={decompte}
             onChange={(e) => setDecompte(e.target.checked)}
             disabled={!pret}
           />
-          Décompte
+          Décompte au départ
         </label>
 
         <label className="lt__case">

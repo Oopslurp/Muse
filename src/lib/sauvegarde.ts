@@ -83,17 +83,27 @@ function tempo(v: unknown): TempoNote | undefined {
 
 /* ------------------------------------------------------------- import */
 
+export interface Analyse {
+  techniques: EtatTechnique[];
+  seances: Seance[];
+  observations: ObservationLigne[];
+  ignorees: string[];
+}
+
 /**
- * Réinjecte une sauvegarde.
+ * Lit et valide un fichier, **sans rien écrire**.
+ *
+ * Cette séparation n'est pas cosmétique : c'est toute la partie risquée de
+ * l'import — reconnaissance de version, validation champ par champ, reprise de
+ * l'ancienne observation de fiche, rejet des identifiants inconnus — et c'est
+ * la seule qui n'a besoin d'aucune base. Elle se teste donc sous Node
+ * (`npm run test:sauvegarde`), là où `importer()` exigerait un navigateur.
  *
  * Les identifiants de technique inconnus sont **ignorés et signalés**, jamais
  * écrits en silence : une sauvegarde plus ancienne que le corpus contient des
  * fiches renommées, et les avaler créerait des lignes orphelines invisibles.
  */
-export async function importer(
-  brut: unknown,
-  idsConnus: ReadonlySet<string>
-): Promise<ResultatImport> {
+export function analyser(brut: unknown, idsConnus: ReadonlySet<string>): Analyse {
   const f = brut as Partial<Fichier>;
   const format = (brut as { format?: string })?.format;
 
@@ -193,7 +203,37 @@ export async function importer(
     });
   }
 
-  /* --- écriture, en une seule transaction --- */
+  return { techniques, seances, observations, ignorees: [...ignorees] };
+}
+
+/**
+ * Ce qui n'est pas déjà en base, par identifiant stable.
+ *
+ * C'est ici que se joue l'idempotence : réimporter deux fois le même fichier
+ * ne doit rien dupliquer. La clé auto-incrémentée ne pouvait pas servir à ça,
+ * elle ne désigne pas la même séance d'une base à l'autre.
+ */
+export function seancesNouvelles(
+  seances: readonly Seance[],
+  uidsEnBase: ReadonlySet<string>
+): Seance[] {
+  // Un fichier peut contenir deux fois la même séance : on dédoublonne aussi
+  // à l'intérieur du lot, sans quoi `bulkAdd` en écrirait deux.
+  const vus = new Set(uidsEnBase);
+  return seances.filter((s) => {
+    if (!s.uid || vus.has(s.uid)) return false;
+    vus.add(s.uid);
+    return true;
+  });
+}
+
+/** Réinjecte une sauvegarde : analyse, puis écriture en une seule transaction. */
+export async function importer(
+  brut: unknown,
+  idsConnus: ReadonlySet<string>
+): Promise<ResultatImport> {
+  const { techniques, seances, observations, ignorees } = analyser(brut, idsConnus);
+
   let ajoutees = 0;
   let dejaLa = 0;
 
@@ -205,7 +245,7 @@ export async function importer(
       const connus = new Set(
         (await db().seances.toArray()).map((s) => s.uid).filter(Boolean)
       );
-      const neuves = seances.filter((s) => !connus.has(s.uid));
+      const neuves = seancesNouvelles(seances, connus);
       dejaLa = seances.length - neuves.length;
       if (neuves.length) await db().seances.bulkAdd(neuves);
       ajoutees = neuves.length;
@@ -217,7 +257,7 @@ export async function importer(
     seances: ajoutees,
     seancesDejaLa: dejaLa,
     observations: observations.length,
-    ignorees: [...ignorees],
+    ignorees,
   };
 }
 

@@ -91,17 +91,28 @@ IndexedDB s'efface avec les données de navigation, sans prévenir. La page le
 dit en toutes lettres, mais un texte ne remplace pas un rappel — par exemple
 au bout de N séances non exportées.
 
-### B4 🟠 Le décompte du lecteur se rejoue à chaque reprise après pause
+### B4 ✅ Le décompte se rejoue à chaque reprise — CORRIGÉ en 8b
 
 Comportement d'alphaTab (`play()` relance le décompte dès que
 `countInVolume > 0`). Repartir au milieu d'un exercice impose donc une mesure
 de clics. Contournable en coupant le décompte à la volée avant la reprise.
 
-### B5 🟠 La partition ne défile pas pendant la lecture
+### B5 ◐ La partition ne défile pas pendant la lecture — GARDE-FOU posé en 8b
 
-`scrollMode: ScrollMode.Off`. Sur les exercices de deux à quatre mesures, tout
-tient à l'écran. Sur une fiche longue ouverte en petit, le curseur peut sortir
-du champ.
+Le cadre de la partition défile maintenant avec le curseur
+(`ScrollMode.Continuous` sur `.lt__partition`, plafonné à 70 vh).
+
+**Mais je n'ai pas pu produire le cas qu'il corrige.** Mesuré : l'exercice le
+plus haut du corpus fait 535 px à 390 px de large, il tient entier dans le
+cadre. Le mécanisme ne s'enclenche donc sur aucune fiche aux tailles d'écran
+réelles. C'est un garde-fou, pas une correction observée — à confirmer le jour
+où un exercice plus long arrivera.
+
+⚠️ **Ne pas retenter de faire défiler la page.** Essayé en 8b : alphaTab amène
+la mesure courante en haut du conteneur, la page remonte de toute la hauteur du
+bloc de commandes, qui passe **sous l'en-tête collant**. On ne peut plus mettre
+en pause sans remonter à la main. `scrollOffsetY` ne rattrape pas ça, la
+hauteur du bloc varie avec la largeur.
 
 ### B6 ✅ Le minuteur ne prévient qu’à l’œil — CORRIGÉ en 8a
 
@@ -113,13 +124,13 @@ en regardant ses mains.
 Le passage travail → repos est visuel. Un signal court à chaque bascule
 rendrait le mode utilisable sans regarder.
 
-### B8 🟡 Le journal n'enregistre que des tempos en bpm
+### B8 ✅ Le journal n’enregistrait que des bpm — CORRIGÉ en 8b
 
 `TempoNote` accepte `notes-min`, la saisie non. `bilan()` compare déjà les
 unités correctement, donc la structure est prête ; c'est l'interface qui
 manque.
 
-### B9 🟡 `audit:layout` sort en code non nul sur un débordement légitime
+### B9 ✅ audit:layout et le débordement légitime — CORRIGÉ en 8b
 
 Il signale tout élément plus large que le viewport, y compris ceux qui vivent
 dans un conteneur à défilement — le graphe de l'arbre, les tablatures. C'est
@@ -130,7 +141,7 @@ contraire.
 
 ## C. Dette technique
 
-### C1 🟡 Code mort, vérifié
+### C1 ✅ Code mort — SUPPRIMÉ en 8b
 
 | Symbole | Fichier | État |
 |---|---|---|
@@ -142,7 +153,7 @@ contraire.
 **À trancher au cas par cas** : brancher (`parJour` mérite un petit graphe
 d'assiduité) ou supprimer.
 
-### C2 🟡 Aucun test unitaire sur trois modules purs
+### C2 ✅ Tests sur les trois modules purs — ÉCRITS en 8b (45 cas)
 
 `test:notes` (10 cas) et `test:accordeur` (19 cas) existent. Rien ne couvre :
 
@@ -160,7 +171,7 @@ Ces trois modules sont purs : ils se testent comme les deux autres.
 `npm run shot` produit des images que **je** regarde. Rien ne détecte une
 régression visuelle entre deux tranches.
 
-### C4 🟡 Git Bash mange les arguments à barre oblique
+### C4 ✅ Git Bash et les arguments à barre oblique — DOCUMENTÉ en 8b
 
 `npm run audit:console -- /accordeur` devient
 `C:/Program Files/Git/accordeur` (conversion de chemins MSYS). Contourné en
@@ -207,7 +218,7 @@ la corde 6, le seuil de bruit dans une vraie pièce.
 débordement, mais aucune page n'a été manipulée au doigt. Le graphe de l'arbre
 et les tablatures défilent dans leur cadre — en théorie.
 
-### D4 🟠 Les liens de prérequis sont un jugement, pas une donnée sourcée
+### D4 ✅ Les liens de prérequis portent leur provenance — FAIT en 8b
 
 L'invariant de monotonie en a attrapé trois. Les 42 autres reposent sur la
 taxonomie de la phase de recherche et n'ont pas été rejugés depuis. La page
@@ -261,12 +272,20 @@ texte sont exemptés par WCAG 2.2 (critère « Target Size (Minimum) »), mais
 plusieurs sont des boutons à part entière. À reprendre avec l'audit
 d'accessibilité (D1), pas séparément.
 
-### G2 🟡 `audit:poids` mesure le chargement initial seulement
+### G2 ✅ `audit:poids` mesurait le chargement initial seulement — CORRIGÉ en 8b
 
-Le lecteur de tablature et l'accordeur chargent leur machinerie au premier
-clic — c'est précisément pourquoi ils sont paresseux, et les compter punirait
-le bon comportement. Mais du coup, **les 3,3 Mo d'alphaTab ne sont dans aucun
-budget** (voir A5).
+Un second budget existe, séparé du premier : **4326 Ko mesurés** pour un
+plafond à 4600, soit 6 % de marge contre 25 % pour l'initial. Lecteur, worker
+de synthèse, worklet audio et banque de sons.
+
+⚠️ La mesure se fait à **deux endroits**, et il le faut : le worker et le
+worklet sont chargés par le contexte du worker, leurs requêtes n'apparaissent
+pas dans le domaine Network de la cible page. Au clic on ne voit que la banque
+de sons ; le reste se lit dans `dist/`.
+
+Défaut trouvé en chemin : l'audit attribuait chaque `loadingFinished` à la
+**dernière** requête vue au lieu de la classer par `requestId`. Juste tant que
+les chargements sont séquentiels, faux dès qu'il en part trois ensemble.
 
 ---
 

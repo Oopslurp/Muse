@@ -13,7 +13,6 @@ import {
   BORNES_BPM,
   MOTIFS,
   creerMetronome,
-  motifSimple,
   type Accent,
   type Metronome as MetronomeMoteur,
 } from '~/lib/metronome';
@@ -267,5 +266,3 @@ export default function Metronome({ bpm, onBpm: setBpm }: MetronomeProps) {
     </section>
   );
 }
-
-export { motifSimple };

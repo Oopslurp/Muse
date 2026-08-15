@@ -30,8 +30,6 @@ export const GRILLE = {
 export interface NoeudPlace extends NoeudGraphe {
   x: number;
   y: number;
-  /** Rang dans sa colonne, après réduction des croisements. */
-  rang: number;
 }
 
 export interface AretePlacee {
@@ -114,7 +112,6 @@ export function disposer(graphe: Graphe): Disposition {
     col.forEach((n, r) => {
       noeuds.push({
         ...n,
-        rang: r,
         x: GRILLE.marge + c * (GRILLE.largeurNoeud + GRILLE.ecartColonne),
         y: GRILLE.marge + (offset + r) * pas,
       });

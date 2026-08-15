@@ -1,13 +1,16 @@
 {
   "name": "muse",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "description": "Bibliothèque de référence des techniques de guitare fingerstyle et accordeur chromatique. Site statique, local, sans backend.",
   "directories": {
     "doc": "docs"
   },
+  "engines": {
+    "node": ">=22.12"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run test:notes && npm run test:accordeur && npm run test:arbre && npm run test:journal && npm run test:sauvegarde && npm run validate",
     "probe": "node tools/probe-alphatex.mjs",
     "validate": "node tools/validate-corpus-tabs.mjs",
     "serve": "node tools/serve.mjs",
@@ -17,6 +20,9 @@
     "check": "astro check",
     "test:notes": "node tools/test-notes.mts",
     "test:accordeur": "node tools/test-accordeur.mts",
+    "test:arbre": "node tools/test-arbre.mts",
+    "test:journal": "node --import ./tools/resolveur-ts.mjs tools/test-journal.mts",
+    "test:sauvegarde": "node --import ./tools/resolveur-ts.mjs tools/test-sauvegarde.mts",
     "shot": "node tools/shot.mjs",
     "audit:layout": "node tools/audit-layout.mjs",
     "audit:console": "node tools/audit-console.mjs",
@@ -31,9 +37,15 @@
     "predev": "node tools/copy-alphatab-assets.mjs",
     "prebuild": "node tools/copy-alphatab-assets.mjs"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "guitare",
+    "fingerstyle",
+    "tablature",
+    "accordeur",
+    "astro"
+  ],
+  "author": "Olivier",
+  "license": "SEE LICENCE IN LICENCE.md",
   "type": "module",
   "dependencies": {
     "@astrojs/mdx": "^7.0.5",

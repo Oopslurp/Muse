@@ -12,6 +12,7 @@ import Annexes from '~/components/fiche/Annexes.astro';
 import Callout from '~/components/ui/Callout.astro';
 import SuiviFiche from '~/components/react/SuiviFiche';
 import { construireGraphe } from '~/lib/graph';
+import { provenanceLien } from '~/lib/provenance';
 
 export const getStaticPaths = (async () => {
   const fiches = await getCollection('techniques');
@@ -38,7 +39,13 @@ const resoudre = (ids: string[]) =>
     .sort((a, b) => a.code.localeCompare(b.code, 'fr'));
 
 const noeud = graphe.noeuds.find((n) => n.id === fiche.id);
-const prerequis = resoudre(d.prerequis);
+// Chaque lien porte sa provenance — `déduit` par défaut (décision 1 appliquée
+// aux liens). « Débloque » est l'inverse d'un lien saisi ailleurs : sa
+// provenance vit sur la fiche aval, pas ici.
+const prerequis = resoudre(d.prerequis).map((p) => ({
+  ...p,
+  provenance: provenanceLien(d.lienProvenance, p.id),
+}));
 const debloque = resoudre(noeud?.debloque ?? []);
 
 const nomsTechniques = Object.fromEntries(toutes.map((f) => [f.id, f.data.nom.fr]));

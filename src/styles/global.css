@@ -561,6 +561,13 @@ input[type='range'] {
     background: none;
   }
 
+  /* Le plafond de hauteur sert au défilement pendant la lecture. Sur papier
+     il rognerait la partition à la première portée. */
+  .lt__partition {
+    max-height: none;
+    overflow: visible;
+  }
+
   /**
    * La source alphaTex s'ouvre à l'impression.
    *

@@ -142,25 +142,36 @@ Si tu préfères ton ordre, dis-le : les deux blocs sont indépendants.
 
 ---
 
-## 5. Backlog 8b — à ton accord, après 8a
+## 5. Backlog 8b — clos le 15 août 2026
 
-- **B4** décompte rejoué à chaque reprise après pause
-- **B5** défilement de la partition pendant la lecture
-- **B8** saisie de tempo en notes/min dans le journal
-- **B9** code de sortie d'`audit:layout`
-- **C1** suppression des quatre exports morts
-- **C2** tests sur `arbre.ts` (déterminisme de la disposition **en premier**),
-  `journal.ts`, puis `sauvegarde.ts` — **après** la migration du point 6, comme
-  tu l'as demandé : les écrire avant serait du travail perdu
-- **C4** documenter le souci Git Bash dans CLAUDE.md
-- **D4** provenance sur chaque arête de prérequis, `déduit` par défaut
-- **K7** `npm test` comme commande de référence, agrégeant les tests existants
-- **K8** version de Node épinglée (`engines` + `.nvmrc`)
-- **K9** avertissement `import.meta`
-- **K10** `README.md`, fichier de licence, description de paquet, Open Graph
-- **K11** carte d'accueil « mise en page provisoire », devenue fausse
-- **A5** budget de chargement différé dans `audit:poids` (résout **G2**)
-- **Déploiement Cloudflare Pages**, en toute fin
+| | Point | Résultat |
+|---|---|---|
+| **B4** | décompte rejoué à chaque reprise | ✅ décidé à l'appui, selon la position |
+| **B5** | défilement de la partition | ◐ garde-fou posé, **cas non reproduit** — voir dette.md |
+| **B8** | tempo en notes/min | ✅ et un défaut trouvé dans `bilan()` au passage |
+| **B9** | code de sortie d'`audit:layout` | ✅ conteneur à défilement distingué du vrai débordement |
+| **C1** | quatre exports morts | ✅ supprimés |
+| **C2** | tests sur les trois modules purs | ✅ 45 cas, dont un défaut trouvé et un garde-fou faible corrigé |
+| **C4** | souci Git Bash | ✅ documenté, avec les trois contournements |
+| **D4** | provenance des arêtes de prérequis | ✅ `lienProvenance`, `déduit` par défaut, 44 doutes au lieu de 41 |
+| **K7** | `npm test` | ✅ agrège tout, puis `validate` |
+| **K8** | version de Node | ✅ `engines` + `.nvmrc` |
+| **K9** | avertissement `import.meta` | ✅ workers en modules ES, worker vérifié jouant |
+| **K10** | README, licence, paquet, Open Graph | ✅ |
+| **K11** | « mise en page provisoire » | ✅ |
+| **A5** | budget de chargement différé | ✅ 4326 Ko consignés — résout **G2** |
+
+**Trois choses trouvées en 8b qui n'étaient dans aucune liste :**
+
+1. `bilan()` **se verrouillait sur l'unité du premier tempo** et jetait en
+   silence tous ceux de l'autre unité. Bloquant pour B8.
+2. `audit:poids` attribuait les octets à la **dernière requête vue** au lieu de
+   les classer par `requestId` — faux dès trois chargements parallèles.
+3. Mon propre test de déterminisme de l'arbre **ne prouvait pas ce qu'il
+   affirmait** : il fallait un graphe à barycentres égaux pour qu'il puisse
+   tomber.
+
+**Reste :** le déploiement Cloudflare Pages.
 
 ## 6. Proposé pour la v2
 

@@ -251,7 +251,8 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | 6 | **Pratique** | Métronome, minuteur de séance, journal IndexedDB, suivi par technique, export/import JSON | ✅ **close** |
 | 7 | **Finitions** | Recherche, perf, responsive, impression PDF d'une fiche, déploiement | ✅ **close** |
 | 8a | **Reprise — correction** | Provenance par affirmation, accessibilité mesurée, signaux santé, intégrité des données | ✅ **close** |
-| 8b | Reprise — confort et dette | Le reste de [docs/dette.md](docs/dette.md), tests, déploiement Cloudflare Pages | ⏳ |
+| 8b | **Reprise — confort et dette** | Le reste de [docs/dette.md](docs/dette.md), tests, métadonnées du dépôt | ✅ **close** |
+| 9 | Déploiement | Cloudflare Pages | ⏳ |
 
 > **[docs/dette.md](docs/dette.md) recense ce qui est imparfait, incomplet ou non vérifié**, avec les décisions qui attendent une réponse. Le tenir à jour à chaque tranche : un défaut connu qui n'est écrit nulle part est un défaut oublié.
 
@@ -327,8 +328,13 @@ npm run serve     # serveur statique local (sans dépendance), port 5173
 
 npm run dev       # site en développement, port 4321
 npm run build     # construction statique
-npm run test:notes    # dérivation des noms de notes (10 cas)
-npm run test:accordeur # moteur de l'accordeur sur signaux de synthèse (19 cas)
+
+npm test          # tous les tests, dans l'ordre ci-dessous, puis validate
+npm run test:notes       # dérivation des noms de notes (10 cas)
+npm run test:accordeur   # moteur de l'accordeur sur signaux de synthèse (19 cas)
+npm run test:arbre       # disposition du graphe, déterminisme d'abord (13 cas)
+npm run test:journal     # agrégation du journal (12 cas)
+npm run test:sauvegarde  # lecture d'une sauvegarde, idempotence (20 cas)
 
 npm run shot          # captures de contrôle dans .captures/ (Chrome headless)
 npm run audit:console # exceptions, erreurs console, îlots vides, débordement
@@ -344,6 +350,8 @@ npm run audit:a11y      # contrastes, cibles tactiles, noms accessibles, titres
 npm run audit:a11y -- --rapport   # relevé complet dans .captures/a11y.json
 npm run audit:layout -- <url> <largeur>   # remonte à l'élément qui déborde
 ```
+
+⚠️ **Git Bash mange les arguments qui commencent par une barre oblique.** `npm run audit:console -- /accordeur` arrive au script sous la forme `C:/Program Files/Git/accordeur` : c'est la conversion de chemins MSYS, elle s'applique à tout argument ressemblant à un chemin POSIX. Contournements : passer par PowerShell, préfixer d'un `//` (`//accordeur`), ou poser `MSYS_NO_PATHCONV=1`. Les routes des audits sont dans leur liste par défaut, précisément pour ne pas dépendre de ça.
 
 ### Vérifier le rendu — ne pas s'en remettre au HTML
 
@@ -361,6 +369,7 @@ Les tranches 0 à 2 ont été livrées **sans jamais regarder le rendu**, faute 
 **À lancer à la fin de chaque tranche**, avant le commit :
 
 ```bash
+npm test                                           # d'abord les tests purs
 npm run audit:console                              # contre le dev
 npm run audit:lecture
 npm run audit:accordeur
@@ -566,6 +575,34 @@ Tranche de correction, ouverte par [docs/dette.md](docs/dette.md) et par un audi
 4. Une affirmation médicale énoncée à l'absolu, ramenée à ce que la source dit.
 
 **Ce qui ne se simule pas** — [docs/verifications-manuelles.md](docs/verifications-manuelles.md) : l'accordeur sur Firefox et Safari guitare en main, un vrai téléphone au doigt, un lecteur d'écran, la faisabilité musicale des exercices. **Ne rien affirmer sur ces points.**
+
+### Reprise — confort et dette (tranche 8b)
+
+**`npm test` existe et agrège** : notes, accordeur, arbre, journal, sauvegarde, puis `validate`. Il échouait volontairement depuis `npm init`. Node est épinglé (`engines` + `.nvmrc`) — Astro 7 exige ≥ 22.12 et rien ne le disait.
+
+**Trois modules purs sont désormais testés**, 45 cas de plus.
+
+- **`arbre.ts` — le déterminisme d'abord.** La disposition est calculée au build, donc figée dans le HTML : un graphe qui change de forme à chaque déploiement est impossible à relire. ⚠️ Le résultat de la falsification mérite d'être connu : **le déterminisme est garanti deux fois**, par le tri initial famille-puis-code et par la clé de rupture d'égalité des barycentres. Retirer l'une ne casse rien ; il a fallu un graphe de quatre sœurs à barycentres égaux, et retirer les deux, pour faire tomber le test.
+- **`journal.ts`** — et le test a trouvé un défaut : `bilan()` **se verrouillait sur l'unité du premier tempo rencontré** et jetait en silence tous ceux de l'autre unité. Corrigé en un maximum **par unité**, ce qui débloquait B8.
+- **`sauvegarde.ts`** — `importer()` a été coupé en deux : `analyser()` lit et valide **sans rien écrire**, `importer()` écrit. Ce n'est pas cosmétique — toute la partie risquée (versions, validation champ par champ, reprise de l'ancienne observation, rejet des identifiants inconnus) devient testable sous Node, là où l'écriture exigerait un navigateur.
+
+⚠️ **Les tests qui importent un module de `src/` passent par `node --import ./tools/resolveur-ts.mjs`.** Le code de `src/` s'écrit sans extension parce que c'est Vite qui le compile ; Node exige l'extension. Le crochet ne peut pas s'enregistrer depuis le test lui-même : les imports ESM sont hissés et tout le graphe est résolu avant la première ligne exécutée.
+
+**Le décompte ne se rejoue plus à la reprise** (B4). alphaTab le relance à chaque `play()` dès que `countInVolume > 0` ; le réglage est maintenant décidé **au moment de l'appui**, selon que la position est au départ de la plage ou non. Un décompte prépare un départ, il ne ponctue pas une pause.
+
+**La partition suit le curseur dans son cadre** (B5), pas en faisant défiler la page. ⚠️ Faire défiler `html` a été essayé et **abandonné** : alphaTab amène la mesure courante en haut du conteneur, la page remontait de toute la hauteur du bloc de commandes, qui passait sous l'en-tête collant — on ne pouvait plus mettre en pause. `scrollOffsetY` ne rattrape pas ça, la hauteur du bloc varie avec la largeur. Attrapé par `audit:lecture`, dont le clic aux coordonnées tombait sur l'en-tête. **Honnêteté** : aucun exercice du corpus ne dépasse le plafond de 70 vh aux tailles d'écran réelles (le plus haut mesure 535 px à 390 px de large). C'est un garde-fou, pas une correction observée.
+
+**D4 — un lien de prérequis est une affirmation.** `lienProvenance` porte la provenance d'un lien, par identifiant amont ; **l'absence vaut `déduit`**, et le contenu n'inscrit que les liens qui ont une histoire — les trois que l'invariant de monotonie a corrigés. La pastille s'affiche sur chaque puce « à tenir avant », et le compteur de doutes les compte : **44** au lieu de 41.
+
+**K9 — les workers passent en modules ES.** Le format IIFE par défaut de Vite remplace `import.meta` par `{}` ; alphaTab s'en sert sous `try` pour détecter son fichier et sa plateforme, donc l'échec était silencieux et le build crachait quatre avertissements par construction. Un avertissement qu'on apprend à ignorer masque le suivant. ⚠️ Vérifié que le worker de synthèse joue toujours — c'est exactement le piège de la tranche 3.
+
+**Le poids différé est consigné** (A5, résout G2). `audit:poids` a maintenant deux budgets : le chargement initial (210–291 Ko par route) et **ce qu'on paie pour entendre un exercice — 4326 Ko**, lecteur + worker + worklet + banque de sons. Marge serrée à 6 %, contre 25 % pour l'initial : c'est déjà le poste le plus lourd du site.
+
+⚠️ **Deux mesures, deux endroits, et c'est nécessaire.** Le worker et le worklet sont chargés par le contexte du worker : leurs requêtes **n'apparaissent pas** dans le domaine Network de la cible page. Au clic, on ne voit que la banque de sons. Le reste se lit dans `dist/`. Corrigé au passage : l'audit attribuait chaque `loadingFinished` à la **dernière** requête vue au lieu de la classer par `requestId` — juste en séquentiel, faux dès que trois chargements partent ensemble.
+
+**Métadonnées du dépôt** — [README.md](README.md), [LICENCE.md](LICENCE.md) (tous droits réservés, plus ce que le dépôt ne possède pas : citations, répertoire, dépendances servies), description et mots-clés du paquet, Open Graph sans image. Et la carte d'accueil ne dit plus « mise en page provisoire », ce qui était faux depuis la tranche 1.
+
+**Quatre exports morts supprimés** : `parJour()`, `oublier()`, `motifSimple`, `NoeudPlace.rang`. `audit:layout` ne sort plus en échec sur un débordement légitime — il sépare les éléments larges vivant dans un conteneur à défilement de ceux qui débordent vraiment, et seul le second cas échoue.
 
 ### Conventions alphaTex établies par la sonde
 

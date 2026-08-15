@@ -52,6 +52,9 @@ function comptDoutes(d: TechniqueData): number {
   if (d.provenance.doute) n += 1;
   if (d.seance.provenance.doute) n += 1;
   for (const e of d.exercices) if (e.provenance?.doute) n += 1;
+  // Un lien de prérequis douteux est affiché comme tel sur la fiche : il se
+  // compte, sans quoi on retomberait exactement dans le défaut ci-dessus.
+  for (const p of Object.values(d.lienProvenance)) if (p.doute) n += 1;
   return n;
 }
 

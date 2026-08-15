@@ -16,7 +16,14 @@ interface Props {
   permanent: boolean;
   provenance: Provenance;
   sonCible: string;
-  prerequis: Array<{ id: string; nom: string; code: string; famille: FamilyId }>;
+  /** Chaque lien porte sa provenance : un prérequis est une affirmation. */
+  prerequis: Array<{
+    id: string;
+    nom: string;
+    code: string;
+    famille: FamilyId;
+    provenance: Provenance;
+  }>;
   debloque: Array<{ id: string; nom: string; code: string; famille: FamilyId }>;
 }
 
@@ -90,9 +97,24 @@ const MAIN: Record<string, string> = {
                     <span class="puce" aria-hidden="true" />
                     {p.nom}
                   </a>
+                  {/* Le défaut — `déduit` — est énoncé une fois sous la liste.
+                      Le répéter sur chaque puce donnerait trois pastilles
+                      identiques qui ne distinguent rien : on ne marque que ce
+                      qui s'en écarte. Même logique que le contenu, qui ne
+                      stocke pas le défaut. */}
+                  {statutAffiche(p.provenance) !== 'deduit' && (
+                    <StatusBadge status={statutAffiche(p.provenance)} />
+                  )}
                 </li>
               ))}
             </ul>
+            {/* Un lien de prérequis est un jugement de conception, pas un fait
+                établi : l'invariant de monotonie en a attrapé trois qui étaient
+                faux. On le dit ici plutôt que de laisser croire le contraire. */}
+            <p class="fh__lien-note">
+              Sauf mention contraire, ces liens sont <strong>déduits</strong>&nbsp;:
+              un ordre de progression proposé, pas une règle établie.
+            </p>
           </div>
         )}
         {debloque.length > 0 && (
@@ -218,6 +240,19 @@ const MAIN: Record<string, string> = {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
+  }
+  /* Le lien et sa pastille de statut restent solidaires quand la ligne passe. */
+  .fh__liens li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .fh__lien-note {
+    margin: 0.5rem 0 0;
+    font-size: var(--text-2xs);
+    line-height: 1.5;
+    color: var(--color-ink-3);
+    max-width: 34rem;
   }
   .fh__liens a {
     display: inline-flex;

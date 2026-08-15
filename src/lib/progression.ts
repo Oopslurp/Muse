@@ -55,8 +55,3 @@ export async function ecrire(
   await db().techniques.put(suivant);
   return suivant;
 }
-
-/** Retire complètement une technique du suivi — plus propre qu'un état « neuf ». */
-export async function oublier(id: string): Promise<void> {
-  await db().techniques.delete(id);
-}

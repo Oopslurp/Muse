@@ -70,9 +70,32 @@
 .jo__champ--court {
   flex: 0 0 7rem;
 }
+/* Valeur et unité côte à côte : « 120 » seul ne veut rien dire. */
+.jo__champ--tempo {
+  flex: 1 1 13rem;
+}
+.jo__cle {
+  font-size: var(--text-2xs);
+  color: var(--color-ink-3);
+}
+.jo__duo {
+  display: flex;
+  gap: 0.35rem;
+}
+.jo__duo input {
+  flex: 0 1 5rem;
+}
+.jo__duo select {
+  /* `min-width: auto` sur un enfant de flex refuse de descendre sous la plus
+     longue option et fait déborder la ligne à 320 px. */
+  flex: 1 1 0;
+  min-width: 0;
+}
 .jo__champ input,
 .jo__champ select,
-.jo__champ textarea {
+.jo__champ textarea,
+.jo__duo input,
+.jo__duo select {
   font: inherit;
   font-size: var(--text-xs);
   color: var(--color-ink);

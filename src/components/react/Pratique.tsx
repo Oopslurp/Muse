@@ -22,6 +22,7 @@ import {
   type Seance,
 } from '~/lib/journal';
 import { disponible } from '~/lib/base';
+import { tempoCourt } from '~/lib/format';
 import './Pratique.css';
 
 export interface FichePratique extends FicheBreve {
@@ -149,11 +150,13 @@ export default function Pratique({ fiches }: PratiqueProps) {
             <p>
               <span>{Math.round(b.minutes)}</span> minutes cumulées
             </p>
-            {b.meilleurTempo && (
-              <p>
-                <span>♩ {b.meilleurTempo.valeur}</span> atteint
+            {/* Le libellé est produit par `tempoCourt`, jamais écrit ici
+                (décision 9) : « ♩ 96 » pour des notes par minute serait faux. */}
+            {b.meilleursTempos.map((t) => (
+              <p key={t.unite}>
+                <span>{tempoCourt(t)}</span> atteint
               </p>
-            )}
+            ))}
           </div>
           {b.arrets.length > 0 && (
             <p className="pr__arrets">

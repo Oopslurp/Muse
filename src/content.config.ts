@@ -205,6 +205,17 @@ const techniqueSchema = z
 
     /** Identifiants d'autres fiches. Existence et acyclicité vérifiées au build. */
     prerequis: z.array(z.string()).default([]),
+    /**
+     * Provenance d'un lien de prérequis, par identifiant de fiche amont.
+     *
+     * Un lien est une affirmation comme une autre — « il faut tenir ceci avant
+     * d'aborder cela » — et la décision 1 s'y applique. **L'absence vaut
+     * `déduit`** : c'est le cas de la grande majorité des liens, hérités de la
+     * taxonomie de la phase de recherche et jamais rejugés depuis. On ne les
+     * inscrit donc pas un par un pour dire qu'ils sont déduits ; on inscrit
+     * ceux qui ont une histoire.
+     */
+    lienProvenance: z.record(z.string(), provenanceSchema).default({}),
     /** Transversal permanent : affiché en bandeau plutôt qu'en prérequis. */
     permanent: z.boolean().default(false),
 
@@ -270,7 +281,15 @@ const techniqueSchema = z
     message:
       'audioFidele: false exige de nommer ce qui manque (CLAUDE.md, décision 10)',
     path: ['exercices'],
-  });
+  })
+  .refine(
+    (t) => Object.keys(t.lienProvenance).every((id) => t.prerequis.includes(id)),
+    {
+      message:
+        'lienProvenance désigne un prérequis absent — une provenance orpheline ne s’affiche nulle part',
+      path: ['lienProvenance'],
+    }
+  );
 
 const techniques = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/techniques' }),

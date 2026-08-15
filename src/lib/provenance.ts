@@ -60,6 +60,27 @@ export function detailProvenance(p: Provenance): string {
   return bouts.join(' ');
 }
 
+/**
+ * Provenance d'un lien de prérequis — `déduit` faute de mieux.
+ *
+ * La grande majorité des liens vient de la taxonomie de la phase de recherche
+ * et n'a jamais été rejugée : ce sont des déductions, et l'écran doit le dire
+ * plutôt que de faire passer un jugement de conception pour un fait établi.
+ * L'invariant de monotonie de `graph.ts` en a d'ailleurs attrapé trois qui
+ * étaient faux.
+ *
+ * Le défaut n'est pas stocké fiche par fiche : le contenu ne porte que les
+ * liens qui ont une histoire, le code produit le reste (décision 9).
+ */
+export const LIEN_DEDUIT: Provenance = { origine: 'deduit', sourceIds: [] };
+
+export function provenanceLien(
+  table: Record<string, Provenance> | undefined,
+  prerequisId: string
+): Provenance {
+  return table?.[prerequisId] ?? LIEN_DEDUIT;
+}
+
 /** Une fiche est-elle intégralement assurée ? Sert au tri et au filtrage. */
 export const estAssure = (p: Provenance): boolean =>
   Boolean(p.observe) || (p.origine === 'source' && !p.doute);

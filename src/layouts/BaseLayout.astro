@@ -38,6 +38,21 @@ const canonique = new URL(Astro.url.pathname, Astro.site ?? 'https://muse.local'
     <link rel="canonical" href={canonique.href} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
+    {/*
+      Open Graph. Aucune image : il faudrait en fabriquer une par page, et une
+      vignette générique unique ne dit rien de plus que le titre. Le site est
+      personnel, il ne se partage pas sur les réseaux — ces balises servent à
+      ce qu'un lien collé dans une conversation ou un carnet montre autre chose
+      qu'une URL nue.
+    */}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Muse" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonique.href} />
+    <meta name="twitter:card" content="summary" />
+
     {/* Les deux couleurs de fond, pour que la barre d'adresse mobile suive le thème. */}
     <meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#14110e" media="(prefers-color-scheme: dark)" />

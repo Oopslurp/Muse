@@ -42,10 +42,6 @@ export interface ReglagesMetronome {
 
 export const BORNES_BPM = { min: 30, max: 240 } as const;
 
-/** Motif par défaut pour un cycle de `n` positions : appui sur la première. */
-export const motifSimple = (n: number): Accent[] =>
-  Array.from({ length: n }, (_, i) => (i === 0 ? 'fort' : 'faible'));
-
 /**
  * Motifs prêts à l'emploi, ceux que le corpus demande nommément.
  * Le libellé est produit ici ; le contenu ne stocke que la structure.
