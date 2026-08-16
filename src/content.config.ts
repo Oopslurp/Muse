@@ -3,6 +3,7 @@ import { glob } from 'astro/loaders';
 // Zod importé directement : le ré-export par `astro:content` est déprécié
 // depuis Astro 7 et produit un avertissement par usage.
 import { z } from 'zod';
+import { MOTIFS } from './lib/metronome';
 
 /**
  * Schéma des fiches techniques.
@@ -114,6 +115,18 @@ const palierSchema = z.object({
   /** Si faux, la fiche doit dire ce qui manque : prof, oreille tierce… */
   autoVerifiable: z.boolean().default(true),
   note: z.string().optional(),
+  /**
+   * Identifiant d'un motif de `MOTIFS` (src/lib/metronome.ts) quand le critère
+   * demande un **clic déplacé**.
+   *
+   * C'est ce qui justifie le métronome maison du projet : « sur les temps 2 et
+   * 4 », « sur la 2ᵉ note du cycle » sont des autodiagnostics, et un clic posé
+   * sur l'appui les rend impossibles. Ils n'existaient jusqu'ici qu'en prose ;
+   * l'identifiant permet de les montrer et d'ouvrir l'atelier déjà réglé.
+   *
+   * L'existence de l'identifiant est vérifiée au build.
+   */
+  motifMetronome: z.string().optional(),
 });
 
 const exerciceSchema = z.object({
@@ -165,6 +178,29 @@ const positionSchema = z.object({
     })
     .optional(),
   capo: z.number().int().min(1).max(12).optional(),
+});
+
+/**
+ * Assignation des doigts de la main qui pince aux cordes.
+ *
+ * C'est une règle de la technique — « le pouce prend les basses, l'index la
+ * corde 3 » — pas la transcription d'un exercice. Le contenu stocke la lettre
+ * espagnole comme **donnée**, jamais le libellé affiché : `nomDoigtMD` produit
+ * « pouce », « index »… et changer d'avis se fait à un seul endroit.
+ *
+ * ⚠️ Le 5ᵉ doigt est `c` (usage Tennant), arrêté dans les conventions.
+ */
+const doigteMDSchema = z.object({
+  titre: z.string(),
+  assignations: z
+    .array(
+      z.object({
+        corde: z.number().int().min(1).max(7),
+        doigt: z.enum(['p', 'i', 'm', 'a', 'c']),
+      })
+    )
+    .min(1),
+  note: z.string().optional(),
 });
 
 const repertoireSchema = z.object({
@@ -262,6 +298,8 @@ const techniqueSchema = z
      * données que la tablature, vues autrement — jamais une anatomie inventée.
      */
     positions: z.array(positionSchema).default([]),
+    /** Assignations doigt → corde de la main qui pince. Voir `doigteMDSchema`. */
+    doigtesMD: z.array(doigteMDSchema).default([]),
 
     ecoutes: z.array(ecouteSchema).default([]),
     erreurs: z.array(erreurSchema).default([]),
@@ -359,6 +397,50 @@ const techniqueSchema = z
             path: ['positions'],
           });
         }
+      }
+    }
+
+    /* Un identifiant de motif inconnu ne s'afficherait nulle part : c'est la
+       même classe d'erreur qu'un prérequis mort, et elle se voit au build. */
+    for (const pal of t.paliers) {
+      if (pal.motifMetronome && !MOTIFS.some((m) => m.id === pal.motifMetronome)) {
+        ctx.addIssue({
+          code: 'custom',
+          message:
+            `palier « ${pal.titre} » : motif de métronome inconnu ` +
+            `« ${pal.motifMetronome} ». Connus : ${MOTIFS.map((m) => m.id).join(', ')}.`,
+          path: ['paliers'],
+        });
+      }
+    }
+
+    /* Un doigt de la main qui pince ne peut pas être à deux endroits, et une
+       corde ne peut pas être pincée par deux doigts en même temps. Mêmes
+       raisons que ci-dessus : le diagramme rendrait l'erreur crédible. */
+    for (const d of t.doigtesMD) {
+      const cordesVues = new Set<number>();
+      const doigtsVus = new Set<string>();
+      for (const a of d.assignations) {
+        if (cordesVues.has(a.corde)) {
+          ctx.addIssue({
+            code: 'custom',
+            message: `doigté « ${d.titre} » : la corde ${a.corde} est assignée deux fois.`,
+            path: ['doigtesMD'],
+          });
+        }
+        cordesVues.add(a.corde);
+
+        // Le pouce fait exception : il couvre plusieurs basses, c'est son rôle.
+        if (a.doigt !== 'p' && doigtsVus.has(a.doigt)) {
+          ctx.addIssue({
+            code: 'custom',
+            message:
+              `doigté « ${d.titre} » : le doigt « ${a.doigt} » est assigné à deux ` +
+              `cordes. Seul le pouce en couvre plusieurs.`,
+            path: ['doigtesMD'],
+          });
+        }
+        doigtsVus.add(a.doigt);
       }
     }
   });

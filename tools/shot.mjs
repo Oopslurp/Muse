@@ -71,6 +71,9 @@ const VUES = [
   { nom: 'diagrammes-clair', route: '/style-guide', ancre: '#diagrammes', theme: 'light' },
   // Et en situation, sur la fiche qui les justifie.
   { nom: 'positions-fiche', route: '/techniques/barre', ancre: '#positions' },
+  // Doigté de la main qui pince, et grille d'un clic déplacé.
+  { nom: 'doigte-md', route: '/techniques/arpeges-pima', ancre: '#positions' },
+  { nom: 'motif-palier', route: '/techniques/tremolo', ancre: '#progression' },
   { nom: 'liste-mobile', route: '/techniques', largeur: 390, hauteur: 1400 },
   { nom: 'pratique', route: '/pratique?technique=tremolo', pause: 1500 },
   { nom: 'pratique-clair', route: '/pratique?technique=tremolo', theme: 'light', pause: 1500 },

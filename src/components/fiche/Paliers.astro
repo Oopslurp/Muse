@@ -7,6 +7,8 @@
  * n'est pas vérifiable seul, la fiche le dit au lieu de faire semblant.
  */
 import { plageTempo, tempoLong, type Tempo } from '~/lib/format';
+import { MOTIFS } from '~/lib/metronome';
+import GrilleMotif from '~/components/ui/GrilleMotif.astro';
 
 interface Palier {
   titre: string;
@@ -17,6 +19,8 @@ interface Palier {
   critere: string;
   autoVerifiable: boolean;
   note?: string | undefined;
+  /** Identifiant d'un motif de métronome quand le critère demande un clic déplacé. */
+  motifMetronome?: string | undefined;
 }
 
 interface Props {
@@ -69,6 +73,24 @@ const { paliers, titresExercices } = Astro.props;
                 )}
               </p>
               <p class="critere__v">{p.critere}</p>
+
+              {/* Un clic déplacé se montre : « sur la 2ᵉ note du cycle » ne se
+                  visualise pas en le lisant, et c'est précisément l'autodiagnostic
+                  qui justifie le métronome maison du projet. */}
+              {
+                p.motifMetronome &&
+                  (() => {
+                    const m = MOTIFS.find((x) => x.id === p.motifMetronome);
+                    return m ? (
+                      <p class="critere__motif">
+                        <GrilleMotif motif={m.motif} parPulsation={m.parPulsation} />
+                        <a href={`/pratique?motif=${m.id}`}>
+                          {m.label} — régler l’atelier
+                        </a>
+                      </p>
+                    ) : null;
+                  })()
+              }
             </div>
 
             {p.note && <p class="palier__note">{p.note}</p>}
@@ -80,6 +102,18 @@ const { paliers, titresExercices } = Astro.props;
 </ol>
 
 <style>
+  .critere__motif {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0.7rem 0 0;
+    font-size: var(--text-2xs);
+  }
+  .critere__motif a {
+    color: var(--color-brass);
+  }
+
   .paliers {
     list-style: none;
     margin: 0;

@@ -1,0 +1,164 @@
+---
+/**
+ * Quelle main pince quelle corde — l'assignation, rien de plus.
+ *
+ * C'est une **donnée**, pas une anatomie : « le pouce prend les cordes 6, 5 et
+ * 4, l'index la 3 » est une règle de la technique, énoncée par les méthodes et
+ * transcrite dans les `rf` de chaque tablature du corpus. On la rend visible ;
+ * on ne dessine ni la forme de la main, ni l'angle d'attaque, ni la course du
+ * doigt — aucune méthode de référence ne les chiffre (CLAUDE.md, décision 2).
+ *
+ * Les cordes sont dessinées **grave en haut**, comme sur une portée de
+ * tablature : c'est le repère que le lecteur a sous les yeux juste au-dessus,
+ * dans l'exercice.
+ */
+import {
+  decrireDoigteMD,
+  nomDoigtMD,
+  type DoigteMD,
+} from '~/lib/position';
+import { ACCORDAGES } from '~/lib/notes';
+
+interface Props {
+  doigte: DoigteMD;
+  accordage?: keyof typeof ACCORDAGES;
+  colorVar?: string | undefined;
+  class?: string | undefined;
+}
+
+const {
+  doigte,
+  accordage = 'standard',
+  colorVar,
+  class: className = '',
+} = Astro.props;
+
+const cordes = ACCORDAGES[accordage].length;
+const accent = colorVar ? `var(${colorVar})` : 'var(--c-brass)';
+
+const parCorde = new Map(doigte.assignations.map((a) => [a.corde, a.doigt]));
+/** De la grave à l'aiguë : corde 6 en haut, comme une tablature. */
+const lignes = Array.from({ length: cordes }, (_, i) => cordes - i);
+---
+
+<figure class:list={['dmd', className]} style={`--accent:${accent}`}>
+  <div class="dmd__grille" role="img" aria-label={decrireDoigteMD(doigte)}>
+    {
+      lignes.map((corde) => {
+        const d = parCorde.get(corde);
+        return (
+          <div class:list={['dmd__ligne', !d && 'dmd__ligne--libre']}>
+            <span class="dmd__corde" aria-hidden="true">
+              {corde}
+            </span>
+            <span class="dmd__fil" aria-hidden="true" />
+            {d ? (
+              <span class="dmd__doigt" title={nomDoigtMD(d)} aria-hidden="true">
+                {d}
+              </span>
+            ) : (
+              /* Une corde sans doigt n'est pas une corde interdite : elle n'est
+                 simplement pas assignée par cette règle-là. */
+              <span class="dmd__vide" aria-hidden="true">
+                ·
+              </span>
+            )}
+          </div>
+        );
+      })
+    }
+  </div>
+
+  <figcaption class="dmd__pied">
+    <span class="dmd__titre">{doigte.titre}</span>
+    {doigte.note && <span class="dmd__note">{doigte.note}</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .dmd {
+    margin: 0;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .dmd__grille {
+    display: grid;
+    gap: 0.3rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+  }
+
+  .dmd__ligne {
+    display: grid;
+    grid-template-columns: 1.1rem 1fr 1.5rem;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .dmd__ligne--libre {
+    opacity: 0.45;
+  }
+
+  .dmd__corde {
+    font-size: var(--text-2xs);
+    color: var(--color-ink-3);
+    text-align: right;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  /* Le fil s'épaissit vers les graves : on s'oriente sans compter, comme sur
+     le diagramme de manche. */
+  .dmd__fil {
+    block-size: 1px;
+    background: var(--color-line-strong);
+    min-inline-size: 3.5rem;
+  }
+  .dmd__ligne:nth-child(1) .dmd__fil {
+    block-size: 2.2px;
+  }
+  .dmd__ligne:nth-child(2) .dmd__fil {
+    block-size: 1.9px;
+  }
+  .dmd__ligne:nth-child(3) .dmd__fil {
+    block-size: 1.6px;
+  }
+  .dmd__ligne:nth-child(4) .dmd__fil {
+    block-size: 1.3px;
+  }
+
+  .dmd__doigt {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    font-style: italic;
+  }
+  .dmd__vide {
+    text-align: center;
+    color: var(--color-ink-3);
+  }
+
+  .dmd__pied {
+    display: grid;
+    gap: 0.15rem;
+    font-size: var(--text-2xs);
+    color: var(--color-ink-3);
+    max-width: 16rem;
+  }
+  .dmd__titre {
+    font-weight: 650;
+    color: var(--color-ink-2);
+  }
+  .dmd__note {
+    line-height: 1.5;
+  }
+</style>

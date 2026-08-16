@@ -42,6 +42,57 @@ export interface Position {
   capo?: number | undefined;
 }
 
+/* ------------------------------------------------- doigté de la main qui pince */
+
+/**
+ * Doigts de la main qui pince, dans la notation espagnole universelle.
+ *
+ * ⚠️ Le 5ᵉ doigt est noté `c` — usage de Tennant, arrêté dans les conventions
+ * de CLAUDE.md. `ch`, `x` et `e` existent ailleurs ; on n'en change pas sans
+ * changer cette table, et le contenu ne stocke jamais la lettre affichée.
+ *
+ * La correspondance avec les `rf 1..5` de l'alphaTex a été **établie par la
+ * sonde de la tranche 0**, pas supposée : `rf 1` = pouce. La recherche pariait
+ * juste, mais rien ne le garantissait — un décalage d'un cran aurait faussé
+ * toutes les tablatures du corpus.
+ */
+export type DoigtMD = 'p' | 'i' | 'm' | 'a' | 'c';
+
+const NOM_MD: Record<DoigtMD, string> = {
+  p: 'pouce',
+  i: 'index',
+  m: 'majeur',
+  a: 'annulaire',
+  c: 'auriculaire',
+};
+
+export const nomDoigtMD = (d: DoigtMD): string => NOM_MD[d];
+
+/** Ordre naturel de la main, du pouce vers l'auriculaire. */
+export const ORDRE_MD: readonly DoigtMD[] = ['p', 'i', 'm', 'a', 'c'];
+
+export interface Assignation {
+  /** Corde 1 = la plus aiguë. */
+  corde: number;
+  doigt: DoigtMD;
+}
+
+export interface DoigteMD {
+  titre: string;
+  assignations: Assignation[];
+  note?: string | undefined;
+}
+
+/**
+ * L'assignation dite en toutes lettres, pour `aria-label`.
+ * Énumérée de la corde grave à l'aiguë, comme on regarde l'instrument.
+ */
+export function decrireDoigteMD(d: DoigteMD): string {
+  const parCorde = [...d.assignations].sort((a, b) => b.corde - a.corde);
+  const bouts = parCorde.map((a) => `corde ${a.corde} au ${nomDoigtMD(a.doigt)}`);
+  return `${d.titre} : ${bouts.join(', ')}.`;
+}
+
 /* ------------------------------------------------------- chiffres romains */
 
 const ROMAINS = [

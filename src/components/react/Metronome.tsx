@@ -103,13 +103,27 @@ export default function Metronome({ bpm, onBpm: setBpm }: MetronomeProps) {
     }
   }, []);
 
-  const appliquer = (id: string) => {
+  const appliquer = useCallback((id: string) => {
     const p = MOTIFS.find((m) => m.id === id);
     if (!p) return;
     setPreset(id);
     setParPulsation(p.parPulsation);
     setMotif([...p.motif]);
-  };
+  }, []);
+
+  /**
+   * `?motif=<id>` — une fiche peut ouvrir l'atelier déjà réglé sur le clic
+   * déplacé que son critère demande.
+   *
+   * ⚠️ Lu **dans l'îlot**, jamais dans le frontmatter Astro : le site est
+   * construit en statique et `Astro.url.searchParams` y est vide. C'est
+   * exactement le défaut trouvé en tranche 6 sur `?technique=`, où la
+   * présélection ne marchait pour personne sans que rien ne le signale.
+   */
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('motif');
+    if (id) appliquer(id);
+  }, [appliquer]);
 
   const basculerPosition = (i: number) => {
     setMotif((m) => m.map((a, j) => (j === i ? SUIVANT[a] : a)));

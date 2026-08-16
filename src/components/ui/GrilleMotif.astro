@@ -1,0 +1,97 @@
+---
+/**
+ * Un motif de métronome, en une rangée de cellules.
+ *
+ * Rendu pur de `MOTIFS` (src/lib/metronome.ts) : le contenu ne stocke que
+ * `fort | faible | muet`, le dessin est produit ici. Décision 9, sans
+ * exception — changer de représentation ne demande de toucher à aucune donnée.
+ *
+ * **Pourquoi ça vaut un composant.** Les autodiagnostics du corpus reposent sur
+ * un clic **déplacé** — « sur la 2ᵉ note du cycle » pour le trémolo, « sur les
+ * temps 2 et 4 » pour le placement rythmique. C'est précisément ce qui justifie
+ * l'existence d'un second métronome dans le projet, et c'était jusqu'ici décrit
+ * en prose seule. Un motif se comprend d'un coup d'œil et se raconte mal.
+ */
+import type { Accent } from '~/lib/metronome';
+
+interface Props {
+  motif: readonly Accent[];
+  /** Positions par pulsation. 4 = doubles-croches, 1 = noires. */
+  parPulsation?: number;
+  /** Variable CSS d'accent. */
+  colorVar?: string | undefined;
+  class?: string | undefined;
+}
+
+const { motif, parPulsation = 1, colorVar, class: className = '' } = Astro.props;
+const accent = colorVar ? `var(${colorVar})` : 'var(--c-brass)';
+
+const NOM: Record<Accent, string> = {
+  fort: 'clic accentué',
+  faible: 'clic',
+  muet: 'silence',
+};
+
+/**
+ * Le motif dit en toutes lettres. Sans ça le diagramme n'existe pas pour un
+ * lecteur d'écran — et c'est le genre d'information qu'on ne peut pas deviner
+ * d'une rangée de carrés.
+ */
+const label = `Cycle de ${motif.length} positions : ${motif
+  .map((a, i) => `${i + 1} ${NOM[a]}`)
+  .join(', ')}.`;
+---
+
+<div class:list={['gm', className]} style={`--accent:${accent}`} role="img" aria-label={label}>
+  {
+    motif.map((a, i) => (
+      <span
+        class:list={[
+          'gm__c',
+          `gm__c--${a}`,
+          /* Début de pulsation : c'est ce qui permet de voir qu'un clic tombe
+             entre deux appuis plutôt que dessus. */
+          parPulsation > 1 && i % parPulsation === 0 && 'gm__c--pulsation',
+        ]}
+      />
+    ))
+  }
+</div>
+
+<style>
+  .gm {
+    display: inline-flex;
+    gap: 3px;
+    align-items: stretch;
+  }
+
+  .gm__c {
+    inline-size: 0.85rem;
+    block-size: 1.35rem;
+    border-radius: 3px;
+    border: 1px solid var(--color-line-strong);
+    background: transparent;
+  }
+
+  /* Trois états franchement distincts : plein, contour, vide. On doit pouvoir
+     les séparer en niveaux de gris, à l'impression comme en vision réduite. */
+  .gm__c--fort {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .gm__c--faible {
+    background: color-mix(in oklab, var(--accent) 26%, transparent);
+    border-color: color-mix(in oklab, var(--accent) 55%, transparent);
+  }
+  .gm__c--muet {
+    background: transparent;
+    border-style: dashed;
+    border-color: var(--color-line);
+  }
+
+  /* Le repère de pulsation est un filet sous la cellule, pas une couleur de
+     plus : trois états suffisent, un quatrième les brouillerait. */
+  .gm__c--pulsation {
+    box-shadow: 0 3px 0 -1px var(--color-ink-3);
+  }
+</style>

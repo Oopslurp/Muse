@@ -267,7 +267,7 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | 9 | **Publication** | Licences, page « À propos », réserve santé, GitHub Pages, intégration continue | ✅ **close** |
 | 10 | **Le site s'adresse au public** | Journal de chantier retiré, portes d'entrée, garde-fou des mots collés | ✅ **close** |
 | 11 | **Diagrammes de manche** | Positions dérivées des données, barré de la décision 9 enfin livré | ✅ **close** |
-| 12 | Diagrammes restants | Doigté main droite, grilles de motifs | ⏳ |
+| 12 | **Doigté et motifs** | Assignation de la main qui pince, grilles de clic déplacé | ✅ **close** |
 
 > **[docs/dette.md](docs/dette.md) recense ce qui est imparfait, incomplet ou non vérifié**, avec les décisions qui attendent une réponse. Le tenir à jour à chaque tranche : un défaut connu qui n'est écrit nulle part est un défaut oublié.
 
@@ -671,6 +671,22 @@ Le contrôle ne regarde que les frontières **à l'intérieur d'un bloc**, entre
 ⚠️ **Quand montrer le sillet — deux essais faux avant le bon.** Sans règle, un mi mineur (cases 2, quatre cordes à vide) s'affichait en « position 2 » avec des ronds de corde à vide au-dessus : deux repères contradictoires. Avec « une corde à vide impose le sillet », un demi-barré case 5 dont la corde 6 sonne à vide se dessinait sur cinq rangées depuis le sillet — exact, et illisible. **Le seuil est celui de la main, pas des cordes** : sillet si la case la plus basse est ≤ 3, sinon numéro de case, et le rond garde son sens habituel.
 
 **Invariant de build** : deux entrées sur une même corde font échouer la construction, comme pour les tablatures depuis la tranche 8a. Le danger propre au diagramme est qu'il rend l'erreur **crédible** — deux pastilles alignées ont l'air d'un accord. Vérifié en échec.
+
+### Doigté de la main qui pince, et motifs (tranche 12)
+
+Les deux diagrammes qui restaient du plan, tous deux **dérivés de données existantes**.
+
+**[DiagrammeMainDroite](src/components/ui/DiagrammeMainDroite.astro) rend une règle, pas une transcription.** « Le pouce prend les cordes 6, 5 et 4, l'index la 3 » est une assignation énoncée par les méthodes et transcrite dans les `rf` de chaque tablature du corpus — c'est du contenu légitime, au même titre qu'un prérequis. Le contenu stocke la lettre espagnole ; `nomDoigtMD` produit « pouce », « index »…
+
+⚠️ Le 5ᵉ doigt est `c` (usage Tennant) et la correspondance `rf 1` = pouce vient de la **sonde de la tranche 0**, pas d'une supposition : un décalage d'un cran aurait faussé tout le corpus.
+
+**Invariant** : une corde assignée deux fois, ou un doigt sur deux cordes, font échouer le build — **sauf le pouce**, dont le rôle est justement de couvrir plusieurs basses. Vérifié en échec.
+
+**[GrilleMotif](src/components/ui/GrilleMotif.astro) sert là où le motif n'existait qu'en prose.** Le métronome de l'atelier affiche déjà son cycle en cellules cliquables ; le manque était sur les **critères de palier** — « placer le métronome sur la deuxième note du cycle » ne se visualise pas en le lisant, et c'est précisément l'autodiagnostic qui justifie le métronome maison du projet.
+
+`palier.motifMetronome` porte un identifiant de `MOTIFS`, **dont l'existence est vérifiée au build** (même classe d'erreur qu'un prérequis mort). Un seul palier du corpus le porte aujourd'hui — le test du décalage du trémolo. `placement-rythmique` a le même besoin mais c'est une fiche courte, sans paliers : son clic déplacé vit dans un diagnostic d'erreur, et je n'ai pas inventé de palier pour lui faire une place.
+
+⚠️ **Le lien « régler l'atelier » aurait pu mentir.** `/pratique?motif=<id>` ne réglait rien tant que l'îlot ne lisait pas le paramètre — exactement le défaut de `?technique=` trouvé en tranche 6, où la présélection ne marchait pour personne. Lu **dans l'îlot**, jamais dans le frontmatter : `Astro.url.searchParams` est vide au build d'un site statique. Vérifié au navigateur : sans paramètre `fort·faible·faible·faible`, avec `muet·fort·muet·muet`.
 
 ### Conventions alphaTex établies par la sonde
 

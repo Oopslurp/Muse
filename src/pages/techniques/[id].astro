@@ -14,6 +14,7 @@ import SuiviFiche from '~/components/react/SuiviFiche';
 import { construireGraphe } from '~/lib/graph';
 import { provenanceLien } from '~/lib/provenance';
 import DiagrammeManche from '~/components/ui/DiagrammeManche.astro';
+import DiagrammeMainDroite from '~/components/ui/DiagrammeMainDroite.astro';
 import { familyById } from '~/lib/taxonomy';
 
 export const getStaticPaths = (async () => {
@@ -69,7 +70,7 @@ const sections = [
   d.paliers.length > 0 && { href: '#progression', label: 'Progression' },
   d.erreurs.length > 0 && { href: '#erreurs', label: 'Erreurs & autodiagnostic' },
   d.exercices.length > 0 && { href: '#exercices', label: 'Exercices' },
-  d.positions.length > 0 && { href: '#positions', label: 'Positions' },
+  (d.positions.length > 0 || d.doigtesMD.length > 0) && { href: '#positions', label: 'Positions' },
   d.repertoire.length > 0 && { href: '#repertoire', label: 'Répertoire' },
   d.sources.length > 0 && { href: '#sources', label: 'Sources' },
 ].filter((x): x is { href: string; label: string } => Boolean(x));
@@ -156,18 +157,33 @@ const sections = [
         }
 
         {
-          d.positions.length > 0 && (
+          (d.positions.length > 0 || d.doigtesMD.length > 0) && (
             <section id="positions" class="bloc">
               <h2>Positions</h2>
+              {/* La note dépend de ce qui est réellement affiché : parler de
+                  cases sur une fiche qui n'a qu'un doigté serait faux. */}
               <p class="bloc__note">
-                Les mêmes cordes et les mêmes cases que les exercices ci-dessus,
-                vues de face. Une corde laissée vide n’est pas une corde
-                étouffée&nbsp;: elle ne fait simplement pas partie de cette
-                position.
+                {d.positions.length > 0 && (
+                  <>
+                    Les mêmes cordes et les mêmes cases que les exercices
+                    ci-dessus, vues de face. Une corde laissée vide n’est pas une
+                    corde étouffée&nbsp;: elle ne fait simplement pas partie de
+                    cette position.{' '}
+                  </>
+                )}
+                {d.doigtesMD.length > 0 && (
+                  <>
+                    L’assignation des doigts est une règle de la technique, pas
+                    la transcription d’un exercice.
+                  </>
+                )}
               </p>
               <div class="positions">
                 {d.positions.map((p) => (
                   <DiagrammeManche position={p} colorVar={famille.colorVar} />
+                ))}
+                {d.doigtesMD.map((g) => (
+                  <DiagrammeMainDroite doigte={g} colorVar={famille.colorVar} />
                 ))}
               </div>
             </section>
