@@ -10,7 +10,7 @@ import { corpus } from '~/lib/corpus';
 import { NAV } from '~/lib/nav';
 
 const c = await corpus();
-const sections = NAV.filter((n) => n.ready);
+const sections = NAV;
 ---
 
 <BaseLayout title="Page introuvable" description="Cette adresse ne correspond à rien sur Muse.">

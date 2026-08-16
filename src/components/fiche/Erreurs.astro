@@ -52,7 +52,7 @@ const { erreurs, nomsTechniques, fiche } = Astro.props;
 
         {e.renvoi.length > 0 && (
           <p class="renvoi">
-            Cause possible ailleurs&nbsp;:
+            Cause possible ailleurs&nbsp;:{' '}
             {e.renvoi.map((id, i) => (
               <>
                 {i > 0 && ', '}

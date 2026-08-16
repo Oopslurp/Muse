@@ -8,9 +8,7 @@ import Callout from '~/components/ui/Callout.astro';
 import Button from '~/components/ui/Button.astro';
 import { FAMILIES, STATUSES } from '~/lib/taxonomy';
 import { corpus } from '~/lib/corpus';
-import { TRANCHES } from '~/lib/nav';
 
-const done = TRANCHES.filter((t) => t.done).length;
 const c = await corpus();
 ---
 
@@ -37,7 +35,7 @@ const c = await corpus();
         <Button href="/techniques" variant="primary">
           Parcourir les {c.fiches} fiches
         </Button>
-        <Button href="/style-guide" variant="secondary">Voir le design system</Button>
+        <Button href="/accordeur" variant="secondary">Accorder ma guitare</Button>
       </div>
 
       <dl class="specs">
@@ -53,9 +51,12 @@ const c = await corpus();
           <dt>Fiches</dt>
           <dd>{c.fiches}</dd>
         </div>
+        {/* Le quatrième chiffre dit ce que le site revendique : il compte ce
+            qu'il ne sait pas encore. C'est la mesure la plus honnête qu'on
+            puisse afficher, et la seule qui distingue vraiment ce corpus. */}
         <div>
-          <dt>Tranches livrées</dt>
-          <dd>{done}<span class="specs__of">/{TRANCHES.length}</span></dd>
+          <dt>Points à vérifier</dt>
+          <dd>{c.doutes}</dd>
         </div>
       </dl>
     </div>
@@ -185,7 +186,7 @@ const c = await corpus();
       <p>
         Jusqu'à <strong>89&nbsp;% des musiciens</strong> rapportent une blessure
         professionnelle au cours de leur carrière, et la douleur poignet-main est
-        la plus fréquente. Dans un centre de médecine des arts du spectacle,
+        la plus fréquente. Dans un centre de médecine des arts du spectacle,{' '}
         <strong>42&nbsp;% des musiciens atteints de dystonie focale étaient des
         guitaristes</strong>.
       </p>
@@ -206,57 +207,45 @@ const c = await corpus();
       <p class="sante__reserve">
         Ces chiffres décrivent des populations, pas votre main, et une partie des
         valeurs proposées ici sont des déductions prudentes plutôt que des seuils
-        mesurés. <strong>Ce site n'est pas un avis médical</strong> —
+        mesurés. <strong>Ce site n'est pas un avis médical</strong> —{' '}
         <a href="/a-propos">ce qu'il est et ce qu'il n'est pas</a>.
       </p>
     </Callout>
   </section>
 
   <!-- ================================================================== -->
-  <!-- Chantier                                                           -->
+  <!-- Par où commencer                                                   -->
   <!-- ================================================================== -->
-  <section class="section" aria-labelledby="chantier">
+  <section class="section" aria-labelledby="commencer">
     <header class="section__head">
-      <p class="eyebrow">État du chantier</p>
-      <h2 id="chantier" class="section__title">Ce qui existe, ce qui vient</h2>
-      <p class="section__lede">
-        Le site se construit par tranches. Rien n'est masqué&nbsp;: ce qui n'est
-        pas fait est listé comme tel.
-      </p>
+      <p class="eyebrow">Par où commencer</p>
+      <h2 id="commencer" class="section__title">Trois portes d'entrée</h2>
     </header>
 
-    <ol class="tranches">
-      {
-        TRANCHES.map((t) => (
-          <li class:list={['tranche', t.done && 'tranche--done']}>
-            <span class="tranche__n" aria-hidden="true">
-              {t.n}
-            </span>
-            <div class="tranche__body">
-              <p class="tranche__label">
-                {t.label}
-                {t.done && (
-                  <span class="tranche__flag">
-                    <span class="sr-only">livrée</span>
-                    <svg viewBox="0 0 16 16" aria-hidden="true">
-                      <path
-                        d="M3 8.4 6.2 11.6 13 4.8"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
-                  </span>
-                )}
-              </p>
-              <p class="tranche__detail">{t.detail}</p>
-            </div>
-          </li>
-        ))
-      }
-    </ol>
+    <div class="grid grid--3">
+      <Card href="/arbre">
+        <h3 class="porte__titre">Suivre le parcours</h3>
+        <p class="porte__texte">
+          Le graphe des prérequis, des points d'entrée jusqu'aux techniques les
+          plus exigeantes. Ce qui est ouvert maintenant s'y voit d'un coup d'œil.
+        </p>
+      </Card>
+      <Card href="/techniques">
+        <h3 class="porte__titre">Chercher un geste</h3>
+        <p class="porte__texte">
+          Les {c.fiches} fiches, filtrables par famille, difficulté, style et
+          statut. On y cherche aussi par symptôme&nbsp;: c'est souvent ce dont on
+          se souvient.
+        </p>
+      </Card>
+      <Card href="/accordeur">
+        <h3 class="porte__titre">S'accorder</h3>
+        <p class="porte__texte">
+          Chromatique, 13 accordages, affiché sur une tête de manche pour tourner
+          la bonne clé sans traduire. Le micro ne quitte pas la page.
+        </p>
+      </Card>
+    </div>
   </section>
 </BaseLayout>
 
@@ -318,8 +307,15 @@ const c = await corpus();
     padding-top: 1.5rem;
     border-top: 1px solid var(--color-line);
   }
+  /* Les libellés n'ont pas tous la même longueur : « Fiches approfondies »
+     passe à deux lignes et poussait son chiffre plus bas que les autres. La
+     ligne d'étiquettes prend donc la hauteur de la plus haute, et les quatre
+     nombres retombent sur la même ligne de base — c'est ce qui les fait lire
+     comme un tableau plutôt que comme quatre blocs indépendants. */
   .specs div {
     min-width: 0;
+    display: grid;
+    grid-template-rows: 1fr auto;
   }
   .specs dt {
     font-size: var(--text-2xs);
@@ -519,71 +515,18 @@ const c = await corpus();
     color: var(--color-ink-2);
   }
 
-  /* ------------------------------------------------------------ tranches */
-  .tranches {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border-top: 1px solid var(--color-line);
-  }
-  .tranche {
-    display: grid;
-    grid-template-columns: 2.6rem 1fr;
-    gap: 1.1rem;
-    align-items: baseline;
-    padding: 1rem 0.25rem;
-    border-bottom: 1px solid var(--color-line);
-    opacity: 0.55;
-  }
-  .tranche--done {
-    opacity: 1;
-  }
-  .tranche__n {
-    font-family: var(--font-display);
-    font-variation-settings: 'opsz' 48, 'WONK' 0;
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: var(--color-ink-3);
-    font-variant-numeric: tabular-nums lining-nums;
-  }
-  .tranche--done .tranche__n {
-    color: var(--color-brass);
-  }
-  .tranche__label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0;
+  /* -------------------------------------------------------------- portes */
+  .porte__titre {
+    margin: 0 0 0.5rem;
+    font-size: var(--text-lg);
     font-weight: 650;
-    font-size: var(--text-base);
+    line-height: 1.25;
   }
-  .tranche__flag {
-    display: inline-grid;
-    place-items: center;
-    width: 1.05rem;
-    height: 1.05rem;
-    color: var(--color-observe);
-  }
-  .tranche__flag svg {
-    width: 100%;
-    height: 100%;
-  }
-  .tranche__detail {
-    margin: 0.25rem 0 0;
+  .porte__texte {
+    margin: 0;
     font-size: var(--text-sm);
-    color: var(--color-ink-3);
-    line-height: 1.55;
-  }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
+    line-height: 1.6;
+    color: var(--color-ink-2);
   }
 
   /* ---------------------------------------------------------- responsive */

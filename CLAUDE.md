@@ -265,7 +265,8 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | 8a | **Reprise — correction** | Provenance par affirmation, accessibilité mesurée, signaux santé, intégrité des données | ✅ **close** |
 | 8b | **Reprise — confort et dette** | Le reste de [docs/dette.md](docs/dette.md), tests, métadonnées du dépôt | ✅ **close** |
 | 9 | **Publication** | Licences, page « À propos », réserve santé, GitHub Pages, intégration continue | ✅ **close** |
-| 10 | Diagrammes dérivés | Manche, doigté main droite, grilles de motifs — depuis les données seules | ⏳ |
+| 10 | **Le site s'adresse au public** | Journal de chantier retiré, portes d'entrée, garde-fou des mots collés | ✅ **close** |
+| 11 | Diagrammes dérivés | Manche, doigté main droite, grilles de motifs — depuis les données seules | ⏳ |
 
 > **[docs/dette.md](docs/dette.md) recense ce qui est imparfait, incomplet ou non vérifié**, avec les décisions qui attendent une réponse. Le tenir à jour à chaque tranche : un défaut connu qui n'est écrit nulle part est un défaut oublié.
 
@@ -350,7 +351,7 @@ npm run test:journal     # agrégation du journal (12 cas)
 npm run test:sauvegarde  # lecture d'une sauvegarde, idempotence (20 cas)
 
 npm run shot          # captures de contrôle dans .captures/ (Chrome headless)
-npm run audit:console # exceptions, erreurs console, îlots vides, débordement
+npm run audit:console # exceptions, îlots vides, débordement, mots collés
 npm run audit:lecture # appuie sur « lire » et vérifie que le curseur avance
 npm run audit:accordeur # joue un mi2 détendu dans un faux micro, lit l'écran
 npm run audit:progression # note une technique, recharge, vérifie qu'elle a tenu
@@ -636,6 +637,20 @@ Le site passe d'« écrit pour un praticien » à « publié tel quel ». Rien n
 **Sitemap et robots.txt** (K15, remontés aussi : ils ne servaient à rien tant que le site n'était publié nulle part). ⚠️ `robots.txt` est un **endpoint**, pas un fichier statique : la directive `Sitemap:` exige une URL absolue et le domaine n'est connu qu'au build.
 
 **Défaut trouvé en regardant l'image, pas le HTML** : Astro supprime l'espace quand un saut de ligne sépare du texte d'un élément (`… porte\n<strong>44</strong>` rend « porte44 »). Trois occurrences sur la page neuve, corrigées par `{' '}`. Un balayage automatique du reste du site n'a rien donné de concluant — trop de faux positifs entre éléments voisins.
+
+### Le site s'adresse au public (tranche 10)
+
+La tranche 9 avait traité le **cadre** — licences, réserve santé, déploiement. Celle-ci traite le **texte** : le site parlait encore de lui-même comme d'un chantier en cours, ce qu'un visiteur n'a aucune raison de lire.
+
+**Le journal de chantier quitte l'écran.** La section « État du chantier » de l'accueil listait les tranches livrées ; la spec « Tranches livrées 8/9 » les comptait ; `nav.ts` portait un mécanisme d'avancement (`ready`, `tranche`) qui affichait les sections non livrées, désactivées et numérotées. Tout est retiré — ce mécanisme n'avait plus rien à annoncer une fois la dernière section livrée, et **cette histoire vit dans le dépôt, pas à l'écran**.
+
+Le quatrième chiffre de l'accueil devient **« Points à vérifier : 44 »**. C'est la seule statistique qui distingue vraiment ce corpus : le site compte ce qu'il ne sait pas encore et l'affiche au même rang que ce qu'il sait.
+
+**L'accueil se termine par trois portes d'entrée** au lieu d'une liste de tranches, et le second bouton du bandeau mène à l'accordeur plutôt qu'au design system — qui reste en ligne mais sort du pied de page. Un visiteur venu pour la guitare n'a rien à faire dans une vitrine de composants.
+
+⚠️ **Un garde-fou neuf : `audit:console` détecte les mots collés à une balise.** Astro supprime l'espace quand un saut de ligne sépare du texte d'un élément — `… porte\n<strong>44</strong>` rend « porte44 ». Le code source paraît juste, le HTML est valide, rien ne le signale : **on ne le voit qu'en lisant la page**. J'en avais trouvé quatre à l'œil ; le contrôle en a sorti **six de plus** du premier coup, dont deux dans des composants de fiche vus des dizaines de fois (`Annexes`, `Paliers`).
+
+Le contrôle ne regarde que les frontières **à l'intérieur d'un bloc**, entre un nœud de texte et un élément en ligne voisin, et laisse passer les collages légitimes (`l'<em>`, `mi-<em>`, ponctuation). Vérifié en échec en retirant un `{' '}`.
 
 ### Conventions alphaTex établies par la sonde
 

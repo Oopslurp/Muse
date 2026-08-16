@@ -24,25 +24,13 @@ const path = Astro.url.pathname;
         {
           NAV.map((item) => (
             <li>
-              {item.ready ? (
-                <a
-                  href={item.href}
-                  class:list={['nav__link', path.startsWith(item.href) && 'is-current']}
-                  aria-current={path.startsWith(item.href) ? 'page' : undefined}
-                >
-                  {item.label}
-                </a>
-              ) : (
-                <span
-                  class="nav__link nav__link--soon"
-                  title={`Livré en tranche ${item.tranche}`}
-                >
-                  {item.label}
-                  <span class="soon" aria-label={`à venir, tranche ${item.tranche}`}>
-                    {item.tranche}
-                  </span>
-                </span>
-              )}
+              <a
+                href={item.href}
+                class:list={['nav__link', path.startsWith(item.href) && 'is-current']}
+                aria-current={path.startsWith(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
             </li>
           ))
         }
@@ -146,27 +134,6 @@ const path = Astro.url.pathname;
 
   a.nav__link.is-current {
     color: var(--color-brass);
-  }
-
-  .nav__link--soon {
-    color: var(--color-ink-3);
-    cursor: default;
-  }
-
-  /* Numéro de tranche : dit *quand* la section arrive, pas seulement
-     qu'elle manque. */
-  .soon {
-    display: inline-grid;
-    place-items: center;
-    min-width: 1.15em;
-    height: 1.15em;
-    padding: 0 0.28em;
-    border-radius: var(--radius-pill);
-    border: 1px solid var(--color-line-strong);
-    font-size: 0.62em;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--color-ink-3);
   }
 
   @media (max-width: 42rem) {

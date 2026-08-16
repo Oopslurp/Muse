@@ -129,7 +129,48 @@ for (const route of ROUTES) {
         })),
         debordement:
           document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        colles: motsColles(),
       });
+
+      /**
+       * Mots collés à une balise voisine — « porte44 », « spectacle,42 ».
+       *
+       * Astro supprime l'espace quand un saut de ligne sépare du texte d'un
+       * élément : \`… porte\\n<strong>44</strong>\` rend « porte44 ». Le code
+       * source paraît juste, le HTML est valide, et rien ne le signale — on ne
+       * le voit qu'en lisant la page. Quatre occurrences ont été trouvées à
+       * l'œil avant que ce contrôle n'existe.
+       *
+       * On ne regarde que les frontières **à l'intérieur d'un bloc**, entre un
+       * nœud de texte et un élément en ligne voisin. Les apostrophes et les
+       * traits d'union sont des collages légitimes (\`l'<em>\`, \`mi-<em>\`).
+       */
+      function motsColles() {
+        const EN_LIGNE = new Set(['STRONG', 'EM', 'B', 'I', 'A', 'SPAN', 'CODE', 'ABBR']);
+        const trouves = [];
+
+        for (const el of document.querySelectorAll('p, li, dd, dt, h1, h2, h3, figcaption')) {
+          for (const noeud of el.childNodes) {
+            if (noeud.nodeType !== Node.ELEMENT_NODE) continue;
+            if (!EN_LIGNE.has(noeud.tagName)) continue;
+
+            const avant = noeud.previousSibling;
+            if (!avant || avant.nodeType !== Node.TEXT_NODE) continue;
+
+            const gauche = avant.textContent;
+            const droite = noeud.textContent;
+            if (!gauche || !droite) continue;
+
+            const fin = gauche.slice(-1);
+            const debut = droite.slice(0, 1);
+            // Collage légitime : espace, apostrophe, trait d'union, ouvrante.
+            if (/[\\s'’\\-–(«"]/.test(fin) || /[\\s'’\\-–).,;:!?»"]/.test(debut)) continue;
+
+            trouves.push((gauche.slice(-14) + droite.slice(0, 12)).trim());
+          }
+        }
+        return trouves.slice(0, 6);
+      }
     })()`,
   });
 
@@ -139,6 +180,9 @@ for (const route of ROUTES) {
   // Un îlot vide après hydratation est le symptôme qui a motivé cet outil.
   for (const ile of etat.iles ?? []) {
     if (ile.contenu === 0) problemes.push(`îlot vide — ${ile.composant}`);
+  }
+  for (const colle of etat.colles ?? []) {
+    problemes.push(`mot collé à une balise : « ${colle} » — manque un {' '}`);
   }
   if ((etat.corps ?? 0) < 200) problemes.push(`page quasi vide (${etat.corps} caractères)`);
   if ((etat.debordement ?? 0) > 1) problemes.push(`débordement horizontal de ${etat.debordement} px`);

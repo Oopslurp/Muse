@@ -64,9 +64,12 @@ const aucuneEcoutee = ecoutes.length > 0 && ecoutes.every((e) => !e.ecoute);
               {e.compositeur && <span class="liste__auteur"> — {e.compositeur}</span>}
               {e.interprete && <span class="liste__auteur">, {e.interprete}</span>}
               {!e.ecoute && (
-                <span class="marque" title="Non écouté pour cette fiche">
-                  non écouté
-                </span>
+                <>
+                  {' '}
+                  <span class="marque" title="Non écouté pour cette fiche">
+                    non écouté
+                  </span>
+                </>
               )}
             </p>
             <p class="liste__note">{e.quoiEcouter}</p>
@@ -140,9 +143,12 @@ const aucuneEcoutee = ecoutes.length > 0 && ecoutes.every((e) => !e.ecoute);
                   {s.annee && `, ${s.annee}`}
                 </span>
                 {s.kind === 'video' && s.visionne === false && (
-                  <span class="marque" title="Qualifiée d'après sa description, pas visionnée">
-                    non visionnée
-                  </span>
+                  <>
+                    {' '}
+                    <span class="marque" title="Qualifiée d'après sa description, pas visionnée">
+                      non visionnée
+                    </span>
+                  </>
                 )}
               </p>
               <p class="liste__note">{pertinence}</p>

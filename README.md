@@ -4,8 +4,8 @@ Bibliothèque de référence des grandes techniques de guitare **fingerstyle** �
 classique et percussif moderne — avec **accordeur chromatique**, arbre de
 compétences et atelier de pratique.
 
-Écrite pour un praticien, publiée telle quelle. Aucun compte, aucun serveur :
-tout ce qui est enregistré vit dans votre navigateur et ressort en JSON.
+Écrite par un praticien, pas par une école. Aucun compte, aucun serveur : tout
+ce qui est enregistré vit dans votre navigateur et ressort en JSON.
 
 <!--
   Badge d'intégration continue : à ajouter une fois le dépôt créé, en
@@ -43,7 +43,7 @@ avec sa raison, dont neuf sur une seule fiche. Ils sont affichés, pas rangés.
 > ⚠️ `observé` est enregistré dans **votre** navigateur : vous arrivez donc sur
 > un corpus où rien n'est marqué observé, et les vérifications de l'auteur sont
 > encore à faire. C'est une limite réelle, expliquée sur la page
-> [À propos](src/pages/a-propos.astro).
+> « À propos » du site.
 
 **Les champs santé sont une contrainte de construction.** Une fiche sans durée
 maximale, sans signaux d'arrêt ordonnés du plus précoce au plus tardif et sans
@@ -106,7 +106,7 @@ npm run audit:lecture      # appuie sur « lire » et vérifie que le curseur av
 npm run audit:accordeur    # joue un mi2 détendu dans un faux micro, lit l'écran
 npm run audit:progression  # note une technique, recharge, vérifie qu'elle a tenu
 npm run audit:pratique     # compte les oscillateurs réellement programmés
-npm run audit:mobile       # 8 routes × 320 et 390 px
+npm run audit:mobile       # 9 routes × 320 et 390 px
 npm run audit:poids        # budget par route, aucun appel hors origine
 npm run audit:a11y         # contrastes et cibles, sur les couleurs rendues
 npm run audit:finitions    # recherche, impression, page introuvable
