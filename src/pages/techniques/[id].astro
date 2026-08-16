@@ -13,6 +13,8 @@ import Callout from '~/components/ui/Callout.astro';
 import SuiviFiche from '~/components/react/SuiviFiche';
 import { construireGraphe } from '~/lib/graph';
 import { provenanceLien } from '~/lib/provenance';
+import DiagrammeManche from '~/components/ui/DiagrammeManche.astro';
+import { familyById } from '~/lib/taxonomy';
 
 export const getStaticPaths = (async () => {
   const fiches = await getCollection('techniques');
@@ -38,6 +40,7 @@ const resoudre = (ids: string[]) =>
     .filter((x): x is NonNullable<typeof x> => x !== null)
     .sort((a, b) => a.code.localeCompare(b.code, 'fr'));
 
+const famille = familyById(d.famille);
 const noeud = graphe.noeuds.find((n) => n.id === fiche.id);
 // Chaque lien porte sa provenance — `déduit` par défaut (décision 1 appliquée
 // aux liens). « Débloque » est l'inverse d'un lien saisi ailleurs : sa
@@ -66,6 +69,7 @@ const sections = [
   d.paliers.length > 0 && { href: '#progression', label: 'Progression' },
   d.erreurs.length > 0 && { href: '#erreurs', label: 'Erreurs & autodiagnostic' },
   d.exercices.length > 0 && { href: '#exercices', label: 'Exercices' },
+  d.positions.length > 0 && { href: '#positions', label: 'Positions' },
   d.repertoire.length > 0 && { href: '#repertoire', label: 'Répertoire' },
   d.sources.length > 0 && { href: '#sources', label: 'Sources' },
 ].filter((x): x is { href: string; label: string } => Boolean(x));
@@ -147,6 +151,25 @@ const sections = [
             <section id="exercices" class="bloc">
               <h2>Exercices</h2>
               <Exercices exercices={d.exercices} fiche={fiche.id} />
+            </section>
+          )
+        }
+
+        {
+          d.positions.length > 0 && (
+            <section id="positions" class="bloc">
+              <h2>Positions</h2>
+              <p class="bloc__note">
+                Les mêmes cordes et les mêmes cases que les exercices ci-dessus,
+                vues de face. Une corde laissée vide n’est pas une corde
+                étouffée&nbsp;: elle ne fait simplement pas partie de cette
+                position.
+              </p>
+              <div class="positions">
+                {d.positions.map((p) => (
+                  <DiagrammeManche position={p} colorVar={famille.colorVar} />
+                ))}
+              </div>
             </section>
           )
         }
@@ -256,6 +279,20 @@ const sections = [
   .bloc__lede {
     max-width: 68ch;
     margin: 0 0 1.5rem;
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    color: var(--color-ink-3);
+  }
+
+  .positions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.75rem 2.25rem;
+    margin-top: 1.1rem;
+  }
+  .bloc__note {
+    margin: 0;
+    max-width: 60ch;
     font-size: var(--text-sm);
     line-height: 1.6;
     color: var(--color-ink-3);

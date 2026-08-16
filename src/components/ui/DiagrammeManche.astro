@@ -1,0 +1,292 @@
+---
+/**
+ * Diagramme de manche pour une **position** — un accord, un barré, un
+ * écartement — là où la tablature montre une séquence.
+ *
+ * Ce composant ne sait rien de plus que la tablature : il rend les mêmes
+ * couples corde/case, vus autrement. C'est la limite que la tranche 11 s'est
+ * fixée (CLAUDE.md, décision 2) — on compose ce que les données portent déjà
+ * et qu'un invariant valide, jamais une anatomie qu'il faudrait inventer.
+ *
+ * En SVG et sans une ligne de JavaScript : le dessin ne dépend que du build,
+ * il suit le thème par les jetons `--c-*`, et il ne coûte rien au chargement.
+ *
+ * ⚠️ Le manche se lit **grave à gauche**, comme on regarde l'instrument posé
+ * devant soi. L'ordre interne reste corde 1 = aiguë (convention du projet) ;
+ * l'inversion se fait ici, à l'affichage, exactement comme pour la tête de
+ * manche de l'accordeur.
+ */
+import { ACCORDAGES } from '~/lib/notes';
+import {
+  decrirePosition,
+  fenetre,
+  libelleBarre,
+  detailBarre,
+  type Position,
+} from '~/lib/position';
+
+interface Props {
+  position: Position;
+  /** Identifiant d'accordage. Le standard couvre tout le corpus classique. */
+  accordage?: keyof typeof ACCORDAGES;
+  /** Variable CSS d'accent — en général celle de la famille de la fiche. */
+  colorVar?: string | undefined;
+  class?: string | undefined;
+}
+
+const {
+  position: p,
+  accordage = 'standard',
+  colorVar,
+  class: className = '',
+} = Astro.props;
+
+const accord = ACCORDAGES[accordage];
+const cordes = accord.length;
+const { premiere, derniere } = fenetre(p);
+const nbCases = derniere - premiere + 1;
+
+/* --------------------------------------------------------------- grille */
+/* Unités arbitraires : le SVG est mis à l'échelle par le CSS, seules les
+   proportions comptent. */
+const PAS_X = 22; // entre deux cordes
+const PAS_Y = 26; // entre deux cases
+const MARGE_H = 26; // place pour les pastilles « à vide » et « étouffée »
+const MARGE_B = 14;
+/* Place pour le numéro de case. Calibré sur **deux** chiffres : les positions
+   au-delà de la case 10 existent (le barré CXII du corpus), et une marge juste
+   pour un chiffre les rognerait sans que rien ne le signale. */
+const MARGE_G = 30;
+
+const largeur = MARGE_G + (cordes - 1) * PAS_X + 20;
+const hauteur = MARGE_H + nbCases * PAS_Y + MARGE_B;
+
+/** Corde 1 (aiguë) est à droite : le manche se lit grave à gauche. */
+const x = (corde: number) => MARGE_G + (cordes - corde) * PAS_X;
+/** Le doigt se pose entre deux frettes, d'où le demi-pas. */
+const y = (numCase: number) => MARGE_H + (numCase - premiere + 0.5) * PAS_Y;
+/** Ligne de frette, à la limite basse de la case. */
+const yFrette = (numCase: number) => MARGE_H + (numCase - premiere + 1) * PAS_Y;
+
+const auSillet = premiere === 1;
+const accent = colorVar ? `var(${colorVar})` : 'var(--c-brass)';
+
+const parCorde = new Map(p.frettes.map((f) => [f.corde, f]));
+const description = decrirePosition(p, accord);
+const label = `${p.titre}. ${description}`;
+
+/** Cordes couvertes par le barré : le demi-barré s'arrête à la moitié aiguë. */
+const barreDe = p.barre ? (p.barre.type === 'demi' ? Math.ceil(cordes / 2) : cordes) : 0;
+---
+
+<figure class:list={['dgm', className]} style={`--accent:${accent}`}>
+  <svg
+    viewBox={`0 0 ${largeur} ${hauteur}`}
+    class="dgm__svg"
+    role="img"
+    aria-label={label}
+  >
+    {/* Cases : les chiffres romains désignent la position sur le manche,
+        convention des méthodes classiques (décision 9). */}
+    {
+      Array.from({ length: nbCases }, (_, i) => premiere + i).map((n) => (
+        <>
+          <line
+            x1={MARGE_G}
+            y1={yFrette(n)}
+            x2={MARGE_G + (cordes - 1) * PAS_X}
+            y2={yFrette(n)}
+            class="dgm__frette"
+          />
+          {n === premiere && !auSillet && (
+            <text x={MARGE_G - 8} y={y(n) + 4} class="dgm__case" text-anchor="end">
+              {n}
+            </text>
+          )}
+        </>
+      ))
+    }
+
+    {/* Sillet : trait épais. Sa présence dit qu'on est en première position. */}
+    <line
+      x1={MARGE_G}
+      y1={MARGE_H}
+      x2={MARGE_G + (cordes - 1) * PAS_X}
+      y2={MARGE_H}
+      class:list={['dgm__haut', auSillet && 'dgm__haut--sillet']}
+    />
+
+    {/* Cordes. La plus grave est la plus épaisse — c'est ce qui permet de
+        s'orienter sans compter. */}
+    {
+      Array.from({ length: cordes }, (_, i) => i + 1).map((corde) => (
+        <line
+          x1={x(corde)}
+          y1={MARGE_H}
+          x2={x(corde)}
+          y2={MARGE_H + nbCases * PAS_Y}
+          class="dgm__corde"
+          style={`stroke-width:${0.7 + (corde - 1) * 0.16}`}
+        />
+      ))
+    }
+
+    {/* Barré, avant les doigts : il passe dessous. */}
+    {
+      p.barre && (
+        <line
+          x1={x(1)}
+          y1={y(p.barre.case)}
+          x2={x(barreDe)}
+          y2={y(p.barre.case)}
+          class="dgm__barre"
+        >
+          <title>{detailBarre(p.barre)}</title>
+        </line>
+      )
+    }
+
+    {/* Doigts, cordes à vide et cordes étouffées. */}
+    {
+      Array.from({ length: cordes }, (_, i) => i + 1).map((corde) => {
+        const f = parCorde.get(corde);
+        if (!f) return null;
+
+        if (f.case === null) {
+          return (
+            <g class="dgm__muet">
+              <line x1={x(corde) - 4} y1={12} x2={x(corde) + 4} y2={20} />
+              <line x1={x(corde) - 4} y1={20} x2={x(corde) + 4} y2={12} />
+            </g>
+          );
+        }
+        if (f.case === 0) {
+          return <circle cx={x(corde)} cy={16} r={4.5} class="dgm__vide" />;
+        }
+        return (
+          <g>
+            <circle cx={x(corde)} cy={y(f.case)} r={8} class="dgm__doigt" />
+            {f.doigt && (
+              <text x={x(corde)} y={y(f.case) + 3.6} class="dgm__num" text-anchor="middle">
+                {f.doigt}
+              </text>
+            )}
+          </g>
+        );
+      })
+    }
+  </svg>
+
+  <figcaption class="dgm__pied">
+    <span class="dgm__titre">{p.titre}</span>
+    {
+      p.barre && (
+        <span class="dgm__sigle" title={detailBarre(p.barre)}>
+          {libelleBarre(p.barre)}
+        </span>
+      )
+    }
+    {p.capo && <span class="dgm__capo">capo {p.capo}</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .dgm {
+    margin: 0;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .dgm__svg {
+    /* Le diagramme garde une taille lisible sans s'étirer : un manche démesuré
+       se lit moins bien qu'un petit, pas mieux. */
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    /* 1 unité SVG ≈ 1 px à taille de lecture ordinaire. */
+    inline-size: min(11rem, 100%);
+  }
+
+  /* `--color-line` est trop pâle pour un trait de 0,8 unité en thème sombre :
+     la grille disparaissait. Même constat que pour les portées d'alphaTab en
+     tranche 3, qui ont dû passer à `--c-ink-3`. */
+  .dgm__frette,
+  .dgm__haut {
+    stroke: var(--color-line-strong);
+    stroke-width: 1;
+  }
+  /* Le sillet est le seul repère absolu du dessin : il mérite son épaisseur. */
+  .dgm__haut--sillet {
+    stroke: var(--color-ink-3);
+    stroke-width: 3.5;
+    stroke-linecap: square;
+  }
+  .dgm__corde {
+    stroke: var(--color-line-strong);
+  }
+  .dgm__case {
+    fill: var(--color-ink-3);
+    font-size: 11px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .dgm__barre {
+    stroke: var(--accent);
+    stroke-width: 15;
+    stroke-linecap: round;
+    opacity: 0.35;
+  }
+  .dgm__doigt {
+    fill: var(--accent);
+  }
+  .dgm__num {
+    /* L'encre du fond, pas du thème : la pastille est pleine et colorée, le
+       chiffre doit rester lisible dans les deux thèmes. */
+    fill: var(--color-bg);
+    font-size: 10px;
+    font-weight: 700;
+    font-variant-numeric: lining-nums;
+  }
+
+  .dgm__vide {
+    fill: none;
+    stroke: var(--color-ink-3);
+    stroke-width: 1.4;
+  }
+  .dgm__muet line {
+    stroke: var(--color-ink-3);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+
+  .dgm__pied {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: var(--text-2xs);
+    color: var(--color-ink-3);
+    text-align: center;
+  }
+  .dgm__titre {
+    font-weight: 650;
+    color: var(--color-ink-2);
+  }
+  .dgm__sigle {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  @media print {
+    /* Le barré en aplat translucide disparaît à l'impression noir et blanc. */
+    .dgm__barre {
+      opacity: 1;
+      stroke: #bbb;
+    }
+  }
+</style>

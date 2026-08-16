@@ -66,6 +66,11 @@ const VUES = [
   { nom: 'a-propos', route: '/a-propos' },
   { nom: 'a-propos-clair', route: '/a-propos', theme: 'light' },
   { nom: 'design-system', route: '/style-guide' },
+  // Les diagrammes de manche : composés des mêmes données que la tablature.
+  { nom: 'diagrammes', route: '/style-guide', ancre: '#diagrammes' },
+  { nom: 'diagrammes-clair', route: '/style-guide', ancre: '#diagrammes', theme: 'light' },
+  // Et en situation, sur la fiche qui les justifie.
+  { nom: 'positions-fiche', route: '/techniques/barre', ancre: '#positions' },
   { nom: 'liste-mobile', route: '/techniques', largeur: 390, hauteur: 1400 },
   { nom: 'pratique', route: '/pratique?technique=tremolo', pause: 1500 },
   { nom: 'pratique-clair', route: '/pratique?technique=tremolo', theme: 'light', pause: 1500 },

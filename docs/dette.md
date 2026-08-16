@@ -149,6 +149,27 @@ contraire.
 
 ---
 
+### B10 🟠 Une fiche longue n'a pas de point d'entrée
+
+`apoyando-tirando` fait **11 538 px de haut**. Dans l'ordre : le son visé,
+une justification éditoriale, quatre sections d'anatomie — puis seulement la
+progression, les erreurs, et les exercices tout en bas. La colonne de droite
+ouvre sur le protocole de séance ; le sommaire n'arrive qu'en troisième
+position, sous la ligne de flottaison.
+
+Rien ne répond à « j'ai ma guitare et dix minutes, je fais quoi ? ». C'est un
+excellent document de référence et un mauvais guide de pratique.
+
+Correctif envisagé : un bloc « commencer ici » en tête de fiche — premier
+palier, son exercice, son tempo, son signal d'arrêt — le sommaire remonté en
+tête de colonne, et les exercices avant les erreurs (on joue avant de
+diagnostiquer).
+
+⚠️ **Un diagramme n'y répond pas** : ajouter des images à une page déjà trop
+longue n'aide pas quelqu'un qui ne sait pas par où entrer.
+
+---
+
 ## C. Dette technique
 
 ### C1 ✅ Code mort — SUPPRIMÉ en 8b

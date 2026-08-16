@@ -137,6 +137,36 @@ const exerciceSchema = z.object({
   provenance: provenanceSchema.optional(),
 });
 
+/**
+ * Position de main gauche, pour un diagramme de manche.
+ *
+ * Le contenu ne stocke que la **structure** — corde, case, doigt, barré
+ * `{ type, case }` (décision 9). Aucun nom de note, aucun sigle de barré : ils
+ * sont dérivés par `src/lib/position.ts`, et changer de convention d'affichage
+ * ne demande de toucher à aucun fichier de contenu.
+ */
+const positionSchema = z.object({
+  titre: z.string(),
+  frettes: z
+    .array(
+      z.object({
+        /** Corde 1 = la plus aiguë, comme partout dans le projet. */
+        corde: z.number().int().min(1).max(7),
+        /** 0 = à vide. `null` = étouffée, volontairement non jouée. */
+        case: z.number().int().min(0).max(24).nullable(),
+        doigt: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
+      })
+    )
+    .min(1),
+  barre: z
+    .object({
+      type: z.enum(['complet', 'demi']),
+      case: z.number().int().min(1).max(24),
+    })
+    .optional(),
+  capo: z.number().int().min(1).max(12).optional(),
+});
+
 const repertoireSchema = z.object({
   oeuvre: z.string(),
   compositeur: z.string(),
@@ -227,6 +257,12 @@ const techniqueSchema = z
     /** Fiches courtes : le geste en une phrase. */
     gesteCle: z.string().optional(),
 
+    /**
+     * Positions de main gauche à illustrer. Un diagramme rend les mêmes
+     * données que la tablature, vues autrement — jamais une anatomie inventée.
+     */
+    positions: z.array(positionSchema).default([]),
+
     ecoutes: z.array(ecouteSchema).default([]),
     erreurs: z.array(erreurSchema).default([]),
     paliers: z.array(palierSchema).default([]),
@@ -289,7 +325,43 @@ const techniqueSchema = z
         'lienProvenance désigne un prérequis absent — une provenance orpheline ne s’affiche nulle part',
       path: ['lienProvenance'],
     }
-  );
+  )
+  /**
+   * Une corde ne sonne qu'une hauteur à la fois.
+   *
+   * Même règle que celle que `npm run validate` applique aux tablatures depuis
+   * la tranche 8a — et pour la même raison : un accord qui pose deux doigts sur
+   * une corde ne peut pas sonner. Le danger propre au diagramme est qu'il rend
+   * l'erreur **crédible** : deux pastilles alignées ont l'air d'un accord, là
+   * où une tablature trahirait le doublon.
+   */
+  .superRefine((t, ctx) => {
+    for (const p of t.positions) {
+      const vues = new Set<number>();
+      for (const f of p.frettes) {
+        if (vues.has(f.corde)) {
+          ctx.addIssue({
+            code: 'custom',
+            message:
+              `position « ${p.titre} » : deux entrées sur la corde ${f.corde}. ` +
+              `Une corde ne sonne qu'une hauteur à la fois.`,
+            path: ['positions'],
+          });
+        }
+        vues.add(f.corde);
+
+        if (f.case === 0 && f.doigt) {
+          ctx.addIssue({
+            code: 'custom',
+            message:
+              `position « ${p.titre} » : corde ${f.corde} à vide, mais un doigt lui ` +
+              `est attribué. Une corde à vide ne se frette pas.`,
+            path: ['positions'],
+          });
+        }
+      }
+    }
+  });
 
 const techniques = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/techniques' }),

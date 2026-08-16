@@ -266,7 +266,8 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | 8b | **Reprise — confort et dette** | Le reste de [docs/dette.md](docs/dette.md), tests, métadonnées du dépôt | ✅ **close** |
 | 9 | **Publication** | Licences, page « À propos », réserve santé, GitHub Pages, intégration continue | ✅ **close** |
 | 10 | **Le site s'adresse au public** | Journal de chantier retiré, portes d'entrée, garde-fou des mots collés | ✅ **close** |
-| 11 | Diagrammes dérivés | Manche, doigté main droite, grilles de motifs — depuis les données seules | ⏳ |
+| 11 | **Diagrammes de manche** | Positions dérivées des données, barré de la décision 9 enfin livré | ✅ **close** |
+| 12 | Diagrammes restants | Doigté main droite, grilles de motifs | ⏳ |
 
 > **[docs/dette.md](docs/dette.md) recense ce qui est imparfait, incomplet ou non vérifié**, avec les décisions qui attendent une réponse. Le tenir à jour à chaque tranche : un défaut connu qui n'est écrit nulle part est un défaut oublié.
 
@@ -651,6 +652,25 @@ Le quatrième chiffre de l'accueil devient **« Points à vérifier : 44 »**. C
 ⚠️ **Un garde-fou neuf : `audit:console` détecte les mots collés à une balise.** Astro supprime l'espace quand un saut de ligne sépare du texte d'un élément — `… porte\n<strong>44</strong>` rend « porte44 ». Le code source paraît juste, le HTML est valide, rien ne le signale : **on ne le voit qu'en lisant la page**. J'en avais trouvé quatre à l'œil ; le contrôle en a sorti **six de plus** du premier coup, dont deux dans des composants de fiche vus des dizaines de fois (`Annexes`, `Paliers`).
 
 Le contrôle ne regarde que les frontières **à l'intérieur d'un bloc**, entre un nœud de texte et un élément en ligne voisin, et laisse passer les collages légitimes (`l'<em>`, `mi-<em>`, ponctuation). Vérifié en échec en retirant un `{' '}`.
+
+### Diagrammes de manche (tranche 11)
+
+**La limite d'abord, parce que c'est elle qui définit le composant.** Un diagramme est une **affirmation**. On compose ce que les données portent déjà et qu'un invariant valide ; on ne compose pas ce qu'il faudrait inventer.
+
+- Un diagramme de manche dit « corde 2, case 5 » — la donnée de la tablature, vue autrement.
+- Un dessin de main dirait « le poignet fait tel angle ». **Aucune méthode de référence ne chiffre ça**, et rien ne l'attraperait. Ce serait un artefact crédible portant une affirmation fausse : exactement la classe d'erreur que la décision 2 existe pour empêcher.
+
+**Ne seront donc pas faits** : mains, poignets, angles, profils d'ongle, animations de geste. Le curseur du lecteur alphaTab est déjà l'animation du geste dans le temps, et il vient de données notées.
+
+**Le barré de la décision 9 est enfin implémenté.** Il n'existait jusqu'ici que comme décision écrite — l'exemple phare de la règle « le contenu stocke la donnée, le code produit le libellé », jamais livré depuis la tranche 1. [position.ts](src/lib/position.ts) porte la donnée `{ type, case }` et produit `CV` / `½CV`, chiffre romain compris. Changer d'avis sur cette notation se fait à un seul endroit.
+
+[DiagrammeManche](src/components/ui/DiagrammeManche.astro) est en SVG, **sans une ligne de JavaScript**, suit le thème par les jetons `--c-*`, et porte un `aria-label` qui décrit la position en toutes lettres — noms de notes **dérivés**, jamais écrits dans le contenu.
+
+⚠️ **Le manche se lit grave à gauche**, comme l'instrument posé devant soi. L'ordre interne reste corde 1 = aiguë ; l'inversion se fait à l'affichage, comme pour la tête de manche de l'accordeur.
+
+⚠️ **Quand montrer le sillet — deux essais faux avant le bon.** Sans règle, un mi mineur (cases 2, quatre cordes à vide) s'affichait en « position 2 » avec des ronds de corde à vide au-dessus : deux repères contradictoires. Avec « une corde à vide impose le sillet », un demi-barré case 5 dont la corde 6 sonne à vide se dessinait sur cinq rangées depuis le sillet — exact, et illisible. **Le seuil est celui de la main, pas des cordes** : sillet si la case la plus basse est ≤ 3, sinon numéro de case, et le rond garde son sens habituel.
+
+**Invariant de build** : deux entrées sur une même corde font échouer la construction, comme pour les tablatures depuis la tranche 8a. Le danger propre au diagramme est qu'il rend l'erreur **crédible** — deux pastilles alignées ont l'air d'un accord. Vérifié en échec.
 
 ### Conventions alphaTex établies par la sonde
 

@@ -6,6 +6,7 @@ import StatusBadge from '~/components/ui/StatusBadge.astro';
 import Difficulty from '~/components/ui/Difficulty.astro';
 import Callout from '~/components/ui/Callout.astro';
 import Button from '~/components/ui/Button.astro';
+import DiagrammeManche from '~/components/ui/DiagrammeManche.astro';
 import { FAMILIES, STATUSES, DIFFICULTY_LABELS, type Difficulty as Diff } from '~/lib/taxonomy';
 
 const SURFACES = [
@@ -237,6 +238,82 @@ const difficulties: Diff[] = [1, 2, 3, 4, 5];
     </div>
   </section>
 
+  <!-- ========================================================= diagrammes -->
+  <section class="sec" aria-labelledby="diagrammes">
+    <h2 id="diagrammes">Diagrammes</h2>
+    <p class="note">
+      Composés à partir des <strong>mêmes données que la tablature</strong> —
+      corde, case, doigt — et de rien d'autre. Aucune main, aucun angle, aucune
+      animation&nbsp;: ce serait une anatomie inventée, et rien ne l'attraperait
+      (CLAUDE.md, décision 2). Les noms de notes de la description accessible
+      sont dérivés, le sigle du barré est produit par le code.
+    </p>
+
+    <div class="dgm-rangee">
+      <DiagrammeManche
+        position={{
+          titre: 'Mi mineur',
+          frettes: [
+            { corde: 1, case: 0 },
+            { corde: 2, case: 0 },
+            { corde: 3, case: 0 },
+            { corde: 4, case: 2, doigt: 3 },
+            { corde: 5, case: 2, doigt: 2 },
+            { corde: 6, case: 0 },
+          ],
+        }}
+        colorVar="--c-mg"
+      />
+      <DiagrammeManche
+        position={{
+          titre: 'Barré complet, case 5',
+          barre: { type: 'complet', case: 5 },
+          frettes: [
+            { corde: 1, case: 5, doigt: 1 },
+            { corde: 2, case: 5, doigt: 1 },
+            { corde: 3, case: 7, doigt: 3 },
+            { corde: 4, case: 7, doigt: 4 },
+            { corde: 5, case: 5, doigt: 1 },
+            { corde: 6, case: 5, doigt: 1 },
+          ],
+        }}
+        colorVar="--c-mg"
+      />
+      {/* Position haute, à deux chiffres : le cas qui rogne la marge gauche
+          si on la calibre sur un seul. */}
+      <DiagrammeManche
+        position={{
+          titre: 'Barré haut, case 12',
+          barre: { type: 'complet', case: 12 },
+          frettes: [
+            { corde: 1, case: 12, doigt: 1 },
+            { corde: 2, case: 13, doigt: 2 },
+            { corde: 3, case: 14, doigt: 4 },
+            { corde: 4, case: 14, doigt: 3 },
+            { corde: 5, case: 12, doigt: 1 },
+            { corde: 6, case: 12, doigt: 1 },
+          ],
+        }}
+        colorVar="--c-md"
+      />
+      <DiagrammeManche
+        position={{
+          titre: 'Demi-barré, case 2',
+          barre: { type: 'demi', case: 2 },
+          frettes: [
+            { corde: 1, case: 2, doigt: 1 },
+            { corde: 2, case: 3, doigt: 2 },
+            { corde: 3, case: 2, doigt: 1 },
+            { corde: 4, case: 0 },
+            { corde: 5, case: null },
+            { corde: 6, case: null },
+          ],
+        }}
+        colorVar="--c-pm"
+      />
+    </div>
+  </section>
+
   <!-- ============================================================== prose -->
   <section class="sec" aria-labelledby="prose">
     <h2 id="prose">Contenu long</h2>
@@ -287,6 +364,13 @@ const difficulties: Diff[] = [1, 2, 3, 4, 5];
 </BaseLayout>
 
 <style>
+  .dgm-rangee {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+
   .head {
     padding: clamp(2.5rem, 1.5rem + 4vw, 4.5rem) 0 2.5rem;
     max-width: 62ch;
