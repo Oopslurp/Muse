@@ -53,6 +53,9 @@ const VUES = [
   { nom: 'fiche-longue-clair', route: '/techniques/tremolo', theme: 'light' },
   { nom: 'lecteur', route: '/techniques/tremolo', ancre: '#ex-a', pause: 4000 },
   { nom: 'lecteur-clair', route: '/techniques/tremolo', ancre: '#ex-a', theme: 'light', pause: 4000 },
+  // Le point d'entrée : la question « j'ai ma guitare et dix minutes ».
+  { nom: 'commencer-long', route: '/techniques/apoyando-tirando' },
+  { nom: 'commencer-court', route: '/techniques/ongles' },
   { nom: 'fiche-courte', route: '/techniques/ongles' },
   { nom: 'fiche-a-risque', route: '/techniques/percussion-kick-snare-golpe' },
   // Le cas de la décision 10 : lecture jamais désactivée, réserves nommées.

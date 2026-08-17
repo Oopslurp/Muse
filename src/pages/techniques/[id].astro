@@ -4,6 +4,7 @@ import type { GetStaticPaths } from 'astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import FicheHeader from '~/components/fiche/FicheHeader.astro';
 import Doutes from '~/components/fiche/Doutes.astro';
+import Commencer from '~/components/fiche/Commencer.astro';
 import Seance from '~/components/fiche/Seance.astro';
 import Paliers from '~/components/fiche/Paliers.astro';
 import Erreurs from '~/components/fiche/Erreurs.astro';
@@ -68,8 +69,8 @@ const promouvables =
 /** Sommaire : seulement les sections réellement présentes. */
 const sections = [
   d.paliers.length > 0 && { href: '#progression', label: 'Progression' },
-  d.erreurs.length > 0 && { href: '#erreurs', label: 'Erreurs & autodiagnostic' },
   d.exercices.length > 0 && { href: '#exercices', label: 'Exercices' },
+  d.erreurs.length > 0 && { href: '#erreurs', label: 'Erreurs & autodiagnostic' },
   (d.positions.length > 0 || d.doigtesMD.length > 0) && { href: '#positions', label: 'Positions' },
   d.repertoire.length > 0 && { href: '#repertoire', label: 'Répertoire' },
   d.sources.length > 0 && { href: '#sources', label: 'Sources' },
@@ -94,6 +95,20 @@ const sections = [
     />
 
     {d.doutes.length > 0 && <Doutes doutes={d.doutes} fiche={fiche.id} />}
+
+    {/* Le point d'entrée, avant le corps de la fiche : une fiche longue est un
+        document de référence, et il faut pouvoir s'en servir sans le lire en
+        entier (dette.md, B10). */}
+    <Commencer
+      fiche={fiche.id}
+      paliers={d.paliers}
+      exercices={d.exercices}
+      gesteCle={d.gesteCle}
+      dureeMax={d.seance.dureeMax}
+      dureeMin={d.seance.dureeMin}
+      signalArret={[...d.seance.signalArret]}
+      risque={d.seance.risque}
+    />
 
     {
       d.permanent && (
@@ -135,6 +150,15 @@ const sections = [
         }
 
         {
+          d.exercices.length > 0 && (
+            <section id="exercices" class="bloc">
+              <h2>Exercices</h2>
+              <Exercices exercices={d.exercices} fiche={fiche.id} />
+            </section>
+          )
+        }
+
+        {
           d.erreurs.length > 0 && (
             <section id="erreurs" class="bloc">
               <h2>Erreurs fréquentes &amp; autodiagnostic</h2>
@@ -143,15 +167,6 @@ const sections = [
                 praticable seul et le signe qu'on observe si elle est présente.
               </p>
               <Erreurs erreurs={d.erreurs} nomsTechniques={nomsTechniques} fiche={fiche.id} />
-            </section>
-          )
-        }
-
-        {
-          d.exercices.length > 0 && (
-            <section id="exercices" class="bloc">
-              <h2>Exercices</h2>
-              <Exercices exercices={d.exercices} fiche={fiche.id} />
             </section>
           )
         }
@@ -197,13 +212,6 @@ const sections = [
 
       <aside class="corps__cote">
         <div class="colle">
-          <Seance seance={d.seance} fiche={fiche.id} />
-
-          {/* Avancement partagé avec l'arbre, et promotion « observé » —
-              CLAUDE.md décision 1. Hydraté à la visibilité : il n'est utile
-              qu'une fois la fiche lue, et il n'y a rien à afficher avant. */}
-          <SuiviFiche client:visible id={fiche.id} promouvables={promouvables} />
-
           {
             sections.length > 1 && (
               <nav class="sommaire" aria-label="Sommaire de la fiche">
@@ -218,6 +226,14 @@ const sections = [
               </nav>
             )
           }
+
+          <Seance seance={d.seance} fiche={fiche.id} />
+
+          {/* Avancement partagé avec l'arbre, et promotion « observé » —
+              CLAUDE.md décision 1. Hydraté à la visibilité : il n'est utile
+              qu'une fois la fiche lue, et il n'y a rien à afficher avant. */}
+          <SuiviFiche client:visible id={fiche.id} promouvables={promouvables} />
+
 
           <p class="revu">
             Revue le{' '}

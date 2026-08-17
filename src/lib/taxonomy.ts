@@ -112,7 +112,11 @@ export const STATUSES: readonly StatusMeta[] = [
   {
     id: 'observe',
     label: 'Observé',
-    meaning: 'Vérifié guitare en main. Le seul statut qui vaille vraiment.',
+    // ⚠️ Disait « vérifié guitare en main » — or les cinq observations du
+    // corpus viennent de la sonde alphaTab ou de l'écoute d'un rendu MIDI.
+    // Le statut promettait plus que la donnée ne tenait. Le moyen exact est
+    // dit affirmation par affirmation, par `detailProvenance`.
+    meaning: 'Vérifié directement, pas seulement déduit. La façon dont la vérification a été faite est précisée à chaque fois.',
     colorVar: '--c-observe',
     dashed: false,
   },

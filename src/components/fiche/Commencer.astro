@@ -1,0 +1,263 @@
+---
+/**
+ * « J'ai ma guitare et dix minutes. Je fais quoi ? »
+ *
+ * Une fiche longue faisait 11 500 px et n'y répondait nulle part : on tombait
+ * sur le son visé, puis quatre sections d'anatomie, et les exercices arrivaient
+ * tout en bas. Excellent document de référence, mauvais guide de pratique —
+ * c'est le retour d'usage qui a ouvert la tranche 13 (dette.md, B10).
+ *
+ * Ce bloc ne répète pas la fiche : il en extrait **une seule action**, et il la
+ * situe. Quatre choses, pas cinq :
+ *
+ *  1. par où on entre — le premier palier s'il y en a un, sinon le geste clé ;
+ *  2. sur quel exercice, avec son tempo de départ ;
+ *  3. combien de temps au maximum ;
+ *  4. à quel signe on s'arrête — le premier de la liste, l'alarme utile.
+ *
+ * Tout est **dérivé** du contenu existant. Rien n'y est saisi deux fois : si un
+ * palier change de tempo, ce bloc suit.
+ */
+import { plageTempo, tempoCourt, type Tempo } from '~/lib/format';
+
+interface Palier {
+  titre: string;
+  objectif: string;
+  exercices: string[];
+  tempoDepart?: Tempo | undefined;
+  tempoCible?: Tempo | undefined;
+  critere: string;
+}
+
+interface Exercice {
+  id: string;
+  titre: string;
+  tempoDepart?: Tempo | undefined;
+}
+
+interface Props {
+  fiche: string;
+  paliers: Palier[];
+  exercices: Exercice[];
+  gesteCle?: string | undefined;
+  dureeMax: number;
+  dureeMin?: number | undefined;
+  signalArret: string[];
+  risque: 'faible' | 'modere' | 'eleve';
+}
+
+const {
+  fiche,
+  paliers,
+  exercices,
+  gesteCle,
+  dureeMax,
+  dureeMin,
+  signalArret,
+  risque,
+} = Astro.props;
+
+const premier = paliers[0];
+
+/**
+ * L'exercice par lequel on commence : celui du premier palier quand il y en a
+ * un, sinon le premier de la fiche. Une fiche courte n'a pas de palier — 26 sur
+ * 32 — et c'est justement là que le manque de point d'entrée se sentait le plus.
+ */
+const idExercice = premier?.exercices[0] ?? exercices[0]?.id;
+const exercice = exercices.find((e) => e.id === idExercice) ?? exercices[0];
+
+const tempo =
+  plageTempo(premier?.tempoDepart, premier?.tempoCible) ??
+  (exercice?.tempoDepart ? tempoCourt(exercice.tempoDepart) : null);
+
+const duree = dureeMin && dureeMin !== dureeMax ? `${dureeMin} à ${dureeMax} min` : `${dureeMax} min`;
+const alarme = signalArret[0];
+/** « signal » → « signaux » : le pluriel se remplace, il ne s'ajoute pas. */
+const autres = signalArret.length - 1;
+const resteSignaux = autres > 0 ? `${autres} autre${autres > 1 ? 's' : ''} ${autres > 1 ? 'signaux' : 'signal'}` : null;
+---
+
+<section class="cm" aria-labelledby="commencer">
+  <div class="cm__tete">
+    <h2 id="commencer" class="cm__titre">Commencer</h2>
+    {/* Le chapeau situe, il ne répète pas : l'objectif du palier est déjà
+        énoncé mot pour mot dans la première ligne du tableau. */}
+    <p class="cm__lede">
+      {
+        premier
+          ? `Cette technique se travaille en ${paliers.length} paliers. Voici le premier, et rien d’autre — le reste de la fiche existe pour quand celui-là sera tenu.`
+          : gesteCle
+            ? 'Une technique courte : pas de progression par paliers, un geste et de quoi le vérifier seul.'
+            : 'Par où entrer dans cette technique.'
+      }
+    </p>
+  </div>
+
+  <ol class="cm__pas">
+    {
+      premier && (
+        <li>
+          <span class="cm__k">1 · Le palier</span>
+          <span class="cm__v">
+            <strong>{premier.titre}</strong> — {premier.objectif}
+          </span>
+        </li>
+      )
+    }
+
+    {
+      exercice && (
+        <li>
+          <span class="cm__k">{premier ? '2' : '1'} · L’exercice</span>
+          <span class="cm__v">
+            <a href={`#ex-${exercice.id}`}>{exercice.titre}</a>
+            {tempo && <span class="cm__tempo">{tempo}</span>}
+          </span>
+        </li>
+      )
+    }
+
+    <li>
+      <span class="cm__k">{premier ? '3' : '2'} · La durée</span>
+      <span class="cm__v">
+        <strong>{duree}</strong> au maximum sur cette technique, pas davantage.
+        {' '}
+        <a href={`/pratique?technique=${fiche}`}>Ouvrir le minuteur</a>
+      </span>
+    </li>
+
+    {/* Le signal d'arrêt est ici, pas en bas de page : on le lit au moment où
+        on décide de commencer, comme il est près du tempo dans le bloc de
+        séance (décision 3). Le premier de la liste est l'alarme utile. */}
+    <li class:list={['cm__arret', risque === 'eleve' && 'cm__arret--vif']}>
+      <span class="cm__k">On s’arrête si</span>
+      <span class="cm__v">
+        {alarme}
+        {resteSignaux && (
+          <span class="cm__reste">
+            {' '}— et {resteSignaux}, dans le protocole de séance.
+          </span>
+        )}
+      </span>
+    </li>
+  </ol>
+
+  {
+    premier && (
+      <p class="cm__critere">
+        <span class="cm__k">On passe au suivant quand</span>
+        {premier.critere}
+      </p>
+    )
+  }
+</section>
+
+<style>
+  .cm {
+    margin: 1.75rem 0 0;
+    padding: 1.4rem 1.5rem 1.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+  }
+
+  .cm__tete {
+    margin-bottom: 1.1rem;
+  }
+  .cm__titre {
+    font-size: var(--text-xl);
+    margin: 0 0 0.3rem;
+  }
+  .cm__lede {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: 1.55;
+    color: var(--color-ink-2);
+    max-width: 62ch;
+  }
+
+  .cm__pas {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.7rem;
+  }
+  .cm__pas li {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 0.4rem 1rem;
+    align-items: baseline;
+    /* Enfant de grille : sans ça il refuse de descendre sous la largeur de son
+       contenu et fait déborder la fiche sur un téléphone. */
+    min-width: 0;
+  }
+
+  .cm__k {
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+  .cm__v {
+    font-size: var(--text-sm);
+    line-height: 1.55;
+    color: var(--color-ink-2);
+    min-width: 0;
+  }
+  .cm__v strong {
+    color: var(--color-ink);
+    font-weight: 650;
+  }
+  .cm__v a {
+    color: var(--color-brass);
+  }
+
+  .cm__tempo {
+    display: inline-block;
+    margin-left: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-3);
+  }
+
+  .cm__arret .cm__k,
+  .cm__arret .cm__v {
+    color: var(--color-sante);
+  }
+  .cm__arret .cm__v {
+    font-weight: 600;
+  }
+  .cm__reste {
+    font-weight: 400;
+    color: var(--color-ink-3);
+  }
+  .cm__arret--vif {
+    padding-top: 0.5rem;
+    border-top: 1px solid color-mix(in oklab, var(--c-sante) 30%, transparent);
+  }
+
+  .cm__critere {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 0.4rem 1rem;
+    align-items: baseline;
+    margin: 1rem 0 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--color-line);
+    font-size: var(--text-sm);
+    line-height: 1.55;
+    color: var(--color-ink-2);
+  }
+
+  @media (max-width: 36rem) {
+    .cm__pas li,
+    .cm__critere {
+      grid-template-columns: 1fr;
+      gap: 0.15rem;
+    }
+  }
+</style>

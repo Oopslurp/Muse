@@ -58,11 +58,20 @@ const provenanceSchema = z.object({
   origine: z.enum(['source', 'deduit']),
   /** Identifiants du catalogue global. Requis si `origine === 'source'`. */
   sourceIds: z.array(z.string()).default([]),
-  /** Promotion manuelle après vérification à la guitare. N'écrase pas l'origine. */
+  /**
+   * Promotion manuelle après vérification. N'écrase pas l'origine.
+   *
+   * `par` dit **comment** l'affirmation a été vérifiée. Le champ existe parce
+   * que les cinq observations du corpus venaient toutes de la sonde alphaTab ou
+   * de l'écoute d'un rendu MIDI, alors que la pastille annonçait « vérifié
+   * guitare en main » : le statut promettait plus que la donnée ne tenait.
+   * C'est précisément l'erreur que le triptyque existe pour empêcher.
+   */
   observe: z
     .object({
       date: z.string(),
       note: z.string().optional(),
+      par: z.enum(['guitare', 'sonde', 'ecoute']).default('guitare'),
     })
     .optional(),
   /** [À VÉRIFIER] — le doute et sa raison, conservés visibles. */

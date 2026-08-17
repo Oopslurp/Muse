@@ -15,9 +15,18 @@ import type { EpistemicStatus } from './taxonomy';
 export interface Provenance {
   origine: 'source' | 'deduit';
   sourceIds: string[];
-  observe?: { date: string; note?: string | undefined } | undefined;
+  observe?:
+    | { date: string; note?: string | undefined; par?: 'guitare' | 'sonde' | 'ecoute' }
+    | undefined;
   doute?: string | undefined;
 }
+
+/** Comment la vérification a été faite. Le contenu stocke la clé, pas la phrase. */
+const MOYEN: Record<'guitare' | 'sonde' | 'ecoute', string> = {
+  guitare: 'Vérifié à la guitare',
+  sonde: 'Vérifié par la sonde alphaTab — pas à l’instrument',
+  ecoute: 'Vérifié à l’écoute du rendu — pas à l’instrument',
+};
 
 /**
  * Ordre de priorité : observé › à vérifier › origine.
@@ -40,7 +49,11 @@ export function detailProvenance(p: Provenance): string {
   const bouts: string[] = [];
 
   if (p.observe) {
-    bouts.push(`Vérifié à la guitare le ${formaterDate(p.observe.date)}.`);
+    // On dit **comment** la vérification a été faite : une syntaxe confirmée
+    // par la sonde alphaTab n'est pas un geste éprouvé à l'instrument, et les
+    // faire porter la même phrase est exactement l'inexactitude que le statut
+    // épistémique existe pour empêcher.
+    bouts.push(`${MOYEN[p.observe.par ?? 'guitare']} le ${formaterDate(p.observe.date)}.`);
     if (p.observe.note) bouts.push(p.observe.note);
     bouts.push(
       p.origine === 'source'

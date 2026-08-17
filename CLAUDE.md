@@ -268,6 +268,7 @@ Cas connus à ce jour, établis par la Tranche 0 (`docs/research/08-alphatab-ver
 | 10 | **Le site s'adresse au public** | Journal de chantier retiré, portes d'entrée, garde-fou des mots collés | ✅ **close** |
 | 11 | **Diagrammes de manche** | Positions dérivées des données, barré de la décision 9 enfin livré | ✅ **close** |
 | 12 | **Doigté et motifs** | Assignation de la main qui pince, grilles de clic déplacé | ✅ **close** |
+| 13 | **Point d'entrée et dette** | Bloc « Commencer », statut « observé » ramené à ce qu'il prouve, mesure de rendu | ✅ **close** |
 
 > **[docs/dette.md](docs/dette.md) recense ce qui est imparfait, incomplet ou non vérifié**, avec les décisions qui attendent une réponse. Le tenir à jour à chaque tranche : un défaut connu qui n'est écrit nulle part est un défaut oublié.
 
@@ -687,6 +688,22 @@ Les deux diagrammes qui restaient du plan, tous deux **dérivés de données exi
 `palier.motifMetronome` porte un identifiant de `MOTIFS`, **dont l'existence est vérifiée au build** (même classe d'erreur qu'un prérequis mort). Un seul palier du corpus le porte aujourd'hui — le test du décalage du trémolo. `placement-rythmique` a le même besoin mais c'est une fiche courte, sans paliers : son clic déplacé vit dans un diagnostic d'erreur, et je n'ai pas inventé de palier pour lui faire une place.
 
 ⚠️ **Le lien « régler l'atelier » aurait pu mentir.** `/pratique?motif=<id>` ne réglait rien tant que l'îlot ne lisait pas le paramètre — exactement le défaut de `?technique=` trouvé en tranche 6, où la présélection ne marchait pour personne. Lu **dans l'îlot**, jamais dans le frontmatter : `Astro.url.searchParams` est vide au build d'un site statique. Vérifié au navigateur : sans paramètre `fort·faible·faible·faible`, avec `muet·fort·muet·muet`.
+
+### Point d'entrée, et « observé » ramené à ce qu'il prouve (tranche 13)
+
+**Le bloc « Commencer ».** Une fiche longue fait 11 500 px et ne répondait nulle part à « j'ai ma guitare et dix minutes, je fais quoi ? ». [Commencer.astro](src/components/fiche/Commencer.astro) en extrait **une seule action** et la situe : le premier palier, son exercice avec son tempo, la durée maximale, et le premier signal d'arrêt — celui qui sert d'alarme.
+
+Tout est **dérivé** : rien n'est saisi deux fois, et si un palier change de tempo le bloc suit. Les 26 fiches courtes sur 32 ont leur variante, sans palier — c'est là que le manque se sentait le plus.
+
+S'y ajoutent deux remises en ordre : le **sommaire remonte en tête de colonne** (c'est la navigation, elle vient avant le protocole de séance), et les **exercices passent avant les erreurs** — on joue avant de diagnostiquer.
+
+⚠️ **La découverte de la tranche : « observé » promettait plus que la donnée ne tenait.** La pastille affichait « vérifié guitare en main, le seul statut qui vaille vraiment ». Or les **cinq** observations du corpus viennent toutes de la sonde alphaTab ou de l'écoute d'un rendu MIDI — **aucune n'a été faite à l'instrument**. Le statut le plus fort du triptyque était exactement le genre d'affirmation trop assurée que ce projet existe pour empêcher.
+
+`observe.par` porte maintenant le moyen (`guitare` / `sonde` / `ecoute`), la pastille dit « vérifié directement, pas seulement déduit », et l'infobulle nomme la façon affirmation par affirmation. Au passage : la page « À propos » affirmait qu'un visiteur arrive sur un corpus où **rien** n'est marqué observé. C'était faux, et de ma main.
+
+**Trois formulations absolues nuancées** (K12) : le glissando qui ne devait « jamais » décélérer, le plateau « à huit notes par seconde » qu'aucune source ne mesure, le doigt-guide qui ne quitte « jamais » le manche.
+
+**Mesure de rendu** (D5). `audit:poids` relève le premier rendu, médiane sur trois chargements, budget 900 ms — mesuré entre 172 et 316 ms. ⚠️ Ce n'est **pas** une mesure de performance perçue : serveur local, pas de latence, pas de bridage. Elle détecte une dérive entre deux tranches à conditions identiques, rien de plus. La confondre avec un score Lighthouse serait se mentir.
 
 ### Conventions alphaTex établies par la sonde
 

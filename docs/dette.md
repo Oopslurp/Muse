@@ -149,7 +149,7 @@ contraire.
 
 ---
 
-### B10 🟠 Une fiche longue n'a pas de point d'entrée
+### B10 ✅ Une fiche longue n'avait pas de point d'entrée — CORRIGÉ en 13
 
 `apoyando-tirando` fait **11 538 px de haut**. Dans l'ordre : le son visé,
 une justification éditoriale, quatre sections d'anatomie — puis seulement la
@@ -160,13 +160,36 @@ position, sous la ligne de flottaison.
 Rien ne répond à « j'ai ma guitare et dix minutes, je fais quoi ? ». C'est un
 excellent document de référence et un mauvais guide de pratique.
 
-Correctif envisagé : un bloc « commencer ici » en tête de fiche — premier
-palier, son exercice, son tempo, son signal d'arrêt — le sommaire remonté en
-tête de colonne, et les exercices avant les erreurs (on joue avant de
-diagnostiquer).
+**Corrigé en tranche 13**, exactement comme envisagé : un bloc « Commencer »
+en tête de fiche — premier palier, son exercice, son tempo, sa durée maximale
+et son premier signal d'arrêt —, le sommaire remonté en tête de colonne, et les
+exercices avant les erreurs (on joue avant de diagnostiquer).
+
+Tout y est **dérivé** : rien n'est saisi deux fois, et les 26 fiches courtes
+sans palier ont leur variante — c'est là que le manque se sentait le plus.
 
 ⚠️ **Un diagramme n'y répond pas** : ajouter des images à une page déjà trop
 longue n'aide pas quelqu'un qui ne sait pas par où entrer.
+
+---
+
+### B11 ✅ « Observé » promettait plus que la donnée ne tenait — CORRIGÉ en 13
+
+La pastille affichait « vérifié guitare en main, le seul statut qui vaille
+vraiment ». Or les **cinq** observations du corpus viennent toutes de la sonde
+alphaTab ou de l'écoute d'un rendu MIDI : **aucune n'a été faite à
+l'instrument.**
+
+Le statut promettait donc exactement ce que le projet existe pour empêcher —
+une affirmation plus assurée que sa preuve.
+
+`observe.par` porte désormais le moyen (`guitare` / `sonde` / `ecoute`), la
+pastille dit « vérifié directement, pas seulement déduit », et l'infobulle
+nomme la façon, affirmation par affirmation.
+
+Trouvé au passage : la page « À propos » affirmait qu'un visiteur arrive sur un
+corpus où **rien** n'est marqué observé. C'était faux, et écrit de ma main en
+tranche 9.
 
 ---
 
@@ -243,7 +266,7 @@ Et le faux micro de l'audit joue un signal de synthèse parfait. Restent
 l'attaque d'une corde grave d'acoustique, le taux réel d'erreurs d'octave sur
 la corde 6, le seuil de bruit dans une vraie pièce.
 
-### D3 🟠 Rien n'a été vu sur un vrai téléphone
+### D3 ⊘ Rien n'a été vu sur un vrai téléphone — ABANDONNÉ en 13
 
 `audit:layout` force les métriques d'appareil et `audit:console` mesure le
 débordement, mais aucune page n'a été manipulée au doigt. Le graphe de l'arbre
@@ -255,9 +278,15 @@ L'invariant de monotonie en a attrapé trois. Les 42 autres reposent sur la
 taxonomie de la phase de recherche et n'ont pas été rejugés depuis. La page
 `/arbre` le dit dans son encadré, ce qui est honnête mais ne les corrige pas.
 
-### D5 🟡 Aucune mesure de performance
+### D5 ✅ Aucune mesure de performance — CORRIGÉ en 13
 
-Aucun budget, aucun relevé. La tranche 7 devait s'en occuper.
+`audit:poids` mesure le premier rendu, médiane sur trois chargements, avec un
+budget de 900 ms. Relevé : **172 à 316 ms**.
+
+⚠️ Ce n'est **pas** une mesure de performance perçue : serveur local, pas de
+latence, pas de bridage processeur. Elle sert à détecter une dérive entre deux
+tranches à conditions identiques, pas à prétendre savoir ce que vit un visiteur
+sur un téléphone en 4G. Le confondre avec un score Lighthouse serait se mentir.
 
 ---
 
@@ -333,8 +362,6 @@ nettoyage n'ajoute rien.
 | **A6** | Métronome persistant d'une page à l'autre | Fonctionnalité neuve, et une architecture de vue partagée |
 | **K12** | Nuancer les autres formulations absolues (glissando « jamais », plateau à 8 notes/s, doigt-guide « jamais ») | Du contenu. L'affirmation *médicale* absolue, elle, est traitée en 8a |
 | **K13** | Relier chaque affirmation sensible à une source précise, page ou chapitre | Du contenu, et le plus long du lot |
-| **Observations de l'auteur dans le contenu** | Un champ `observeAuteur`, distinct de la promotion locale du lecteur. Sans lui, un visiteur public ne voit **aucune** observation et ignore ce que l'auteur a vérifié | Ouvert par la publication en tranche 9, et le corpus n'a pas encore d'observation à porter |
-| **Version anglaise** | Le site restera en français ; l'abrégé du README suffit pour l'instant | 33 fiches à traduire, et la terminologie existe déjà en `nom.en` / `nom.es` |
 | **Graphe d'assiduité** | Le `parJour()` supprimé en 8b, à réécrire un jour | Mieux vaut le réécrire que le garder en réserve |
 
 ---

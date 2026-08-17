@@ -108,6 +108,22 @@ const MORCEAUX_DIFFERES = [
  */
 const BUDGET_DIFFERE_TOTAL = 4600;
 
+/**
+ * Temps jusqu'au premier rendu, en millisecondes, sur un serveur local.
+ *
+ * ⚠️ Ce n'est **pas** une mesure de performance perçue : pas de latence réseau,
+ * pas de processeur bridé, une machine de développement. Ce chiffre ne dit rien
+ * de ce que vit un visiteur sur un téléphone en 4G — il sert uniquement à
+ * détecter une dérive entre deux tranches, à conditions identiques. Le
+ * confondre avec un score Lighthouse serait se mentir.
+ *
+ * Médiane sur trois chargements : un premier rendu isolé varie de 30 % d'une
+ * mesure à l'autre, et une valeur unique ferait échouer l'audit au hasard.
+ */
+const BUDGET_FCP = 900;
+const CHARGEMENTS = 3;
+const mesures = [];
+
 const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const chrome = execFile(CHROME, [
@@ -180,6 +196,7 @@ try {
   process.exit(2);
 }
 
+const envoyerBrut = envoyer;
 const origine = new URL(BASE).origin;
 const problemes = [];
 let total = 0;
@@ -211,6 +228,32 @@ for (const [route, budget] of Object.entries(BUDGET)) {
     `${verdict.padEnd(4)}${route.padEnd(24)} ${String(ko).padStart(4)} Ko` +
       ` / ${String(budget).padStart(4)} Ko · ${requetes.length} requête(s)`
   );
+
+  /* Temps de rendu, mesuré ici pour ne pas recharger chaque route deux fois. */
+  const releves = [];
+  let charge = 0;
+  for (let i = 0; i < CHARGEMENTS; i++) {
+    await envoyerBrut('Page.navigate', { url: BASE + route });
+    await attendre(1800);
+    const t = await envoyerBrut('Runtime.evaluate', {
+      returnByValue: true,
+      expression: `(() => {
+        const fcp = performance.getEntriesByName('first-contentful-paint')[0];
+        const nav = performance.getEntriesByType('navigation')[0];
+        return JSON.stringify({
+          fcp: fcp ? Math.round(fcp.startTime) : -1,
+          charge: nav ? Math.round(nav.loadEventEnd - nav.startTime) : -1,
+        });
+      })()`,
+    });
+    const v = JSON.parse(t.result?.result?.value ?? '{}');
+    if (v.fcp > 0) releves.push(v.fcp);
+    charge = v.charge ?? 0;
+  }
+  if (releves.length) {
+    releves.sort((a, b) => a - b);
+    mesures.push({ route, fcp: releves[Math.floor(releves.length / 2)], charge });
+  }
 }
 
 /* ------------------------------------------------- chargement différé */
@@ -309,6 +352,25 @@ if (existsSync('dist/_astro')) {
 }
 
 console.log(`\nTotal des routes mesurées : ${Math.round(total / 1024)} Ko au chargement`);
+
+/* ------------------------------------------------------ temps de rendu */
+
+if (mesures.length) {
+  console.log(`\nPremier rendu · médiane sur ${CHARGEMENTS} chargements\n`);
+  let pire = 0;
+  for (const { route, fcp, charge } of mesures) {
+    pire = Math.max(pire, fcp);
+    const verdict = fcp > BUDGET_FCP ? '✗' : 'ok';
+    if (fcp > BUDGET_FCP) {
+      problemes.push(`${route} — premier rendu à ${fcp} ms pour un budget de ${BUDGET_FCP} ms`);
+    }
+    console.log(
+      `${verdict.padEnd(4)}${route.padEnd(24)} ${String(fcp).padStart(4)} ms` +
+        ` / ${BUDGET_FCP} ms · page complète ${charge} ms`
+    );
+  }
+  console.log(`\nPire premier rendu : ${pire} ms — en local, sans latence ni bridage.`);
+}
 
 if (problemes.length) {
   console.log('\n✗ poids');
