@@ -1,5 +1,6 @@
 ---
 import { corpus } from '~/lib/corpus';
+import { chemin } from '~/lib/chemins';
 
 const year = new Date().getFullYear();
 const c = await corpus();
@@ -31,7 +32,7 @@ const c = await corpus();
       <ul>
         <li>Tout est local. Aucun compte, aucun serveur, aucun appel externe.</li>
         <li>Les données de pratique s'exportent en JSON.</li>
-        <li><a href="/a-propos">À propos et limites</a></li>
+        <li><a href={chemin('/a-propos')}>À propos et limites</a></li>
       </ul>
     </div>
   </div>
@@ -40,7 +41,7 @@ const c = await corpus();
     © {year} — code sous licence MIT, contenu sous CC BY-NC-SA 4.0. Répertoire
     limité au domaine public&nbsp;; aucune tablature sous droits n'est reproduite.
     <br />
-    Ce site n'est pas un avis médical&nbsp;: <a href="/a-propos">ce qu'il est et
+    Ce site n'est pas un avis médical&nbsp;: <a href={chemin('/a-propos')}>ce qu'il est et
     ce qu'il n'est pas</a>.
   </p>
 </footer>

@@ -1,13 +1,9 @@
 # Construction et publication sur GitHub Pages.
 #
-# Le dépôt s'appelle `<pseudo>.github.io` : le site est donc servi **à la
-# racine**. C'est ce qui permet de n'avoir aucun `base` à poser dans
-# `astro.config.mjs` — une vingtaine de chemins absolus vivent dans le code, et
-# autant dans le contenu et les actifs alphaTab. Un dépôt projet servi sous
-# `/muse/` les casserait tous.
+# Le dépôt s'appelle `Muse` : GitHub Pages sert donc le site sous `/Muse/`.
+# `MUSE_BASE` transmet ce préfixe à Astro et aux chemins internes.
 #
-# `MUSE_SITE` se dérive de `github.repository_owner` : aucun pseudo en dur,
-# rien à modifier si le compte change de nom.
+# `MUSE_SITE` se dérive de `github.repository_owner` : aucun pseudo en dur.
 #
 # ⚠️ `public/alphatab/` est ignoré par git et reproduit par le script
 # `prebuild`. `npm run build` le déclenche via le cycle de vie npm. Une police
@@ -48,6 +44,7 @@ jobs:
       - name: Construire
         env:
           MUSE_SITE: https://${{ github.repository_owner }}.github.io
+          MUSE_BASE: /Muse
         run: npm run build
 
       # Les actifs d'alphaTab ne sont pas versionnés : s'ils manquent, le site

@@ -17,6 +17,7 @@ export default defineConfig({
    * Voir docs/deploiement.md.
    */
   site: process.env.MUSE_SITE ?? 'https://muse.local',
+  base: process.env.MUSE_BASE ?? '/',
   integrations: [
     // Îlots React réservés à l'interactif : accordeur, alphaTab, filtres,
     // métronome, journal. Tout le reste du site est rendu statiquement.

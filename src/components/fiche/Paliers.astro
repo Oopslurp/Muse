@@ -9,6 +9,7 @@
 import { plageTempo, tempoLong, type Tempo } from '~/lib/format';
 import { MOTIFS } from '~/lib/metronome';
 import GrilleMotif from '~/components/ui/GrilleMotif.astro';
+import { chemin } from '~/lib/chemins';
 
 interface Palier {
   titre: string;
@@ -84,7 +85,7 @@ const { paliers, titresExercices } = Astro.props;
                     return m ? (
                       <p class="critere__motif">
                         <GrilleMotif motif={m.motif} parPulsation={m.parPulsation} />
-                        <a href={`/pratique?motif=${m.id}`}>
+                        <a href={chemin(`/pratique?motif=${m.id}`)}>
                           {m.label} — régler l’atelier
                         </a>
                       </p>

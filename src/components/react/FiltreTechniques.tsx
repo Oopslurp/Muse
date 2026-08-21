@@ -11,6 +11,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { chemin } from '~/lib/chemins';
 import './FiltreTechniques.css';
 
 export interface FicheResume {
@@ -283,7 +284,7 @@ export default function FiltreTechniques({
             <li key={f.id}>
               <a
                 className="fiche"
-                href={`/techniques/${f.id}`}
+                href={chemin(`/techniques/${f.id}`)}
                 style={{ ['--accent' as string]: `var(${f.familleColorVar})` }}
               >
                 <span className="fiche__edge" aria-hidden="true" />

@@ -630,7 +630,7 @@ Le site passe d'« écrit pour un praticien » à « publié tel quel ». Rien n
 
 **Licences séparées, parce que code et contenu n'ont pas le même risque** : [MIT](LICENSE) pour le code, [CC BY-NC-SA 4.0](LICENSE-CONTENU.md) pour le corpus. La consigne qui compte est écrite dans les deux : **une réutilisation conserve les statuts et les doutes** — une version qui les efface est plus fausse que l'original, tout en ayant l'air plus sûre.
 
-**Hébergeur : GitHub Pages, sur un dépôt `<pseudo>.github.io`.** Ce n'est pas cosmétique : c'est ce qui fait servir le site **à la racine**, donc ce qui permet de n'avoir **aucun `base`**. ⚠️ Un dépôt projet servi sous `/muse/` casserait la vingtaine de chemins absolus du code plus ceux du contenu et des actifs alphaTab, et le premier oublié ne se verrait qu'en production. `MUSE_SITE` se dérive de `github.repository_owner` — aucun pseudo en dur.
+**Hébergeur : GitHub Pages, sur le dépôt `Muse`.** Le site est servi sous `/Muse/`. Le workflow fixe `MUSE_BASE=/Muse`, Astro construit ses actifs avec cette base et tous les chemins internes passent par `src/lib/chemins.ts`. `MUSE_SITE` se dérive de `github.repository_owner` — aucun pseudo en dur.
 
 ⚠️ **Le workflow refuse de publier si les actifs alphaTab manquent.** `public/alphatab/` est ignoré par git et reproduit par `prebuild` ; si la copie échoue, **la construction réussit quand même** et le site sort avec une partition sans glyphes et un lecteur muet. Exactement la classe de panne silencieuse que ce projet collectionne.
 

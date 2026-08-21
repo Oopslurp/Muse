@@ -21,6 +21,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as alphaTab from '@coderline/alphatab';
 import './LecteurTab.css';
+import { chemin } from '~/lib/chemins';
 
 export interface LecteurTabProps {
   /** Source alphaTex de l'exercice. */
@@ -36,8 +37,8 @@ export interface LecteurTabProps {
 }
 
 const CHEMIN = {
-  police: '/alphatab/font/',
-  soundfont: '/alphatab/soundfont/sonivox.sf3',
+  police: chemin('/alphatab/font/'),
+  soundfont: chemin('/alphatab/soundfont/sonivox.sf3'),
 };
 
 /** Durée d'une mesure 4/4 en tics alphaTab, repli quand on ne peut pas mieux. */

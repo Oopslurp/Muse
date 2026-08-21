@@ -7,9 +7,9 @@ compétences et atelier de pratique.
 Écrite par un praticien, pas par une école. Aucun compte, aucun serveur : tout
 ce qui est enregistré vit dans votre navigateur et ressort en JSON.
 
-[![Contrôles](https://github.com/Oopslurp/Oopslurp.github.io/actions/workflows/ci.yml/badge.svg)](https://github.com/Oopslurp/Oopslurp.github.io/actions/workflows/ci.yml)
+[![Contrôles](https://github.com/Oopslurp/Muse/actions/workflows/ci.yml/badge.svg)](https://github.com/Oopslurp/Muse/actions/workflows/ci.yml)
 
-Site en ligne : [oopslurp.github.io](https://oopslurp.github.io/)
+Site en ligne : [oopslurp.github.io/Muse](https://oopslurp.github.io/Muse/)
 
 Prérequis : **Node.js 22.12 ou plus récent** et npm.
 
@@ -162,6 +162,8 @@ répertoire cité, dépendances servies.
 Muse a été développé avec l'assistance de **Claude, par Anthropic**.
 La direction éditoriale, les choix techniques et la responsabilité du contenu
 restent ceux de Mathieu C.
+
+Voir la liste des [contributeurs](CONTRIBUTORS.md).
 
 ---
 

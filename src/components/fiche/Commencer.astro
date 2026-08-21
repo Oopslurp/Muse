@@ -19,6 +19,7 @@
  * palier change de tempo, ce bloc suit.
  */
 import { plageTempo, tempoCourt, type Tempo } from '~/lib/format';
+import { chemin } from '~/lib/chemins';
 
 interface Palier {
   titre: string;
@@ -123,7 +124,7 @@ const resteSignaux = autres > 0 ? `${autres} autre${autres > 1 ? 's' : ''} ${aut
       <span class="cm__v">
         <strong>{duree}</strong> au maximum sur cette technique, pas davantage.
         {' '}
-        <a href={`/pratique?technique=${fiche}`}>Ouvrir le minuteur</a>
+        <a href={chemin(`/pratique?technique=${fiche}`)}>Ouvrir le minuteur</a>
       </span>
     </li>
 

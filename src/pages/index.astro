@@ -8,6 +8,7 @@ import Callout from '~/components/ui/Callout.astro';
 import Button from '~/components/ui/Button.astro';
 import { FAMILIES, STATUSES } from '~/lib/taxonomy';
 import { corpus } from '~/lib/corpus';
+import { chemin } from '~/lib/chemins';
 
 const c = await corpus();
 ---
@@ -208,7 +209,7 @@ const c = await corpus();
         Ces chiffres décrivent des populations, pas votre main, et une partie des
         valeurs proposées ici sont des déductions prudentes plutôt que des seuils
         mesurés. <strong>Ce site n'est pas un avis médical</strong> —{' '}
-        <a href="/a-propos">ce qu'il est et ce qu'il n'est pas</a>.
+        <a href={chemin('/a-propos')}>ce qu'il est et ce qu'il n'est pas</a>.
       </p>
     </Callout>
   </section>

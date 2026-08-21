@@ -16,13 +16,15 @@ interface Props {
   class?: string | undefined;
 }
 
+import { chemin } from '~/lib/chemins';
+
 const { href, colorVar, muted = false, class: className = '' } = Astro.props;
 const accent = colorVar ? `var(${colorVar})` : 'var(--c-brass-bright)';
 const Tag = href && !muted ? 'a' : 'article';
 ---
 
 <Tag
-  {...href && !muted ? { href } : {}}
+  {...href && !muted ? { href: chemin(href) } : {}}
   class:list={['card', muted && 'card--muted', href && !muted && 'card--link', className]}
   style={`--accent:${accent}`}
 >

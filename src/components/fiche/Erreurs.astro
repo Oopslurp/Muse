@@ -8,6 +8,7 @@
  */
 import { nomCanal } from '~/lib/format';
 import Observer from '~/components/react/Observer';
+import { chemin } from '~/lib/chemins';
 
 interface Erreur {
   titre: string;
@@ -56,7 +57,7 @@ const { erreurs, nomsTechniques, fiche } = Astro.props;
             {e.renvoi.map((id, i) => (
               <>
                 {i > 0 && ', '}
-                <a href={`/techniques/${id}`}>{nomsTechniques[id] ?? id}</a>
+                <a href={chemin(`/techniques/${id}`)}>{nomsTechniques[id] ?? id}</a>
               </>
             ))}
           </p>

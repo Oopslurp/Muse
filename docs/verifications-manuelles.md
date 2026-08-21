@@ -130,7 +130,7 @@ n'y ressemblent pas à ce qu'on voit en local.
 - [ ] Les audits tournent contre n'importe quelle URL :
 
 ```bash
-export MUSE_URL=https://<pseudo>.github.io
+export MUSE_URL=https://oopslurp.github.io/Muse
 npm run audit:console && npm run audit:lecture && npm run audit:poids
 ```
 

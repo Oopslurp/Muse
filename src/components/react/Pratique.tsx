@@ -23,6 +23,7 @@ import {
 } from '~/lib/journal';
 import { disponible } from '~/lib/base';
 import { tempoCourt } from '~/lib/format';
+import { chemin } from '~/lib/chemins';
 import './Pratique.css';
 
 export interface FichePratique extends FicheBreve {
@@ -117,7 +118,7 @@ export default function Pratique({ fiches }: PratiqueProps) {
         </label>
 
         {fiche && (
-          <a className="pr__lien" href={`/techniques/${fiche.id}`}>
+          <a className="pr__lien" href={chemin(`/techniques/${fiche.id}`)}>
             Ouvrir la fiche →
           </a>
         )}

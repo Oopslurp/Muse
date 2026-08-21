@@ -9,6 +9,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { FAMILIES, type FamilyId } from './taxonomy';
 import { OUTILS, normaliser, type Entree } from './recherche';
+import { chemin } from './chemins';
 
 export interface Corpus {
   /** Nombre de fiches publiées. */
@@ -107,7 +108,7 @@ export async function indexRecherche(): Promise<Entree[]> {
 
   for (const f of fiches) {
     const d = f.data;
-    const href = `/techniques/${f.id}`;
+    const href = chemin(`/techniques/${f.id}`);
     const noms = [d.nom.fr, d.nom.en, d.nom.es, ...(d.nom.alias ?? [])].filter(Boolean);
 
     entrees.push({
@@ -143,7 +144,7 @@ export async function indexRecherche(): Promise<Entree[]> {
   }
 
   for (const o of OUTILS) {
-    entrees.push({ ...o, cles: normaliser(`${o.titre} ${o.contexte}`) });
+    entrees.push({ ...o, href: chemin(o.href), cles: normaliser(`${o.titre} ${o.contexte}`) });
   }
 
   return entrees;

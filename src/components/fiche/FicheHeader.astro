@@ -4,6 +4,7 @@ import StatusBadge from '~/components/ui/StatusBadge.astro';
 import Difficulty from '~/components/ui/Difficulty.astro';
 import { familyById, STYLE_LABELS, DIFFICULTY_LABELS, type FamilyId, type Difficulty as Diff, type Style } from '~/lib/taxonomy';
 import { statutAffiche, detailProvenance, type Provenance } from '~/lib/provenance';
+import { chemin } from '~/lib/chemins';
 
 interface Props {
   code: string;
@@ -45,9 +46,9 @@ const MAIN: Record<string, string> = {
 
 <header class="fh" style={`--accent:var(${f.colorVar})`}>
   <div class="fh__fil">
-    <a href="/techniques">Techniques</a>
+    <a href={chemin('/techniques')}>Techniques</a>
     <span aria-hidden="true">/</span>
-    <a href={`/techniques?famille=${famille}`}>{f.label}</a>
+    <a href={chemin(`/techniques?famille=${famille}`)}>{f.label}</a>
   </div>
 
   <div class="fh__etiquettes">
@@ -93,7 +94,7 @@ const MAIN: Record<string, string> = {
             <ul>
               {prerequis.map((p) => (
                 <li>
-                  <a href={`/techniques/${p.id}`} style={`--c:var(${familyById(p.famille).colorVar})`}>
+                  <a href={chemin(`/techniques/${p.id}`)} style={`--c:var(${familyById(p.famille).colorVar})`}>
                     <span class="puce" aria-hidden="true" />
                     {p.nom}
                   </a>
@@ -123,7 +124,7 @@ const MAIN: Record<string, string> = {
             <ul>
               {debloque.map((d) => (
                 <li>
-                  <a href={`/techniques/${d.id}`} style={`--c:var(${familyById(d.famille).colorVar})`}>
+                  <a href={chemin(`/techniques/${d.id}`)} style={`--c:var(${familyById(d.famille).colorVar})`}>
                     <span class="puce" aria-hidden="true" />
                     {d.nom}
                   </a>

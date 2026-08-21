@@ -2,6 +2,7 @@
 import '~/styles/global.css';
 import Header from '~/components/Header.astro';
 import Footer from '~/components/Footer.astro';
+import { chemin } from '~/lib/chemins';
 
 interface Props {
   title: string;
@@ -36,7 +37,7 @@ const canonique = new URL(Astro.url.pathname, Astro.site ?? 'https://muse.local'
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonique.href} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={chemin('/favicon.svg')} type="image/svg+xml" />
 
     {/*
       Open Graph. Aucune image : il faudrait en fabriquer une par page, et une

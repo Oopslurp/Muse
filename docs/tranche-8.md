@@ -74,13 +74,9 @@ plutôt que de faire confiance — d'où le tableau ci-dessus.
 
 ### Catégorie 3 — non reproductible, caduc ou faux positif
 
-- **Le blocage GitHub Pages (`base`) est caduc** — mais pas pour la raison
-  écrite ici à l'origine. *(Mise à jour, tranche 9 : l'hébergeur retenu est
-  finalement **GitHub Pages**, sur un dépôt `<pseudo>.github.io`. Servi à la
-  racine comme l'aurait été Cloudflare, donc la conclusion tient : les chemins
-  absolus — `/techniques`, `/recherche.json`, `/alphatab/…` — sont corrects tels
-  quels et aucun `base` n'est nécessaire. Le constat de Codex n'aurait valu que
-  pour un dépôt **projet**, servi sous une sous-adresse.)*
+- **Le blocage GitHub Pages (`base`) a été traité.** Le dépôt public s'appelle
+  `Muse` et le site est servi sous `/Muse/`. Le workflow pose `MUSE_BASE=/Muse`
+  et les chemins internes utilisent la base générée par Astro.
 - **« L'instruction est musicalement incohérente » : à moitié.** Tenir l'index
   case 5 et l'auriculaire case 9 sur la même corde est un exercice d'écartement
   classique et parfaitement faisable. C'est **la tablature** qui est fausse, pas

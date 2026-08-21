@@ -63,17 +63,15 @@ Arrêté à la tranche 9, en même temps que l'ouverture au public.
 [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) construit et
 publie à chaque poussée sur la branche principale.
 
-### Le dépôt s'appelle `<pseudo>.github.io`, et ce n'est pas cosmétique
+### Le dépôt s'appelle `Muse`
 
-C'est ce qui fait servir le site **à la racine**, donc ce qui permet de n'avoir
-**aucun `base`** dans `astro.config.mjs`.
+GitHub Pages le sert sous `https://<pseudo>.github.io/Muse/`. Le workflow passe
+donc `MUSE_BASE=/Muse` à Astro et le code préfixe tous les chemins internes avec
+la base générée.
 
-⚠️ Un dépôt projet — servi sous `https://<pseudo>.github.io/muse/` — casserait
-tout : une vingtaine de chemins absolus vivent dans le code (`/techniques`,
-`/recherche.json`, `/alphatab/…`), et autant dans le contenu. Il faudrait poser
-`base`, réauditer chaque lien, et le premier oublié ne se verrait qu'en
-production. Si l'adresse doit changer un jour, c'est ce travail-là qu'il faut
-prévoir.
+Les routes, la recherche, le favicon et les actifs alphaTab utilisent tous
+`import.meta.env.BASE_URL`. Changer le nom du dépôt demande donc uniquement de
+mettre à jour `MUSE_BASE` et les URL publiques documentées.
 
 ### `MUSE_SITE` n'est écrit nulle part
 
@@ -93,10 +91,9 @@ exactement la classe de panne silencieuse que ce projet collectionne.
 
 ### Ce qu'il reste à faire une seule fois, à la main
 
-1. Créer le dépôt **`<pseudo>.github.io`** et y pousser.
+1. Créer le dépôt **`Muse`** et y pousser.
 2. Dans *Settings → Pages*, régler la source sur **GitHub Actions**.
-3. Ajouter le badge d'intégration continue dans le README (une ligne, laissée
-   en commentaire faute de connaître le pseudo).
+3. Vérifier que le badge d'intégration continue du README pointe vers le dépôt.
 
 ---
 

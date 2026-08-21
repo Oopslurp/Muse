@@ -19,6 +19,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { GRILLE, amont, aval, type Disposition, type NoeudPlace } from '~/lib/arbre';
+import { chemin } from '~/lib/chemins';
 import type { NoeudGraphe } from '~/lib/graph';
 import {
   AVANCEMENTS,
@@ -479,7 +480,7 @@ function Panneau({
         </div>
       </div>
 
-      <a className="ar__lien" href={`/techniques/${noeud.id}`}>
+      <a className="ar__lien" href={chemin(`/techniques/${noeud.id}`)}>
         Ouvrir la fiche →
       </a>
     </section>

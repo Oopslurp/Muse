@@ -11,6 +11,8 @@ interface Props {
   class?: string | undefined;
 }
 
+import { chemin } from '~/lib/chemins';
+
 const {
   href,
   variant = 'secondary',
@@ -21,7 +23,7 @@ const {
 } = Astro.props;
 
 const Tag = href && !disabled ? 'a' : 'button';
-const extra = href && !disabled ? { href } : { type, disabled };
+const extra = href && !disabled ? { href: chemin(href) } : { type, disabled };
 ---
 
 <Tag

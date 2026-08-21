@@ -17,6 +17,7 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
 import Pratique from '~/components/react/Pratique';
 import type { FichePratique } from '~/components/react/Pratique';
 import Callout from '~/components/ui/Callout.astro';
+import { chemin } from '~/lib/chemins';
 
 const fiches = (await getCollection('techniques')).filter((f) => !f.data.brouillon);
 
@@ -98,7 +99,7 @@ const donnees: FichePratique[] = fiches
       <p>
         Séances et progression vivent dans ce navigateur, nulle part ailleurs. La
         sauvegarde complète s'exporte et se réimporte en JSON depuis{' '}
-        <a href="/arbre">l'arbre de compétences</a>. IndexedDB s'efface avec les données
+        <a href={chemin('/arbre')}>l'arbre de compétences</a>. IndexedDB s'efface avec les données
         de navigation&nbsp;: exporter de temps en temps n'est pas une précaution
         excessive.
       </p>

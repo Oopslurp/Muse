@@ -29,6 +29,7 @@ import {
   type EtatTechnique,
 } from '~/lib/progression';
 import { lirePourFiche } from '~/lib/observations';
+import { chemin } from '~/lib/chemins';
 import Observer from './Observer';
 import './SuiviFiche.css';
 
@@ -90,7 +91,7 @@ export default function SuiviFiche({ id, promouvables }: SuiviFicheProps) {
   return (
     <section className="sf">
       <p className="sf__k">Travailler</p>
-      <a className="sf__atelier" href={`/pratique?technique=${encodeURIComponent(id)}`}>
+      <a className="sf__atelier" href={chemin(`/pratique?technique=${encodeURIComponent(id)}`)}>
         Ouvrir l’atelier →
         <span>métronome, minuteur et journal, réglés sur cette fiche</span>
       </a>

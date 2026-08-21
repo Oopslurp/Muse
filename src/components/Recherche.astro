@@ -58,6 +58,7 @@ import '~/styles/recherche.css';
 
 <script>
   import { chercher, type Entree } from '~/lib/recherche';
+  import { chemin } from '~/lib/chemins';
 
   const ETIQUETTE: Record<Entree['type'], string> = {
     technique: 'Technique',
@@ -80,7 +81,7 @@ import '~/styles/recherche.css';
 
     /** L'index arrive à la première ouverture, pas au chargement de la page. */
     const charger = () => {
-      demande ??= fetch('/recherche.json')
+      demande ??= fetch(chemin('/recherche.json'))
         .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
         .then((d: Entree[]) => {
           index = d;

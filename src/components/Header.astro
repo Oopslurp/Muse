@@ -2,13 +2,15 @@
 import ThemeToggle from './ThemeToggle.astro';
 import Recherche from './Recherche.astro';
 import { NAV } from '~/lib/nav';
+import { chemin } from '~/lib/chemins';
 
 const path = Astro.url.pathname;
+const navigation = NAV.map((item) => ({ ...item, href: chemin(item.href) }));
 ---
 
 <header class="header no-print">
   <div class="header__inner">
-    <a href="/" class="brand" aria-label="Muse — accueil">
+    <a href={chemin('/')} class="brand" aria-label="Muse — accueil">
       <span class="brand__mark" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <!-- Six cordes et deux frettes : la marque est un fragment de manche. -->
@@ -22,7 +24,7 @@ const path = Astro.url.pathname;
     <nav class="nav" aria-label="Navigation principale">
       <ul>
         {
-          NAV.map((item) => (
+          navigation.map((item) => (
             <li>
               <a
                 href={item.href}
