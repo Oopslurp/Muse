@@ -7,17 +7,22 @@ compétences et atelier de pratique.
 Écrite par un praticien, pas par une école. Aucun compte, aucun serveur : tout
 ce qui est enregistré vit dans votre navigateur et ressort en JSON.
 
-<!--
-  Badge d'intégration continue : à ajouter une fois le dépôt créé, en
-  remplaçant PSEUDO par le compte GitHub. Laissé de côté plutôt qu'écrit avec
-  un nom fictif — un badge cassé en tête de README est pire que pas de badge.
+[![Contrôles](https://github.com/Oopslurp/Oopslurp.github.io/actions/workflows/ci.yml/badge.svg)](https://github.com/Oopslurp/Oopslurp.github.io/actions/workflows/ci.yml)
 
-  [![Contrôles](https://github.com/PSEUDO/PSEUDO.github.io/actions/workflows/ci.yml/badge.svg)](https://github.com/PSEUDO/PSEUDO.github.io/actions/workflows/ci.yml)
--->
+Site en ligne : [oopslurp.github.io](https://oopslurp.github.io/)
+
+Prérequis : **Node.js 22.12 ou plus récent** et npm.
 
 ```bash
-npm install
+npm ci
 npm run dev        # http://localhost:4321
+```
+
+Pour vérifier une version de production en local :
+
+```bash
+npm run build
+npm run preview
 ```
 
 ![L'accueil](docs/images/accueil.png)
@@ -151,6 +156,12 @@ fausse que l'original, tout en ayant l'air plus sûre.
 
 Voir [LICENCE.md](LICENCE.md) pour ce que le dépôt ne possède pas — citations,
 répertoire cité, dépendances servies.
+
+## Crédits
+
+Muse a été développé avec l'assistance de **Claude, par Anthropic**.
+La direction éditoriale, les choix techniques et la responsabilité du contenu
+restent ceux de Mathieu C.
 
 ---
 
