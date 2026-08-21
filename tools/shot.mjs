@@ -21,6 +21,7 @@
 import { execFile } from 'node:child_process';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { attendreCiblesChrome } from './chrome.mjs';
 import { drapeauxFauxMicro, fabriquerCorde } from './faux-micro.mjs';
 
 const CHROME = [
@@ -117,9 +118,7 @@ const chrome = execFile(CHROME, [
   `--user-data-dir=${process.env.TEMP ?? '/tmp'}/muse-shot`,
   'about:blank',
 ]);
-await attendre(2500);
-
-const cibles = await (await fetch(`http://localhost:${PORT}/json/list`)).json();
+const cibles = await attendreCiblesChrome(PORT);
 const page = cibles.find((c) => c.type === 'page');
 const ws = new WebSocket(page.webSocketDebuggerUrl);
 await new Promise((r) => (ws.onopen = r));

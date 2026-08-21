@@ -21,6 +21,7 @@
 
 import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
+import { attendreCiblesChrome } from './chrome.mjs';
 
 const CHROME = [
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
@@ -47,9 +48,7 @@ const chrome = execFile(CHROME, [
   `--user-data-dir=${process.env.TEMP ?? '/tmp'}/muse-audit-finitions`,
   'about:blank',
 ]);
-await attendre(2500);
-
-const cibles = await (await fetch(`http://localhost:${PORT}/json/list`)).json();
+const cibles = await attendreCiblesChrome(PORT);
 const ws = new WebSocket(cibles.find((c) => c.type === 'page').webSocketDebuggerUrl);
 await new Promise((r) => (ws.onopen = r));
 

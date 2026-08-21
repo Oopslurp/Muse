@@ -20,6 +20,7 @@
  */
 import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
+import { attendreCiblesChrome } from './chrome.mjs';
 
 /** Même liste que les autres audits : un outil qui ne tourne que sur une
  *  machine est un outil perdu. */
@@ -49,9 +50,7 @@ const chrome = execFile(CHROME, [
 ]);
 
 const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
-await attendre(2500);
-
-const cibles = await (await fetch(`http://localhost:${PORT}/json/list`)).json();
+const cibles = await attendreCiblesChrome(PORT);
 const page = cibles.find((c) => c.type === 'page');
 const ws = new WebSocket(page.webSocketDebuggerUrl);
 await new Promise((r) => (ws.onopen = r));
